@@ -1,0 +1,23 @@
+<div class="translate_wrapper" [class.active]="navService.language">
+  <div class="current_lang">
+    <div class="lang">
+       <i class="flag-icon flag-icon-{{ selectedLanguage.icon }}"></i><span class="lang-txt">{{ selectedLanguage.code }}</span>
+      <svg>
+        <use href="assets/svg/icon-sprite.svg#arrow-down-fill"> </use>
+      </svg>
+    </div>
+  </div>
+  <div class="more_lang" [class.active]="navService.language">
+    @for(details of languages; track details){
+      <div class="lang selected" (click)="changeLanguage(details)">
+        <i class="flag-icon flag-icon-{{ details.icon }}"></i>
+        <span class="lang-txt">{{ details.language }}<span>
+          @if(details.type){
+            ({{ details.type }})
+          }
+        </span>
+      </span>
+    </div>
+    }
+  </div>
+</div>

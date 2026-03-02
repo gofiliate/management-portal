@@ -1,0 +1,80 @@
+<div class="security-settings-container">
+  <div class="security-settings-card">
+    <h1>Security Settings</h1>
+
+    <div class="success-message" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <div class="settings-section">
+      <h2>Two-Factor Authentication</h2>
+      <p class="description">
+        Add an extra layer of security to your account by requiring a code from your authenticator app when you sign in.
+      </p>
+
+      <div class="totp-status">
+        <div class="status-indicator" [class.enabled]="totpEnabled">
+          <span class="status-dot"></span>
+          <span class="status-text">
+            {{ totpEnabled ? 'Enabled' : 'Disabled' }}
+          </span>
+        </div>
+
+        <div class="status-actions" *ngIf="!totpEnabled">
+          <button class="btn btn-primary" (click)="enableTOTP()">
+            Enable Two-Factor Authentication
+          </button>
+        </div>
+
+        <div class="status-actions" *ngIf="totpEnabled">
+          <button class="btn btn-danger" (click)="openDisableModal()">
+            Disable Two-Factor Authentication
+          </button>
+        </div>
+      </div>
+
+      <div class="info-box" *ngIf="totpEnabled">
+        <p><strong>✓ Your account is protected</strong></p>
+        <p>You'll need to enter a code from your authenticator app each time you sign in.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Disable Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDisableModal" (click)="closeDisableModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Disable Two-Factor Authentication</h2>
+    <p>Enter your password to confirm you want to disable 2FA.</p>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        [(ngModel)]="disablePassword"
+        placeholder="Enter your password"
+        class="form-control"
+        [disabled]="isProcessing"
+        (keyup.enter)="confirmDisable()"
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeDisableModal()" [disabled]="isProcessing">
+        Cancel
+      </button>
+      <button 
+        class="btn btn-danger" 
+        (click)="confirmDisable()"
+        [disabled]="isProcessing || !disablePassword"
+      >
+        <span *ngIf="!isProcessing">Disable 2FA</span>
+        <span *ngIf="isProcessing">Processing...</span>
+      </button>
+    </div>
+  </div>
+</div>

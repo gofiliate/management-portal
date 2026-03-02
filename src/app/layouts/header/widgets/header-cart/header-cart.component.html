@@ -1,0 +1,36 @@
+<div class="cart-box">
+  <svg>
+    <use href="assets/svg/icon-sprite.svg#stroke-Buy"></use>
+  </svg>
+</div>
+<div class="cart-dropdown onhover-show-div" [class.active]="cart">
+  <h3 class="f-18 mb-0 dropdown-title">Cart</h3>
+  <ul>
+    @for(details of headerCart; track details){
+      <li>
+        <div class="d-flex">
+          <img class="img-fluid b-r-5 me-3 img-60" [src]="details.image" alt="image">
+          <div class="flex-grow-1 f-w-600"><span>{{ details.title }}</span>
+            <div class="qty-box">
+              <div class="input-group"><span class="input-group-prepend">
+                <button class="btn quantity-left-minus" type="button" (click)="changeValue(details.id, -1)">-</button></span>
+                  <input class="form-control input-number f-14 f-w-500" type="text" name="quantity" value="{{details.value}}"><span class="input-group-prepend">
+                <button class="btn quantity-right-plus" type="button" (click)="changeValue(details.id, 1)">+</button></span>
+              </div>
+            </div>
+            <h5 class="font-primary">{{ details.price }}</h5>
+          </div>
+          <div class="close-circle">
+            <a class="bg-danger" href="javascript:void(0)">
+              <app-feather-icons [icon]="'x'"></app-feather-icons>
+            </a>
+          </div>
+        </div>
+      </li>
+    }
+    <li class="total">
+      <h6 class="mb-0">Order Total : <span class="f-right">$1000.00</span></h6>
+    </li>
+    <li class="text-center"><a class="d-block mb-3 view-cart f-w-700" href="/e-commerce/cart">Go to your cart</a><a class="btn btn-primary view-checkout" href="javascript:void(0)" [routerLink]="['/e-commerce/checkout']">Checkout </a></li>
+  </ul>
+</div>

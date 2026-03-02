@@ -1,0 +1,82 @@
+<div class="modal-backdrop" *ngIf="show" (click)="onCancel()"></div>
+<div class="modal-dialog-wrapper" *ngIf="show">
+  <div class="modal-dialog">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ headerText }}</h5>
+        <button type="button" class="btn-close" (click)="onCancel()"></button>
+      </div>
+      <div class="modal-body">
+        <form #loginForm="ngForm">
+          <div class="mb-3" *ngIf="showModeSelector">
+            <label class="form-label">Mode <span class="text-danger">*</span></label>
+            <div class="btn-group w-100" role="group">
+              <input 
+                type="radio" 
+                class="btn-check" 
+                name="mode" 
+                id="mode-admin" 
+                [(ngModel)]="mode" 
+                value="admin"
+              >
+              <label class="btn btn-outline-primary" for="mode-admin">Admin</label>
+              
+              <input 
+                type="radio" 
+                class="btn-check" 
+                name="mode" 
+                id="mode-affiliate" 
+                [(ngModel)]="mode" 
+                value="affiliate"
+              >
+              <label class="btn btn-outline-primary" for="mode-affiliate">Affiliate</label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="username"
+              [(ngModel)]="credentials.username"
+              name="username"
+              placeholder="Enter username"
+              required
+              autocomplete="username"
+              [readonly]="disableUsername"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="password"
+              [(ngModel)]="credentials.password"
+              name="password"
+              placeholder="Enter password"
+              required
+              autocomplete="current-password"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          [disabled]="!loginForm.form.valid"
+          (click)="onConnect()"
+        >
+          <i *ngIf="buttonIcon" [class]="buttonIcon + ' me-2'"></i>
+          {{ buttonText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

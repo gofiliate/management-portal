@@ -1,0 +1,743 @@
+{
+  "product": [
+    {
+        "id": 1,
+        "img": "assets/images/ecommerce/01.jpg",
+        "productName": "Women's Top",
+        "aboutProduct": "Regular Flare Fit Women's white Top",
+        "description": "Lorate Solid Men's Fashion Full Sleeves Latest Jacket for Men With Button Closure Long Sleeve Casual Torn Lycra Denim Jacket.",
+        "discountPrice": "35.00",
+        "status": "none",
+        "price": "50.00",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 3,
+        "colors": [
+            "White",
+            "gray"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "img": "assets/images/ecommerce/02.jpg",
+        "productName": "Men's Jacket",
+        "aboutProduct": "Cotton Blend Men's Blue Jacket",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "45.00",
+        "status": "Sale",
+        "price": "50.00",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 5,
+        "colors": [
+            "green",
+            "gray"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Levis",
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "img": "assets/images/ecommerce/03.jpg",
+        "productName": "Women's Coat",
+        "aboutProduct": "Cotton Blend Women's Coat",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "426.00",
+        "price": "480.00",
+        "status": "none",
+        "stock": "Out of stock",
+        "review": "(250 review)",
+        "category": "Men",
+        "rating": 4,
+        "colors": [
+            "White",
+            "gray",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Spykar",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "img": "assets/images/ecommerce/04.jpg",
+        "productName": "Men's Shirt",
+        "aboutProduct": "Cotton Regular Fit Men's Shirt",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "26.00",
+        "price": "35.00",
+        "status": "50%",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 4,
+        "colors": [
+            "red",
+            "gray",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Levis",
+            "Lee",
+            "Hudson"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "img": "assets/images/ecommerce/05.jpg",
+        "productName": "Track Suit",
+        "aboutProduct": "Cotton Regular Fit Men's Track Suit",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "20.00",
+        "price": "26.00",
+        "stock": "In stock",
+        "status": "none",
+        "review": "(250 review)",
+        "category": "Man",
+        "rating": 3,
+        "colors": [
+            "green",
+            "gray",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Denien",
+            "Diesel",
+            "Spykar"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "img": "assets/images/ecommerce/06.jpg",
+        "productName": "Women's Jacket",
+        "aboutProduct": "Solid Denim Jacket",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "26.00",
+        "price": "30.00",
+        "status": "gift",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Men",
+        "rating": 5,
+        "colors": [
+            "purple",
+            "orange",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Lee",
+            "Lifestyle",
+            "Nike"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "img": "assets/images/ecommerce/07.jpg",
+        "productName": "Denim Jacket",
+        "aboutProduct": "Denim Regular Men's Jacket",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "30.00",
+        "price": "35.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 5,
+        "colors": [
+            "orange",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "img": "assets/images/ecommerce/08.jpg",
+        "productName": "Men's Formal shirt",
+        "aboutProduct": "Regular Men's Denim Shirt.",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "35.00",
+        "price" : "40.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Man",
+        "rating": 2,
+        "colors": [
+            "purple",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "img": "assets/images/ecommerce/09.jpg",
+        "productName": "Woman's Gown",
+        "aboutProduct": "Woman's Long Gown",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "45.00",
+        "price" : "50.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Man",
+        "rating": 3,
+        "colors": [
+            "White",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Spykar"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "img": "assets/images/ecommerce/10.jpg",
+        "productName": "Men's Black Suit",
+        "aboutProduct": "Men's Full Black Suit",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "50.00",
+        "price": "55.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 5,
+        "colors": [
+            "purple",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "img": "assets/images/ecommerce/11.jpg",
+        "productName": "Woman's Dress",
+        "aboutProduct": "Tops for Stylish Woman's Dress",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "60.00",
+        "price": "65.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 2,
+        "colors": [
+            "White",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "img": "assets/images/ecommerce/12.jpg",
+        "productName": "Slim Fit Plastic Coat",
+        "aboutProduct": "Slim Fit Plastic Thunder Coat",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "30.00",
+        "price" : "35.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 1,
+        "colors": [
+            "White",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "img": "assets/images/ecommerce/13.jpg",
+        "productName": "Women's Hoodie",
+        "aboutProduct": "Women's Hoodie T-Shirt",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "30.00",
+        "price": "360.00",
+        "status": "love",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Man",
+        "rating": 5,
+        "colors": [
+            "White",
+            "pink",
+            "blue"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Hudson",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "img": "assets/images/ecommerce/14.jpg",
+        "productName": "Men's T-shirt",
+        "aboutProduct": "Men's Denim T-shirt",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "60.00",
+        "price" : "70.00",
+        "status": "none",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Man",
+        "rating": 3,
+        "colors": [
+            "White",
+            "blue",
+            "yellow"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Diesel",
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "img": "assets/images/ecommerce/15.jpg",
+        "productName": "Woman Party Wear",
+        "aboutProduct": "Stylish Party Wear for women",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "30.00",
+        "price": "350.00",
+        "status": "Hot",
+        "stock": "In stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 2,
+        "colors": [
+            "black",
+            "blue",
+            "yellow"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Lee"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "img": "assets/images/ecommerce/16.jpg",
+        "productName": "Dream Beauty Fashion",
+        "aboutProduct": "Tops for Woman Stylish",
+        "description": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo.",
+        "discountPrice": "30.00",
+        "price": "360.00",
+        "status": "none",
+        "stock": "Out of stock",
+        "review": "(250 review)",
+        "category": "Woman",
+        "rating": 4,
+        "colors": [
+            "black",
+            "pink",
+            "yellow"
+        ],
+        "size": [
+            "M",
+            "L",
+            "XL"
+        ],
+        "tags": [
+            "Hudson"
+        ],
+        "variants": [
+            {
+                "color": "White",
+                "images": "assets/images/ecommerce/01.jpg"
+            },
+            {
+                "color": "gray",
+                "images": "assets/images/ecommerce/02.jpg"
+            },
+            {
+                "color": "black",
+                "images": "assets/images/ecommerce/03.jpg"
+            },
+            {
+                "color": "pink",
+                "images": "assets/images/ecommerce/04.jpg"
+            }
+        ]
+    }
+  ]
+}

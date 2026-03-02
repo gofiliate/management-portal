@@ -1,0 +1,40 @@
+<div class="invitation-accept-container">
+  <div class="invitation-card">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Validating invitation...</p>
+    </div>
+
+    <!-- Invalid Token State -->
+    <div *ngIf="!isLoading && !isValidToken" class="text-center">
+      <div class="alert alert-danger">
+        <h4>Invalid Invitation</h4>
+        <p>This invitation link is invalid, has expired, or has already been used.</p>
+      </div>
+      <a routerLink="/sign-in" class="btn btn-primary">Go to Sign In</a>
+    </div>
+
+    <!-- Valid Token - Show Message and Sign In Button -->
+    <div *ngIf="!isLoading && isValidToken">
+      <div class="text-center">
+        <h2>Welcome to Gofiliate!</h2>
+        <p class="text-muted mb-3">Thank you for validating your email address.</p>
+        <p *ngIf="invitation" class="invitation-info">
+          You've been invited as <strong>{{ invitation.given_name }}</strong> 
+          <span class="email">({{ invitation.email }})</span>
+        </p>
+        
+        <button 
+          type="button" 
+          class="btn btn-primary btn-lg mt-4"
+          (click)="goToSignIn()"
+        >
+          Continue to Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

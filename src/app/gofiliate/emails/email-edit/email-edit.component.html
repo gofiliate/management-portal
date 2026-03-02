@@ -1,0 +1,158 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title mb-4">
+        <h3>{{ isNewEmail ? 'Create' : 'Edit' }} Email Template</h3>
+        <p class="text-muted mb-0">{{ isNewEmail ? 'Create a new email template' : 'Update email template details' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading email template...</p>
+    </div>
+  </div>
+
+  <!-- Email Form -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Email Name -->
+              <div class="col-md-6 mb-3">
+                <label for="email_name" class="form-label">Email Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email_name"
+                  formControlName="email_name"
+                  placeholder="Enter email name"
+                  maxlength="50"
+                >
+                <div class="form-text">Internal name for this email template (max 50 characters)</div>
+              </div>
+
+              <!-- Email Type -->
+              <div class="col-md-6 mb-3">
+                <label for="email_type" class="form-label">Email Type</label>
+                <select class="form-select" id="email_type" formControlName="email_type">
+                  <option [ngValue]="null">None</option>
+                  <option value="internal-template">Internal Template</option>
+                  <option value="external-template">External Template</option>
+                </select>
+              </div>
+
+              <!-- Email Description -->
+              <div class="col-12 mb-3">
+                <label for="email_description" class="form-label">Description <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email_description"
+                  formControlName="email_description"
+                  placeholder="Enter email description"
+                  maxlength="100"
+                >
+                <div class="form-text">Brief description of this email template (max 100 characters)</div>
+              </div>
+
+              <!-- Email Trigger -->
+              <div class="col-md-6 mb-3">
+                <label for="email_trigger" class="form-label">Trigger <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email_trigger"
+                  formControlName="email_trigger"
+                  placeholder="e.g., user_registration, password_reset"
+                  maxlength="50"
+                >
+                <div class="form-text">Event that triggers this email (max 50 characters)</div>
+              </div>
+
+              <!-- Email From -->
+              <div class="col-md-6 mb-3">
+                <label for="email_from" class="form-label">From Address <span class="text-danger">*</span></label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email_from"
+                  formControlName="email_from"
+                  placeholder="noreply@example.com"
+                  maxlength="100"
+                >
+                <div class="form-text">Sender email address (max 100 characters)</div>
+              </div>
+
+              <!-- Email Title -->
+              <div class="col-12 mb-3">
+                <label for="email_title" class="form-label">Subject Line <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email_title"
+                  formControlName="email_title"
+                  placeholder="Enter email subject"
+                  maxlength="255"
+                >
+                <div class="form-text">Email subject line (max 255 characters)</div>
+              </div>
+
+              <!-- Email Text -->
+              <div class="col-12 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <label for="email_text" class="form-label mb-0">Email Body <span class="text-danger">*</span></label>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleViewMode()">
+                    <i class="fa" [ngClass]="viewMode === 'visual' ? 'fa-code' : 'fa-eye'"></i>
+                    {{ viewMode === 'visual' ? 'View HTML Source' : 'Visual Editor' }}
+                  </button>
+                </div>
+                
+                <!-- Visual Editor -->
+                <quill-editor
+                  *ngIf="viewMode === 'visual'"
+                  formControlName="email_text"
+                  [modules]="quillModules"
+                  format="html"
+                  placeholder="Enter email body content..."
+                  [style.height]="'400px'"
+                ></quill-editor>
+                
+                <!-- HTML Source Editor -->
+                <textarea
+                  *ngIf="viewMode === 'html'"
+                  class="form-control font-monospace"
+                  formControlName="email_text"
+                  rows="20"
+                  placeholder="Enter HTML source code..."
+                  style="font-size: 13px;"
+                ></textarea>
+                
+                <div class="form-text mt-2">
+                  {{ viewMode === 'visual' ? 'Use the toolbar to format text, or switch to HTML view to edit raw HTML.' : 'Edit the raw HTML source code. Switch back to visual editor to see the formatted result.' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-secondary" (click)="cancel()">
+                <i class="fa fa-times me-2"></i> Cancel
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="emailForm.invalid">
+                <i class="fa fa-save me-2"></i> {{ isNewEmail ? 'Create' : 'Update' }} Email Template
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

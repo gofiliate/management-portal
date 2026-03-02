@@ -1,0 +1,15 @@
+@if(change){
+  @if(layout.config.settings.icon == 'stroke-svg'){
+    <svg  [ngClass]="class ? class : 'stroke-icon'">
+      <use attr.xlink:href="assets/svg/icon-sprite.svg#stroke-{{icon}}"></use>
+    </svg>
+  }@else {
+    <svg class="fill-icon">
+      <use attr.xlink:href="assets/svg/icon-sprite.svg#fill-{{icon}}"></use>
+    </svg>
+  }
+}@else {
+  <svg [ngClass]="class ? class : 'stroke-icon'">
+    <use attr.xlink:href="assets/svg/icon-sprite.svg#stroke-{{icon}}"></use>
+  </svg>
+}

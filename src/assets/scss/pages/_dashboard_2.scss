@@ -1,0 +1,1569 @@
+/**=====================
+    3.9 Dashboard_2 CSS Start
+==========================**/
+.dashboard_ecommerce {
+  .active-status{
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    top: 16px;
+    left: 30px;
+    border-radius: 100%;
+    &.active-online {
+      background-color: var(--theme-deafult);
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+  }
+  table {
+    margin-top: 0 !important;
+    thead {
+      tr {
+        th{
+          padding: 0px 8px 8px 0px !important;
+          font-family: $font-nunito-sans;
+          .form-check {
+            input {
+              height: 15px;
+              &:checked{
+                background-color: var(--theme-deafult);
+                border: 1px solid $table-border-color;
+              }
+              &:focus {
+                box-shadow: none;
+              }
+            }
+          }
+          padding-bottom: 8px;
+          border-bottom: 1px solid $table-border-color;
+          color: $theme-body-sub-title-color;
+        }
+      }
+    }
+    tbody {
+      tr{
+        &:hover {
+          background-color: transparent !important;
+        }
+        .form-check {
+          input {
+            height: 15px;
+            &:checked{
+              background-color: var(--theme-deafult);
+              border: 1px solid $table-border-color;
+            }
+            &:focus {
+              box-shadow: none;
+            }
+          }
+        }
+        td {
+          padding: 15px 18px 15px 0px !important;
+          border-bottom: 1px solid $table-border-color;
+          font-family: $font-nunito-sans;
+        }
+        &:last-child {
+          td {
+            padding-bottom: 0px !important;
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+  .profit {
+    &:hover {
+      .animation {
+        transform: rotateY(360deg);
+        transition: all 0.7s ease;
+      }
+    }
+    .dropdown {
+      .btn {
+        &:active {
+          border: none;
+          background: $icon-bg-color;
+        }
+        &.show {
+          border: none;
+        }
+      }
+    }
+    .card-header {
+      border-bottom: 1px solid $table-border-color !important;
+    }
+    .profit-earning {
+      overflow: hidden;
+      .d-flex {
+        align-items: center;
+        .badge {
+          width: 69px;
+          height: 69px;
+          border-radius: 100%;
+          display: flex;
+          font-weight: 600;
+          align-items: center;
+          justify-content: center;
+          background-color: $icon-bg-color;
+          margin-right: 10px;
+          svg {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            padding-top: 0px;
+            fill: var(--theme-deafult);
+          }
+        }
+        .flex-grow-1 {
+          .d-flex {
+            h2 {
+              font-size: 30px;
+              font-weight: 800;
+              span {
+                font-weight: 400;
+              }
+            }
+            span[class*="bg-"] {
+              width: 15px;
+              height: 15px;
+              border-radius: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              svg {
+                position: absolute;
+                fill: var(--theme-secondary);
+                padding-top: 0;
+                width: 12px;
+                height: 12px;
+              }
+            }
+          }
+          p {
+            font-size: 16px;
+            font-weight: 600;
+            color: $theme-body-sub-title-color;
+          }
+        }
+      }
+    }
+  }
+  .revenue-ecommerce {
+    .ecommerce {
+      &:hover {
+        h3 {
+          transform: rotateX(360deg);
+        }
+      }
+    }
+    .d-flex {
+      align-items: center;
+      gap: 20px;  
+      .flex-grow-1{
+        border-right: 2px dashed $table-border-color;
+        &:last-child {
+          border-right: none !important;
+        }
+        h5 {
+          color: $theme-body-sub-title-color;
+          margin-bottom: 13px;
+        }
+        h3 {
+          font-size: 24px;
+          margin-bottom: 31px;
+          transition: all 0.7s;
+        }
+        button {
+          padding: 8px 15px;
+          span[class*="bg-"] {
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg {
+              position: absolute;
+              fill: var(--theme-secondary);
+              padding-top: 0;
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .selling-table {
+    thead {
+      tr {
+        th {
+          &:nth-child(6) {
+            span {
+              padding: 8px 8px;
+            }
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        &:hover {
+          td {
+            &:nth-child(2) {
+              .d-flex {
+                .flex-grow-1 {
+                  h6 {
+                    color: var(--theme-deafult);
+                  }
+                }
+                .active-online {
+                  opacity: 1;
+                  transition: all 0.6s ease;
+                }
+              }
+            }
+            &:nth-child(3) {
+              color: var(--theme-deafult) !important;
+            }
+            &:nth-child(4) {
+              color: var(--theme-deafult) !important;
+            }
+            &:nth-child(5) {
+              color: var(--theme-deafult) !important;
+            }
+            &:nth-child(6) {
+              span {
+                color: var(--theme-deafult);
+                background-color: rgba($primary-color, 0.1);
+                border-radius: 5px;
+              }
+            }
+          }
+        }
+        td {
+          &:nth-child(2) {
+            position: relative;
+            .d-flex {
+              align-items: center;
+              .flex-shrink-0 {
+                img {
+                  border-radius: 50%;
+                }
+              }
+              .flex-grow-1{
+                h6  {
+                  text-overflow:ellipsis;
+                  overflow:hidden;
+                  display: -webkit-box !important;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  white-space: normal;
+                }
+                span {
+                  color: $theme-body-sub-title-color;
+                  font-size: 13px;
+                }
+              }
+            }
+          }
+          &:nth-child(6) {
+            span {
+              padding: 8px 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .latest-sales {
+    tbody {
+      tr {
+        &:hover {
+          td {
+            &:nth-child(2) {
+              .d-flex {
+                .flex-grow-1 {
+                  h6 {
+                    color: var(--theme-deafult);
+                  }
+                }
+                .active-online {
+                  opacity: 1;
+                  transition: all 0.6s ease;
+                }
+              }
+            }
+            &:nth-child(3){
+              h6 {
+                color: var(--theme-deafult);
+              }
+            }
+            &:nth-child(4){
+              color: var(--theme-deafult) !important;
+            }
+            &:nth-child(5) {
+              color: var(--theme-deafult) !important;
+            }
+            &:nth-child(6) {
+              color: var(--theme-deafult)!important;
+            }
+            &:nth-child(7) {
+              .order {
+                background-color: rgba($primary-color, 0.1);
+                color: var(--theme-deafult) !important;
+              }
+            }
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          &:nth-child(2) {
+            .d-flex {
+              align-items: center;
+              position: relative;
+              .flex-shrink-0 {
+                img {
+                  border-radius: 50%;
+                }
+              }
+              .flex-grow-1 {
+                span {
+                  font-size: 13px;
+                  color: $theme-body-sub-title-color;
+                  text-overflow:ellipsis;
+                  overflow:hidden;
+                  display: -webkit-box !important;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  white-space: normal;
+                  line-height: 1.7;
+                }
+              }
+              .active-status {
+                top: 0;
+                left: 30px;
+              }
+            }
+          }
+          &:nth-child(3) {
+            span {
+              font-size: 13px;
+              color: $theme-body-sub-title-color;
+              text-overflow:ellipsis;
+              overflow:hidden;
+              display: -webkit-box !important;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              white-space: normal;
+            }
+          }
+          &:nth-child(7) {
+            .order {
+              padding: 6px 13px;
+              min-width: 80px;
+              font-weight: 600;
+              background-color: $icon-bg-color;
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
+  .recent-orders {
+    table {
+      tbody {
+        tr {
+          &:hover{
+            td {
+              &:nth-child(2) {
+                .d-flex {
+                  span {
+                    color: var(--theme-deafult) !important;
+                  }
+                }
+              }
+              &:nth-child(3) {
+                color: var(--theme-deafult) !important;
+              }
+              &:nth-child(4) {
+                color: var(--theme-deafult) !important;
+              }
+              &:nth-child(5){
+                color: var(--theme-deafult) !important;
+              }
+            }
+          }
+          td{
+            &:nth-child(2){
+              .d-flex {
+                align-items: center;
+                img {
+                  border-radius: 50%;
+                }
+                a {
+                  span {
+                    color: $theme-font-color;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .sales-chart {
+    .card-body {
+      ul {
+        display: flex;
+        align-items: center;
+        li {
+          display: flex;
+          align-items: center;
+          .circle {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
+          p {
+            color: $theme-body-sub-title-color;
+            font-weight: 600;
+            span {
+              color: $theme-font-color;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+  .top-dealer-sec {
+    &:hover{
+      .card-header {
+        h3 {
+          letter-spacing: 0px;
+        }
+      }
+      .owl-theme {
+        .owl-nav{
+          &:first-child {
+            display: none !important;
+          }
+          &:last-child {
+            display: none !important;
+          }
+          .owl-next{
+            right: 13px;
+            visibility: visible;
+            opacity: 1;
+            transition: all .4s ease-in-out;
+          }
+          .owl-prev{
+            left: 13px;
+            visibility: visible;
+            opacity: 1;
+            transition: all .4s ease-in-out;
+          }
+        }
+      }
+      .owl-nav {
+        display: none;
+      }
+    }
+    .card-header {
+      .header-top {
+        .dropdown {
+          .dropdown-menu {
+            z-index: 2;
+          }
+        }
+        .center-content {
+          margin: 0 auto;
+          padding-right: 50px;
+          p {
+            color: $theme-body-sub-title-color;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0px;
+            align-items: center;
+            span[class*="bg-"] {
+              width: 15px;
+              height: 15px;
+              border-radius: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              svg {
+                position: absolute;
+                fill: var(--theme-deafult);
+                padding-top: 0;
+                width: 12px;
+                height: 12px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .card {
+      margin-bottom: 16px;
+      box-shadow: none;
+      border: 1px solid $table-border-color;
+      .card-img-top {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        margin: 0 auto;
+        margin-bottom:15px;
+      }
+      .top-dealerbox {
+        padding: 14px;    
+        h6 {
+          font-size: 16px;
+          font-weight: 600;
+          text-overflow:ellipsis;
+          overflow:hidden;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          white-space: normal;
+        }
+        p {
+          font-size:14px;   
+          font-weight: 400;
+          margin-bottom:12px;
+          color: $light-text;
+        }
+        .btn {
+          padding:8px 10px;
+          background-color:rgba($primary-color,0.1);
+          color: var(--theme-deafult);
+          font-size:12px; 
+          font-weight:600;
+          border-radius:15px;
+          line-height:1;    
+        }
+        &:hover{
+          background-color: rgba($primary-color,0.1);        
+          .btn{
+            background-color: var(--theme-deafult);
+            color:$white;
+          }
+        }
+      }   
+    }
+    .owl-theme {
+      .owl-nav{
+        position: unset;
+        margin-bottom: 0;
+        margin-top: 0;
+        .owl-prev {
+          visibility: hidden;
+          opacity: 0;
+          position: absolute;
+          padding: 5px;
+          top: 49%;
+          margin: 4px;
+          left: -60px;
+          right: auto;
+          width: 30px;
+          height: 30px;
+          overflow: hidden;
+          border-radius: 50%;
+          transform: translate(0, -50%);
+          transition: all .4s ease-in-out;
+          background-color:rgba($primary-color,0.1);
+          i {
+            color: var(--theme-deafult);
+          }
+        }
+        .owl-next {
+          right: -60px;
+          visibility: hidden;
+          opacity: 0;
+          position: absolute;
+          padding: 5px;
+          top: 49%;
+          margin: 4px;
+          width: 30px;
+          height: 30px;
+          overflow: hidden;
+          border-radius: 50%;
+          transform: translate(0, -50%);
+          transition: all .4s ease-in-out;
+          background-color:rgba($primary-color,0.1);
+          i {
+            color: var(--theme-deafult);
+          }
+        }
+      }
+    }
+  }
+  .conversion-rate {
+    .conversion-table {
+      margin-bottom: 50px;
+      thead {
+        tr {
+          th {
+            border-bottom: none;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 0px 20px 0px 0px !important;
+          }
+        }
+      }
+      tbody {
+        tr {
+          &:nth-child(3){
+            td {
+              border-bottom: none;
+            }
+          }
+          td {
+            text-align: center ;
+            padding: 10px 20px 10px 0px !important;
+            border-bottom: 2px dashed $table-border-color;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+    ul {
+      gap: 14px;
+      li {
+        &:first-child {
+          border-right: 2px dashed $table-border-color;
+          padding-right: 15px;
+          button{
+            svg {
+              fill: $success-color !important;
+            }
+          }
+        }
+        p {
+          margin-bottom: 25px;
+        }
+        button {
+          padding: 8px 15px;
+          align-items: center;
+          span[class*="bg-"] {
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg {
+              position: absolute;
+              fill: var(--theme-secondary);
+              padding-top: 0;
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .countries-user {
+    .countries-name {
+      border-left: 1px solid $table-border-color;
+      p {
+        color: $theme-body-sub-title-color;
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 5px;
+        align-items: center;
+        span[class*="bg-"] {
+          width: 15px;
+          height: 15px;
+          border-radius: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          svg {
+            position: absolute;
+            fill: var(--theme-success);
+            padding-top: 0;
+            width: 12px;
+            height: 12px;
+          }
+        }
+      }
+      .countries {
+        margin-top: 15px;
+        ul {
+          li {
+            align-items: center;
+            margin-bottom: 26px;
+            img {
+              border-radius: 50%;
+            }
+            .flex-grow-1 {
+              .progress {
+                border-radius: 50px;
+                width: 180px;
+                height: 5px;
+                .progress-bar  {
+                  border-radius: 50px;
+                }
+              }
+            }
+            span {
+              font-size: 16px;
+              font-weight: 600;
+              color: $theme-body-sub-title-color;
+            }
+          }
+        }
+      }
+    }
+    .jvector-map-height {
+      height: 330px;
+      transform: translateY(15px);
+      .jvectormap-zoomin , .jvectormap-zoomout{
+        display: none;
+      }
+    }
+  }
+  #sales-analytics {
+    .apexcharts-canvas {
+      .apexcharts-legend {
+        right: 70% !important;
+      }
+    }
+  }
+  div.dataTables_wrapper {
+    position: unset;
+    font-weight: 600;
+    div.dataTables_filter {
+      position: absolute;
+      top: 15px;
+      right: 22px;
+      @media (max-width: 575px) {
+        top: 60px;
+        right: 18px;
+      }
+      input[type=search] {
+        width: 150px !important;
+        height: 34px;
+        border-radius: 6px;
+      }
+    }
+    table.dataTable {
+      margin-top: 13px !important;
+      border: none !important;
+      font-family: $font-nunito-sans;
+      @media (max-width: 575px) {
+        margin-top: 42px !important;
+      }
+      &.display {
+        tbody {
+          tr.odd,
+          tr.even {
+            background-color: transparent !important;
+            >.sorting_1 {
+              background-color: transparent !important;
+            }
+          }
+        }
+      }
+      thead {
+        >tr {
+          >th {
+            text-transform: capitalize;
+            font-weight: 600;
+            &:before,
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+      tbody {
+        >tr {
+          >td {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1850px) {
+  .dashboard_ecommerce {
+    .latest-sales {
+      table {
+        tbody {
+          tr {
+            td {
+              padding: 15px 0px 15px 0px !important;
+            }
+          }
+        }
+      }
+    }
+    .conversion-rate {
+      .conversion-table {
+        tbody {
+          tr {
+            td {
+              padding: 10px 0px 10px 0px !important;
+            }
+          }
+        }
+      }
+      ul {
+        li {
+          &:first-child {
+            padding-right: 5px;
+          }
+          button {
+            padding: 8px 6px;
+          }
+        }
+      }
+    }
+    .countries-user {
+      .countries-name {
+        .countries {
+          ul {
+            li {
+              .flex-grow-1{
+                .progress {
+                  width: 120px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1750px) and (min-width: 1200px) {
+  .dashboard_ecommerce {
+    table {
+      tbody {
+        tr {
+          td{
+            padding: 15px 0px 15px 0px !important;
+          }
+        }
+      }
+    }
+    .profit {
+      .profit-earning {
+        .d-flex{
+          .flex-grow-1 {
+            .d-flex {
+              span[class*="bg-"] {
+                display: none;
+                svg {
+                  display: none;
+                }
+              }
+              span {
+                &.font-secondary {
+                  display: none;
+                }
+              }
+            } 
+          }
+        }
+      }
+    }
+    .latest-sales {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(6) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(6) {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1600px) and (min-width: 1200px) {
+  .dashboard_ecommerce {
+    .conversion-rate{
+      .conversion-table {
+        thead {
+          tr {
+            th {
+              &:nth-child(4) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(4) {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1550px) and (min-width: 1200px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          h3 {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+    .selling-table {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(3) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(3) {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+    .latest-sales {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(5) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(5) {
+                display: none ;
+              }
+            }
+          }
+        }
+      }
+    }
+    .recent-orders {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(3) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(3) {
+                 display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+    .countries-user {
+      .jvector-map-height {
+        height: 200px; 
+        transform: translateY(4px);
+      }
+      .countries-name {
+        border-left: none !important;
+        .user {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 12px;
+        }
+        .countries {
+          ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+  }
+}
+@media (max-width: 1550px) and (min-width: 1200px) {  
+  .dashboard_ecommerce {
+    .col-xl-100 {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    .col-xl-50 {
+      flex: 0 0 auto;
+      width: 50%;
+    }
+  }
+}
+@media screen and (max-width: 1460px) and (min-width: 1200px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        gap: 8px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1373px) and (min-width: 1200px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          &:nth-child(3) {
+            border-right: none;
+          }
+          &:last-child {
+            display: none;
+          }
+        }
+      }
+    }
+    .latest-sales {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(4) {
+                display: none;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            td {
+              &:nth-child(4) {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    }
+    .conversion-rate {
+      ul {
+        li {
+          button {
+            span {
+              &:first-child {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+    } 
+  }
+}
+@media screen and (max-width: 1300px) and (min-width: 1200px)  {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex {
+          .badge {
+            width: 60px;
+            height: 60px;
+            margin-right: 8px;
+            svg {
+              width: 35px;
+              height: 35px;
+            }
+          }
+          .flex-grow-1 {
+            .d-flex {
+              h2 {
+                font-size: 24px;
+              }
+            }
+          }
+        } 
+      }
+    }
+    .countries-user {
+      .countries-name {
+        .countries {
+          ul {
+            li {
+              .flex-grow-1 {
+                .progress {
+                  width: 100PX;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .selling-table {
+      .card-header {
+        h3 {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          width: 170px;
+          white-space: normal;
+        }
+      }
+    }
+    .recent-orders {
+      .card-header {
+        h3 {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box !important;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          white-space: normal;
+          width: 110px;
+        }
+      }
+    } 
+    .top-dealer-sec {
+      .card-header {
+        .header-top {
+          .center-content {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1199px) and (min-width: 992px) {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex{
+          .flex-grow-1 {
+            .d-flex {
+              h2 {
+                font-size: 23px;
+              }
+              span[class*="bg-"] {
+                display: none;
+                svg {
+                  display: none;
+                }
+              }
+              span {
+                &.me-2 {
+                  display: none;
+                }
+              }
+            } 
+            p {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          &:nth-child(3) {
+            border-right: none;
+          }
+          &:last-child {
+            display: none;
+          }
+        }
+      }
+    }
+    .selling-table {
+      table {
+        thead {
+          tr {
+            th {
+              &:first-child {
+                min-width: 0;
+              }
+              &:nth-child(2){
+                min-width: 172px;
+              }
+              min-width: 120px;
+            }
+          }
+        }
+      }
+    }
+    .recent-orders {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(2) {
+                min-width: 180px;
+              }
+              &:nth-child(3) {
+                min-width: 135px;
+              }
+            }
+          }
+        }
+        tbody {
+          tr {
+            &:nth-child(3){
+              display: none;
+            }
+          }
+        }
+      }
+    }
+    .conversion-rate {
+      #rate-chart {
+        display: none;
+      }
+    }
+    .countries-user {
+      .countries-name {
+        .countries {
+          ul {
+            li {
+              .flex-grow-1 {
+                .progress {
+                  width: 100%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1119px) and (min-width: 992px) {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex {
+          .flex-grow-1 {
+            .d-flex {
+              span {
+                &.font-secondary {
+                  display: none;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        gap: 9px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 700px) {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex {
+          .flex-grow-1 {
+            .d-flex {
+              h2 {
+                font-size: 20px;
+              }
+            } 
+          }
+        }
+      }
+    }
+    .selling-table {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(2){
+                min-width: 184px;
+              }
+              &:nth-child(3){
+                min-width: 116px;
+              }
+              &:nth-child(4){
+                min-width: 100px;
+              }
+              &:nth-child(5){
+                min-width: 100px;
+              }
+              &:nth-child(6){
+                min-width: 100px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .latest-sales {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(2){
+                min-width: 184px;
+              }
+              &:nth-child(3){
+                min-width: 116px;
+              }
+              &:nth-child(4){
+                min-width: 100px;
+              }
+              &:nth-child(5){
+                min-width: 100px;
+              }
+              &:nth-child(6){
+                min-width: 100px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .recent-orders {
+      table {
+        thead {
+          tr {
+            th {
+              &:nth-child(2){
+                min-width: 184px;
+              }
+              &:nth-child(3){
+                min-width: 116px;
+              }
+              &:nth-child(4){
+                min-width: 100px;
+              }
+              &:nth-child(5){
+                min-width: 100px;
+              }
+              &:nth-child(6){
+                min-width: 100px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 600px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          h5 {
+            font-size: 14px;
+            text-overflow:ellipsis;
+            overflow:hidden;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+          }
+          h3 {
+            font-size: 20px;
+          }
+          button {
+            padding: 8px 4px;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 650px) {
+  .dashboard_ecommerce {
+    .countries-user {
+      .countries-name {
+        .countries {
+          ul {
+            li {
+              .flex-grow-1 {
+                .progress {
+                  width: 100px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 595px) {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex {
+          #profit-chart {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 575px) {
+  .dashboard_ecommerce {
+    .top-dealer-sec {
+      .center-content {
+        display: none !important;
+      }
+    }
+    .conversion-rate {
+      #rate-chart {
+        display: none;
+      }
+    }
+    .countries-user {
+      .countries-name  {
+        border-left: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 480px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          &:nth-child(3) {
+            border-right: none;
+          }
+          &:last-child {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 400px) {
+  .dashboard_ecommerce {
+    .conversion-rate {
+      .conversion-table {
+        margin-bottom: 14px;
+        thead {
+          tr {
+            th {
+              font-size: 13px;
+              padding: 0px 3px 0px 0px !important;
+            }
+          }
+        }
+      }
+      ul {
+        li {
+          h2 {
+            font-size: 22px;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 380px) {
+  .dashboard_ecommerce {
+    .revenue-ecommerce {
+      .d-flex {
+        .flex-grow-1 {
+          &:nth-child(2) {
+            border-right: none;
+          }
+          &:nth-child(3) {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 360px) {
+  .dashboard_ecommerce {
+    .profit {
+      .profit-earning {
+        .d-flex {
+          .badge {
+            width: 60px;
+            height: 60px;
+            margin-right: 5px;
+            svg {
+              width: 35px;
+              height: 35px;
+            }
+          }
+          .flex-grow-1 {
+            .d-flex {
+              h2 {
+                font-size: 18px;
+                margin-right: 0 !important;
+              }
+              span {
+                margin-right: 0 !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**=====================
+    3.9 Dashboard_2 CSS End
+==========================**/

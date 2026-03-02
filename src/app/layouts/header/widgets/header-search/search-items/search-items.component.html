@@ -1,0 +1,23 @@
+@if(search.menuItems.length){
+  <div class="Typeahead-menu custom-scrollbar" [class.is-open]="search.searchResult">
+    @for(menuItem of search.menuItems | slice : 0 : 8; track menuItem){
+    <div class="ProfileCard u-cf">
+      <div class="ProfileCard-avatar">
+      </div>
+      <div class="ProfileCard-details">
+        <div class="ProfileCard-realName">
+          <app-svg-icon [icon]="menuItem.icon"></app-svg-icon>
+          <a [routerLink]="menuItem?.path" class="realname" (click)="search.removeFix()">{{ menuItem?.title }}</a>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+}
+  <div class="Typeahead-menu custom-scrollbar" [class.is-open]="search.searchResultEmpty">
+    <div class="ProfileCard u-cf">
+      <div class="EmptyMessage">
+        Opps!! There are no result found.
+      </div>
+    </div>
+  </div>

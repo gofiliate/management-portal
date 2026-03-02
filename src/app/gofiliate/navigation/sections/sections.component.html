@@ -1,0 +1,169 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3>Section Management</h3>
+          <p class="text-muted mb-0">Manage navigation sections and top-level routes</p>
+        </div>
+        <button class="btn btn-primary" (click)="openCreateForm()" *ngIf="!showForm">
+          <i class="fa fa-plus me-2"></i> Create Section
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading sections...</p>
+    </div>
+  </div>
+
+  <!-- Create/Edit Form -->
+  <div class="row" *ngIf="showForm && !loading">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">{{ editMode ? 'Edit Section' : 'Create New Section' }}</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="sectionForm" (ngSubmit)="saveSection()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="section_name" class="form-label">Section Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="section_name" formControlName="section_name" placeholder="e.g., Administration">
+                <div class="text-danger small mt-1" *ngIf="sectionForm.get('section_name')?.invalid && sectionForm.get('section_name')?.touched">
+                  Section name is required
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="section_slug" class="form-label">Section Slug <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="section_slug" formControlName="section_slug" placeholder="e.g., admin">
+                <small class="text-muted d-block">Used in URLs (lowercase, no spaces)</small>
+                <div class="text-danger small mt-1" *ngIf="sectionForm.get('section_slug')?.invalid && sectionForm.get('section_slug')?.touched">
+                  Section slug is required
+                </div>
+              </div>
+
+              <div class="col-md-12 mb-3">
+                <label for="section_description" class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="section_description" formControlName="section_description" rows="2" placeholder="Describe this section..."></textarea>
+                <div class="text-danger small mt-1" *ngIf="sectionForm.get('section_description')?.invalid && sectionForm.get('section_description')?.touched">
+                  Description is required
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="section_icon" class="form-label">Icon</label>
+                <input type="text" class="form-control" id="section_icon" formControlName="section_icon" placeholder="e.g., fa-cog">
+                <small class="text-muted">FontAwesome icon class (optional)</small>
+              </div>
+
+              <div class="col-md-3 mb-3">
+                <label for="order" class="form-label">Display Order <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="order" formControlName="order" min="0">
+                <small class="text-muted">Lower numbers appear first</small>
+              </div>
+
+              <div class="col-md-3 mb-3">
+                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                <select class="form-select" id="status" formControlName="status">
+                  <option [ngValue]="1">Active</option>
+                  <option [ngValue]="0">Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary" [disabled]="loading || sectionForm.invalid">
+                <i class="fa fa-save me-2"></i> {{ editMode ? 'Update' : 'Create' }} Section
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="loading">
+                <i class="fa fa-times me-2"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sections List -->
+  <div class="row" *ngIf="!loading && !showForm">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Active Sections ({{ sections.length }})</h5>
+        </div>
+        <div class="card-body">
+          <!-- Empty State -->
+          <div class="text-center py-5" *ngIf="sections.length === 0">
+            <i class="fa fa-folder-open fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No sections found</h5>
+            <p class="text-muted mb-3">Create your first section to get started</p>
+            <button class="btn btn-primary" (click)="openCreateForm()">
+              <i class="fa fa-plus me-2"></i> Create Section
+            </button>
+          </div>
+
+          <!-- Sections Table -->
+          <div class="table-responsive" *ngIf="sections.length > 0">
+            <div class="alert alert-info mb-3">
+              <i class="fa fa-info-circle me-2"></i>
+              <strong>Tip:</strong> Drag and drop rows to reorder sections. Grab the ≡ icon or anywhere on the row.
+            </div>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">Sort</th>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>Slug</th>
+                  <th>Description</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody cdkDropList (cdkDropListDropped)="onDrop($event)">
+                <tr *ngFor="let section of sections" cdkDrag class="draggable-row">
+                  <td class="text-center drag-handle" style="cursor: grab;">
+                    <span class="drag-icon">≡</span>
+                  </td>
+                  <td>
+                    <i class="fa {{ section.section_icon || 'fa-folder' }}" *ngIf="section.section_icon"></i>
+                    <span class="text-muted" *ngIf="!section.section_icon">-</span>
+                  </td>
+                  <td><strong>{{ section.section_name }}</strong></td>
+                  <td><code>/{{ section.section_slug }}</code></td>
+                  <td class="text-truncate" style="max-width: 300px;">{{ section.section_description }}</td>
+                  <td>{{ section.order }}</td>
+                  <td>
+                    <span class="badge" [class.bg-success]="section.status === 1" [class.bg-secondary]="section.status === 0">
+                      {{ section.status === 1 ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button class="btn btn-outline-primary" (click)="openEditForm(section)" title="Edit">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn btn-outline-danger" (click)="deactivateSection(section)" title="Deactivate">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

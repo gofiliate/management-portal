@@ -1,0 +1,762 @@
+<div class="manage-instance-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Instance Details Form -->
+  <div *ngIf="!loading" class="content-wrapper">
+    <!-- Action Bar - Full Width -->
+    <div class="row mb-1">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body py-2">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <!-- Status Switch -->
+              <div class="form-check form-switch mb-0">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="statusSwitch"
+                  [(ngModel)]="statusActive"
+                  (change)="onStatusChange()"
+                  name="statusSwitch"
+                >
+                <label class="form-check-label" for="statusSwitch">
+                  {{ statusActive ? 'Active' : 'Inactive' }}
+                </label>
+              </div>
+
+              <div class="vr"></div>
+
+              <!-- Single Brand Switch -->
+              <div class="form-check form-switch mb-0">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="singleBrandSwitch"
+                  [(ngModel)]="singleBrandActive"
+                  (change)="onSingleBrandChange()"
+                  name="singleBrandSwitch"
+                >
+                <label class="form-check-label" for="singleBrandSwitch">
+                  {{ singleBrandActive ? 'Single Brand' : 'Multi Brand' }}
+                </label>
+              </div>
+
+              <div class="vr"></div>
+
+              <!-- Live Mode Switch -->
+              <div class="form-check form-switch mb-0">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="liveSwitch"
+                  [(ngModel)]="liveActive"
+                  (change)="onLiveChange()"
+                  name="liveSwitch"
+                >
+                <label class="form-check-label" for="liveSwitch">
+                  {{ liveActive ? 'Live' : 'Development' }}
+                </label>
+              </div>
+
+              <div class="vr"></div>
+
+              <!-- Quick Action Buttons -->
+              <button class="btn btn-sm btn-outline-primary" (click)="testAPI()">
+                <i class="fa fa-heartbeat me-1"></i>
+                Test API
+              </button>
+              <button class="btn btn-sm btn-outline-warning" (click)="testIntegration()">
+                <i class="fa fa-shield-alt me-1"></i>
+                Test Integration
+              </button>
+              <button class="btn btn-sm btn-outline-success">
+                <i class="fa fa-plus me-1"></i>
+                Add Brand
+              </button>
+              <button 
+                class="btn btn-sm btn-outline-primary" 
+                (click)="syncAll()"
+                [disabled]="syncing || !linkedToken"
+              >
+                <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync me-1'"></i>
+                {{ syncing ? 'Syncing...' : 'Sync All' }}
+              </button>
+              <button class="btn btn-sm btn-outline-info">
+                <i class="fa fa-chart-bar me-1"></i>
+                View Analytics
+              </button>
+              <button 
+                *ngIf="canLogin"
+                class="btn btn-sm btn-outline-success"
+                (click)="handleLogin()"
+              >
+                <i class="fa fa-sign-in me-1"></i>
+                Login
+              </button>
+
+              <div class="vr"></div>
+
+              <!-- JWT Token Actions -->
+              <button 
+                *ngIf="linkedToken"
+                class="btn btn-sm btn-outline-primary" 
+                (click)="inspectJWT()"
+              >
+                <i class="fa fa-eye me-1"></i>
+                Inspect JWT
+              </button>
+              <button 
+                *ngIf="linkedToken"
+                class="btn btn-sm btn-outline-danger" 
+                (click)="openRemoveConfirmModal()"
+              >
+                <i class="fa fa-trash me-1"></i>
+                Remove Token
+              </button>
+              <button 
+                *ngIf="!linkedToken"
+                class="btn btn-sm btn-outline-success" 
+                (click)="openLinkModal()"
+              >
+                <i class="fa fa-link me-1"></i>
+                Connect Platform Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Main Form - Col 8 -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Instance Information</h5>
+          </div>
+          <div class="card-body">
+            <form>
+              <div class="row">
+                <!-- Instance Name -->
+                <div class="col-md-6 mb-3">
+                  <label for="instanceName" class="form-label">Instance Name</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="instanceName" 
+                    [(ngModel)]="instance.instance_name"
+                    name="instanceName"
+                    maxlength="255"
+                    pattern="[a-zA-Z0-9\s\-_]+"
+                    title="Only letters, numbers, spaces, hyphens and underscores allowed"
+                  >
+                </div>
+
+                <!-- Hostname -->
+                <div class="col-md-6 mb-3">
+                  <label for="hostname" class="form-label">Instance Hostname</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="hostname" 
+                    [(ngModel)]="instance.hostname"
+                    name="hostname"
+                    maxlength="255"
+                    pattern="[a-zA-Z0-9\-_.]+"
+                    title="Only letters, numbers, hyphens, underscores and dots allowed"
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- IP Address -->
+                <div class="col-md-6 mb-3">
+                  <label for="ipAddress" class="form-label">IP Address</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="ipAddress" 
+                    [(ngModel)]="instance.ip_address"
+                    name="ipAddress"
+                    maxlength="45"
+                    pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"
+                    title="Please enter a valid IPv4 or IPv6 address"
+                  >
+                </div>
+
+                <!-- Client Logo -->
+                <div class="col-md-6 mb-3">
+                  <label for="clientLogo" class="form-label">Client Logo (Optional)</label>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="clientLogo" 
+                    [(ngModel)]="instance.client_logo"
+                    name="clientLogo"
+                    maxlength="255"
+                    pattern="https?://.+"
+                    title="Please enter a valid URL starting with http:// or https://"
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Affiliate Endpoint -->
+                <div class="col-md-6 mb-3">
+                  <label for="affEndpoint" class="form-label">Affiliate Endpoint</label>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="affEndpoint" 
+                    [(ngModel)]="instance.aff_endpoint"
+                    name="affEndpoint"
+                    maxlength="255"
+                    pattern="https?://.+"
+                    title="Please enter a valid URL starting with http:// or https://"
+                  >
+                </div>
+
+                <!-- Admin Endpoint -->
+                <div class="col-md-6 mb-3">
+                  <label for="adminEndpoint" class="form-label">Admin Endpoint</label>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="adminEndpoint" 
+                    [(ngModel)]="instance.admin_endpoint"
+                    name="adminEndpoint"
+                    maxlength="255"
+                    pattern="https?://.+"
+                    title="Please enter a valid URL starting with http:// or https://"
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- API Endpoint -->
+                <div class="col-md-6 mb-3">
+                  <label for="apiEndpoint" class="form-label">API Endpoint</label>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="apiEndpoint" 
+                    [(ngModel)]="instance.api_endpoint"
+                    name="apiEndpoint"
+                    maxlength="255"
+                    pattern="https?://.+"
+                    title="Please enter a valid URL starting with http:// or https://"
+                  >
+                </div>
+
+                <!-- Ad Endpoint -->
+                <div class="col-md-6 mb-3">
+                  <label for="adEndpoint" class="form-label">Ad Endpoint (Optional)</label>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="adEndpoint" 
+                    [(ngModel)]="instance.ad_endpoint"
+                    name="adEndpoint"
+                    maxlength="255"
+                    pattern="https?://.+"
+                    title="Please enter a valid URL starting with http:// or https://"
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- API Key -->
+                <div class="col-md-6 mb-3">
+                  <label for="apiKey" class="form-label">API Key</label>
+                  <div class="input-group">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="apiKey"
+                      [(ngModel)]="apiKeyDisplay"
+                      name="api_key"
+                      [readonly]="!editAPIKey"
+                      title="API Key"
+                    >
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="toggleEditAPIKey()"
+                      [title]="editAPIKey ? 'Lock to hide' : 'Edit to show'"
+                      *ngIf="isGod"
+                    >
+                      <i [class]="editAPIKey ? 'fa fa-lock' : 'fa fa-pencil'"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- JWT Key -->
+                <div class="col-md-6 mb-3">
+                  <label for="jwtKey" class="form-label">JWT Key (Optional)</label>
+                  <div class="input-group">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="jwtKey"
+                      [(ngModel)]="jwtKeyDisplay"
+                      name="jwt_key"
+                      [readonly]="!editJWTKey"
+                      placeholder="No JWT Key set"
+                      title="JWT Key"
+                    >
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="toggleEditJWTKey()"
+                      [title]="editJWTKey ? 'Lock to hide' : 'Edit to show'"
+                      *ngIf="isGod"
+                    >
+                      <i [class]="editJWTKey ? 'fa fa-lock' : 'fa fa-pencil'"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Heartbeat Port -->
+                <div class="col-md-6 mb-3">
+                  <label for="heartbeatPort" class="form-label">Heartbeat Port (Optional)</label>
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="heartbeatPort" 
+                    [(ngModel)]="instance.heartbeat_port"
+                    name="heartbeatPort"
+                    min="1"
+                    max="65535"
+                    title="Enter a valid port number (1-65535)"
+                  >
+                </div>
+
+                <!-- Created Date -->
+                <div class="col-md-6 mb-3">
+                  <label for="created" class="form-label">Created Date</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="created" 
+                    [value]="instance.created | date:'medium'"
+                    name="created"
+                    readonly
+                  >
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" (click)="onSave()">
+                  <i class="fa fa-save me-2"></i>
+                  Save Changes
+                </button>
+                <button type="button" class="btn btn-danger" (click)="onDelete()">
+                  <i class="fa fa-trash me-2"></i>
+                  Delete Instance
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform Summary - Col 4 (Conditional Display) -->
+      <div class="col-lg-4">
+        <!-- User Account Summary -->
+        <app-account-managers-summary
+          *ngIf="currentSection === 'users'"
+          [managers]="managers"
+          [syncing]="syncing"
+          [lastSyncWasForced]="lastSyncWasForced"
+          [instanceId]="instanceId"
+          [hasLinkedToken]="!!linkedToken"
+          (sync)="syncAccountManagers()"
+          (forceSync)="forceSyncAccountManagers()"
+        ></app-account-managers-summary>
+
+        <!-- Affiliate Summary -->
+        <app-affiliates-summary
+          *ngIf="currentSection === 'affiliates'"
+          [affiliates]="affiliates"
+          [syncing]="syncing"
+          [lastSyncWasForced]="lastAffiliatesSyncWasForced"
+          [instanceId]="instanceId"
+          [hasLinkedToken]="!!linkedToken"
+          (sync)="syncAffiliates()"
+          (forceSync)="forceSyncAffiliates()"
+        ></app-affiliates-summary>
+
+        <!-- Brands Summary -->
+        <app-brands-summary
+          *ngIf="currentSection === 'brands'"
+          [brands]="brands"
+          [syncing]="syncing"
+          [lastSyncWasForced]="lastBrandsSyncWasForced"
+          [instanceId]="instanceId"
+          [hasLinkedToken]="!!linkedToken"
+          (sync)="syncBrands()"
+          (forceSync)="forceSyncBrands()"
+        ></app-brands-summary>
+
+        <!-- Landing Pages Summary -->
+        <app-landing-pages-summary
+          *ngIf="currentSection === 'landing-pages'"
+          [textLinks]="textLinks"
+          [geoGroups]="geoGroups"
+          [syncing]="syncing"
+          [lastSyncWasForced]="lastLandingPagesSyncWasForced"
+          [instanceId]="instanceId"
+          [hasLinkedToken]="!!linkedToken"
+          (sync)="syncLandingPages()"
+          (forceSync)="forceSyncLandingPages()"
+        ></app-landing-pages-summary>
+
+        <!-- Default Platform Summary (No section selected) -->
+        <div *ngIf="!currentSection" class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Platform Summary</h5>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info mb-0" *ngIf="linkedToken">
+              <i class="fa fa-info-circle me-2"></i>
+              Select a platform management option below to view details.
+            </div>
+            <div class="alert alert-warning mb-0" *ngIf="!linkedToken">
+              <i class="fa fa-exclamation-triangle me-2"></i>
+              Please connect a platform administrator account to access platform management features.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platform Actions Section (Below Panels) -->
+    <div class="row mt-3" *ngIf="linkedToken">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Platform Management</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Account Managers -->
+              <div class="col-2">
+                <div class="platform-action-card bg-hotpink text-white" (click)="managePlatformSection('users')">
+                  <i class="fa fa-users fa-2x mb-2"></i>
+                  <h6 class="mb-0">Account Managers</h6>
+                </div>
+              </div>
+
+              <!-- Affiliates -->
+              <div class="col-2">
+                <div class="platform-action-card bg-purple text-white" (click)="managePlatformSection('affiliates')">
+                  <i class="fa fa-users fa-2x mb-2"></i>
+                  <h6 class="mb-0">Affiliates</h6>
+                </div>
+              </div>
+
+              <!-- Brands -->
+              <div class="col-2">
+                <div class="platform-action-card bg-warning text-white" (click)="managePlatformSection('brands')">
+                  <i class="fa fa-bookmark fa-2x mb-2"></i>
+                  <h6 class="mb-0">Brands</h6>
+                </div>
+              </div>
+
+              <!-- Landing Pages -->
+              <div class="col-2">
+                <div class="platform-action-card bg-success text-white" (click)="managePlatformSection('landing-pages')">
+                  <i class="fa fa-link fa-2x mb-2"></i>
+                  <h6 class="mb-0">Landing Pages</h6>
+                </div>
+              </div>
+
+              <!-- Emails -->
+              <div class="col-2">
+                <div class="platform-action-card bg-primary text-white" (click)="managePlatformSection('emails')">
+                  <i class="fa fa-envelope fa-2x mb-2"></i>
+                  <h6 class="mb-0">Emails</h6>
+                </div>
+              </div>
+
+              <!-- Terms & Conditions -->
+              <div class="col-2">
+                <div class="platform-action-card bg-dark text-white" (click)="managePlatformSection('terms-conditions')">
+                  <i class="fa fa-gavel fa-2x mb-2"></i>
+                  <h6 class="mb-0">Terms &amp; Conditions</h6>
+                </div>
+              </div>
+
+              <!-- Commission Plans -->
+              <div class="col-2">
+                <div class="platform-action-card bg-info text-white" (click)="managePlatformSection('commission-plans')">
+                  <i class="fa fa-percent fa-2x mb-2"></i>
+                  <h6 class="mb-0">Commission Plans</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JWT Inspection Modal -->
+<div class="modal-backdrop" *ngIf="showJWTModal" (click)="closeJWTModal()"></div>
+<div class="modal-dialog-wrapper" *ngIf="showJWTModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">JWT Token Details</h5>
+        <button type="button" class="btn-close" (click)="closeJWTModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="linkedToken">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Instance</label>
+          <p class="mb-0">{{ linkedToken.instance_name }} (ID: {{ linkedToken.instance_id }})</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Username</label>
+          <p class="mb-0">{{ linkedToken.username }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Role ID</label>
+          <p class="mb-0">{{ linkedToken.role_id }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Expiry</label>
+          <p class="mb-0">
+            {{ linkedToken.expiry | date:'full' }}
+            <span 
+              class="badge ms-2" 
+              [ngClass]="isTokenExpired() ? 'bg-danger' : 'bg-success'"
+            >
+              {{ isTokenExpired() ? 'Expired' : 'Valid' }}
+            </span>
+          </p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Stored At</label>
+          <p class="mb-0">{{ linkedToken.stored_at | date:'full' }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Access Token</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control font-monospace small" 
+              [value]="linkedToken.access_token" 
+              readonly
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="copyToClipboard(linkedToken.access_token)"
+            >
+              <i class="fa fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeJWTModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Link Platform Admin Modal -->
+<app-login-modal
+  [show]="showLinkModal"
+  headerText="Connect Platform Administrator"
+  buttonText="Connect"
+  buttonIcon="fa fa-plug"
+  (connect)="handleLoginConnect($event)"
+  (cancel)="closeLinkModal()"
+></app-login-modal>
+
+<!-- Remove Token Confirmation Modal -->
+<app-confirmation-modal
+  [show]="showRemoveConfirmModal"
+  headerText="Confirm Token Removal"
+  buttonText="Remove Token"
+  buttonIcon="fa fa-trash"
+  [showBody]="false"
+  (confirm)="confirmRemoveToken()"
+  (cancel)="closeRemoveConfirmModal()"
+></app-confirmation-modal>
+
+<!-- API Key View Modal -->
+<div class="modal-backdrop" *ngIf="showAPIKeyModal" (click)="closeAPIKeyModal()"></div>
+<div class="modal-dialog-wrapper" *ngIf="showAPIKeyModal">
+  <div class="modal-dialog">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-key me-2"></i>
+          API Key
+        </h5>
+        <button type="button" class="btn-close" (click)="closeAPIKeyModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning" role="alert">
+          <i class="fa fa-exclamation-triangle me-2"></i>
+          <strong>GOD Access:</strong> This key grants full administrative access. Keep it secure.
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">API Key</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control font-monospace" 
+              [value]="instance.api_key" 
+              readonly
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="copyToClipboard(instance.api_key)"
+            >
+              <i class="fa fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAPIKeyModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JWT Key View Modal -->
+<div class="modal-backdrop" *ngIf="showJWTKeyModal" (click)="closeJWTKeyModal()"></div>
+<div class="modal-dialog-wrapper" *ngIf="showJWTKeyModal">
+  <div class="modal-dialog">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-key me-2"></i>
+          JWT Key
+        </h5>
+        <button type="button" class="btn-close" (click)="closeJWTKeyModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning" role="alert">
+          <i class="fa fa-exclamation-triangle me-2"></i>
+          <strong>GOD Access:</strong> This key is used for JWT token signing. Keep it secure.
+        </div>
+        <div class="mb-3" *ngIf="instance.jwt_key">
+          <label class="form-label fw-bold">JWT Key</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control font-monospace" 
+              [value]="instance.jwt_key" 
+              readonly
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="copyToClipboard(instance.jwt_key!)"
+            >
+              <i class="fa fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!instance.jwt_key" class="text-muted text-center py-3">
+          <i class="fa fa-info-circle me-2"></i>
+          No JWT Key has been configured for this instance.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeJWTKeyModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Manager Selection Modal (GOD Mode) -->
+<div class="modal" [class.show]="showManagerSelectionModal" [style.display]="showManagerSelectionModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-user-secret me-2"></i>
+          Select Manager to Impersonate
+        </h5>
+        <button type="button" class="btn-close" (click)="closeManagerSelectionModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">
+          As a GOD user, you can impersonate any manager. Select which manager account you want to login as:
+        </p>
+        
+        <div class="mb-3">
+          <label for="managerSelect" class="form-label">Select Manager</label>
+          <select 
+            class="form-select" 
+            id="managerSelect"
+            [(ngModel)]="selectedManagerUserId"
+          >
+            <option [ngValue]="null">-- Select a manager --</option>
+            <option *ngFor="let manager of managers" [ngValue]="manager.user_id">
+              {{ manager.full_name }} ({{ manager.username }}) - {{ manager.user_role }}
+            </option>
+          </select>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <i class="fa fa-info-circle me-2"></i>
+          You will be prompted for 2FA verification after selecting a manager.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeManagerSelectionModal()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="proceedWithSelectedManager()"
+          [disabled]="!selectedManagerUserId"
+        >
+          <i class="fa fa-arrow-right me-1"></i>
+          Continue to 2FA
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showManagerSelectionModal" *ngIf="showManagerSelectionModal"></div>
+
+<!-- TOTP Challenge Component -->
+<app-totp-challenge
+  [isVisible]="showTotpChallenge"
+  [username]="loginUsername"
+  (onSuccess)="handleTotpVerification($event)"
+  (onCancel)="closeTotpChallenge()"
+></app-totp-challenge>

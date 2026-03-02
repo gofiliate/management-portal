@@ -1,0 +1,13 @@
+<form class="form-inline search-full" (clickOutside)="search.clickOutside()">
+  <div class="form-group">
+    <div class="Typeahead Typeahead--twitterUsers">
+      <div class="u-posRelative">
+        <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text" placeholder="Type to Search .." [(ngModel)]="search.text" [ngModelOptions]="{ standalone: true }" (keyup)="search.searchTerm(search.text)" title="" autofocus>
+        <svg class="search-bg svg-color">
+          <use href="assets/svg/icon-sprite.svg#Search"></use>
+        </svg>
+      </div>
+      <app-search-items></app-search-items>
+    </div>
+  </div>
+</form>

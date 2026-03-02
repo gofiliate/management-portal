@@ -1,0 +1,27 @@
+<div class="message-box">
+  <svg>
+    <use href="assets/svg/icon-sprite.svg#Message"></use>
+  </svg><span class="rounded-pill badge-secondary"></span>
+</div>
+<div class="onhover-show-div message-dropdown" [class.active]="message">
+  <h3 class="f-18 mb-0 dropdown-title">Message </h3>
+  <ul>
+    @for(details of headerMessage; track details){
+      <li>
+        <div class="d-flex align-items-start">
+          <div class="message-img bg-light-primary">
+            <img [src]="details.image" alt="">
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="mb-1"><a href="javascript:void(0)">{{ details.name }}</a></h5>
+            <p>{{ details.message }}</p>
+          </div>
+          <div class="notification-right">
+            <app-feather-icons [icon]="'x'"></app-feather-icons>
+          </div>
+        </div>
+      </li>
+    }
+    <li><a class="f-w-700" href="/chat/chat-app">Check all</a></li>
+  </ul>
+</div>

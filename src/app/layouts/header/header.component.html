@@ -1,0 +1,34 @@
+<div class="header-wrapper row m-0">
+  <div class="header-logo-wrapper col-auto p-0">
+    <div class="logo-wrapper">
+      <a [routerLink]="['/']">
+        <img class="img-fluid for-light" [src]="logo" alt="">
+        <img class="img-fluid for-dark" src="assets/images/logo/logo-dark.png" alt=""></a></div>
+    <svg class="toggle-sidebar sidebar-toggle stroke-icon" (click)="closeSidebar()">
+      <use href="assets/svg/icon-sprite.svg#Grid"></use>
+    </svg>
+  </div>
+  <div class="col-auto p-0">
+    <app-header-search></app-header-search>
+  </div>
+
+  <div class="nav-right col-auto pull-right right-header p-0 ms-auto">
+    <ul class="nav-menus">
+      <li class="serchinput" (clickOutside)="search.clickOutside()">
+        <div class="serchbox">
+          <svg (click)="openSearch()">
+            <use href="assets/svg/icon-sprite.svg#search"></use>
+          </svg>
+        </div>
+        <div class="form-group search-form" [class.open]="isSearchOpen">
+          <input type="text" placeholder="Search here..." [(ngModel)]="search.text" [ngModelOptions]="{ standalone: true }" (keyup)="search.searchTerm(search.text)">
+          <app-search-items ></app-search-items>
+        </div>
+      </li>
+
+      <li class="profile-nav onhover-dropdown pe-0 py-0" (click)="toggle('profile')">
+        <app-header-user-profile></app-header-user-profile>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="d-flex profile-media"><img class="b-r-10" [src]="profilePicture" [alt]="displayName" width="40" height="40" style="object-fit: cover;">
+  <div class="flex-grow-1 user"><span>{{ displayName }}</span>
+    <p class="mb-0 font-nunito">Account
+      <svg class="middle">
+        <use href="assets/svg/icon-sprite.svg#arrow-down-fill"></use>
+      </svg>
+    </p>
+  </div>
+</div>
+<ul class="profile-dropdown onhover-show-div">
+  <li>
+    <a href="javascript:void(0)" (click)="logOut()">
+      <app-feather-icons [icon]="'log-in'"></app-feather-icons>
+      <span>Log Out</span>
+    </a>
+  </li>
+</ul>

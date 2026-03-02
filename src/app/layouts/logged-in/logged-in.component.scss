@@ -1,0 +1,4 @@
+// Fix gap between header and page body
+.page-wrapper.compact-wrapper .page-body-wrapper .page-body {
+  margin-top: 0 !important;
+}

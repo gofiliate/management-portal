@@ -1,0 +1,15 @@
+.modal {
+  &.show {
+    display: block !important;
+  }
+}
+
+.modal-backdrop {
+  &.show {
+    opacity: 0.5;
+  }
+}
+
+input[type="text"].form-control-lg {
+  font-family: 'Courier New', monospace;
+}

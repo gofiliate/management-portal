@@ -1,0 +1,16 @@
+// Add any custom styles for the role edit component here
+.nav-tabs {
+  .nav-link {
+    cursor: pointer;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+}
+
+.table-bordered {
+  th, td {
+    vertical-align: middle;
+  }
+}

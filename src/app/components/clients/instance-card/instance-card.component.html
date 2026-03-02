@@ -1,0 +1,113 @@
+<div class="card instance-card">
+  <div class="card-body">
+    <!-- Instance Logo & Name -->
+    <div class="instance-header mb-3">
+      <div class="d-flex align-items-center mb-3">
+        <div class="instance-logo-wrapper me-3" *ngIf="instance.logo">
+          <img
+            [src]="instance.logo"
+            [alt]="instance.name"
+            class="instance-logo"
+            onerror="this.src='assets/images/default-avatar.png'"
+          />
+        </div>
+        <h5 class="instance-name mb-0">
+          <a 
+            *ngIf="instance.url"
+            [href]="instance.url" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-decoration-none"
+          >
+            {{ instance.name }}
+          </a>
+          <span *ngIf="!instance.url">{{ instance.name }}</span>
+        </h5>
+      </div>
+
+      <!-- Status Indicators -->
+      <div class="status-indicators mb-2">
+        <!-- Row 1: API | Connected -->
+        <div class="status-row d-flex justify-content-between mb-2">
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">API</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-warning': heartbeatStatus === 'checking',
+                    'dot-success': heartbeatStatus === 'online',
+                    'dot-danger': heartbeatStatus === 'offline'
+                  }">
+            </span>
+          </div>
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">Connected</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-warning': authStatus === 'checking',
+                    'dot-success': authStatus === 'authorized',
+                    'dot-danger': authStatus === 'unauthorized'
+                  }">
+            </span>
+          </div>
+        </div>
+
+        <!-- Row 2: Ad Server | Processor -->
+        <div class="status-row d-flex justify-content-between mb-2">
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">Ad Server</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-warning': adServerStatus === 'checking',
+                    'dot-success': adServerStatus === 'online',
+                    'dot-danger': adServerStatus === 'offline'
+                  }">
+            </span>
+          </div>
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">Processor</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-warning': adProcessorStatus === 'checking',
+                    'dot-success': adProcessorStatus === 'online',
+                    'dot-danger': adProcessorStatus === 'offline'
+                  }">
+            </span>
+          </div>
+        </div>
+
+        <!-- Row 3: Live | Status -->
+        <div class="status-row d-flex justify-content-between">
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">Live</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-success': instance.is_live === 1,
+                    'dot-secondary': instance.is_live !== 1
+                  }">
+            </span>
+          </div>
+          <div class="status-item d-flex align-items-center">
+            <span class="status-label me-2">Status</span>
+            <span class="status-dot" 
+                  [ngClass]="{
+                    'dot-success': instance.active,
+                    'dot-secondary': !instance.active
+                  }">
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="instance-actions mt-3">
+      <a
+        class="btn btn-primary btn-sm w-100"
+        [routerLink]="['/clients/manage-instance', instance.id]"
+      >
+        <i class="fa fa-cog me-2"></i>
+        Manage Instance
+      </a>
+    </div>
+  </div>
+</div>

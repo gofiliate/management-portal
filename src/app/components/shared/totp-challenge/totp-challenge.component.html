@@ -1,0 +1,62 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Two-Factor Authentication</h5>
+        <button type="button" class="btn-close" (click)="cancel()" [disabled]="isVerifying"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">
+          Enter the 6-digit code from your authenticator app to continue.
+        </p>
+        
+        <div class="mb-3">
+          <label for="totpCode" class="form-label">Authentication Code</label>
+          <input
+            type="text"
+            class="form-control form-control-lg text-center"
+            id="totpCode"
+            [(ngModel)]="totpCode"
+            (input)="onCodeInput($event)"
+            [disabled]="isVerifying"
+            maxlength="6"
+            placeholder="000000"
+            autocomplete="off"
+            style="letter-spacing: 0.5em; font-size: 1.5rem;"
+          />
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          <i class="fa fa-exclamation-circle me-2"></i>{{ errorMessage }}
+        </div>
+
+        <div *ngIf="isVerifying" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Verifying...</span>
+          </div>
+          <p class="mt-2 text-muted">Verifying code...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="cancel()"
+          [disabled]="isVerifying"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="submitCode()"
+          [disabled]="totpCode.length !== 6 || isVerifying"
+        >
+          <i class="fa fa-check me-1"></i>
+          Verify
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="isVisible" *ngIf="isVisible"></div>

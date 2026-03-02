@@ -1,0 +1,237 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3>Endpoint Management</h3>
+          <p class="text-muted mb-0">Manage navigation endpoints and routes</p>
+        </div>
+        <button class="btn btn-primary" (click)="openCreateForm()" *ngIf="!showForm">
+          <i class="fa fa-plus me-2"></i> Create Endpoint
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading endpoints...</p>
+    </div>
+  </div>
+
+  <!-- Endpoints List -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Active Endpoints ({{ filteredEndpoints.length }}{{ filterSectionId ? ' / ' + endpoints.length : '' }})</h5>
+          <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filterSectionId" (ngModelChange)="filterBySection($event)">
+              <option [ngValue]="null">All Sections</option>
+              <option *ngFor="let section of sections" [ngValue]="section.section_id">
+                {{ section.section_name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Empty State -->
+          <div class="text-center py-5" *ngIf="filteredEndpoints.length === 0 && endpoints.length === 0">
+            <i class="fa fa-cogs fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No endpoints found</h5>
+            <p class="text-muted mb-3">Create your first endpoint to get started</p>
+            <button class="btn btn-primary" (click)="openCreateForm()">
+              <i class="fa fa-plus me-2"></i> Create Endpoint
+            </button>
+          </div>
+
+          <!-- No Results from Filter -->
+          <div class="text-center py-5" *ngIf="filteredEndpoints.length === 0 && endpoints.length > 0">
+            <i class="fa fa-filter fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No endpoints match filter</h5>
+            <p class="text-muted mb-3">Try selecting a different section</p>
+            <button class="btn btn-secondary" (click)="filterBySection(null)">
+              <i class="fa fa-times me-2"></i> Clear Filter
+            </button>
+          </div>
+
+          <!-- Endpoints Table -->
+          <div class="table-responsive" *ngIf="filteredEndpoints.length > 0">
+            <div class="alert alert-info mb-3" *ngIf="filterSectionId">
+              <i class="fa fa-info-circle me-2"></i>
+              <strong>Tip:</strong> Drag and drop rows to reorder endpoints within this section. Grab the ≡ icon or anywhere on the row.
+            </div>
+            <div class="alert alert-warning mb-3" *ngIf="!filterSectionId && endpoints.length > 0">
+              <i class="fa fa-filter me-2"></i>
+              <strong>Note:</strong> Select a section from the dropdown to enable drag-and-drop reordering.
+            </div>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th *ngIf="filterSectionId" style="width: 50px;">Sort</th>
+                  <th>Section</th>
+                  <th>Name</th>
+                  <th>Slug</th>
+                  <th>Order</th>
+                  <th>In Nav</th>
+                  <th>2FA Required</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody cdkDropList (cdkDropListDropped)="onDrop($event)" [cdkDropListDisabled]="!filterSectionId">
+                <tr *ngFor="let endpoint of filteredEndpoints" cdkDrag [cdkDragDisabled]="!filterSectionId" [class.draggable-row]="filterSectionId">
+                  <td *ngIf="filterSectionId" class="text-center drag-handle" style="cursor: grab;">
+                    <span class="drag-icon">≡</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-info">{{ getSectionName(endpoint.section_id) }}</span>
+                  </td>
+                  <td><strong>{{ endpoint.endpoint_name }}</strong></td>
+                  <td><code>{{ getEndpointFullSlug(endpoint) }}</code></td>
+                  <td>{{ endpoint.order }}</td>
+                  <td>
+                    <span class="badge" [class.bg-success]="endpoint.in_navigation" [class.bg-secondary]="!endpoint.in_navigation">
+                      {{ endpoint.in_navigation ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class.bg-warning]="endpoint.twofa_required" [class.bg-secondary]="!endpoint.twofa_required">
+                      {{ endpoint.twofa_required ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class.bg-success]="endpoint.status === 1" [class.bg-secondary]="endpoint.status === 0">
+                      {{ endpoint.status === 1 ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button class="btn btn-outline-primary" (click)="openEditForm(endpoint)" title="Edit">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn btn-outline-danger" (click)="deactivateEndpoint(endpoint)" title="Deactivate">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit/Create Modal -->
+<div class="modal fade" 
+     [class.show]="showForm" 
+     [style.display]="showForm ? 'block' : 'none'"
+     tabindex="-1" 
+     role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editMode ? 'Edit Endpoint' : 'Create New Endpoint' }}</h5>
+        <button type="button" class="btn-close" (click)="cancelForm()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="endpointForm" (ngSubmit)="saveEndpoint()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="section_id" class="form-label">Section <span class="text-danger">*</span></label>
+              <select class="form-select" id="section_id" formControlName="section_id">
+                <option [value]="null">Select a section...</option>
+                <option *ngFor="let section of sections" [ngValue]="section.section_id">
+                  {{ section.section_name }}
+                </option>
+              </select>
+              <div class="text-danger small mt-1" *ngIf="endpointForm.get('section_id')?.invalid && endpointForm.get('section_id')?.touched">
+                Section is required
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="endpoint_name" class="form-label">Endpoint Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="endpoint_name" formControlName="endpoint_name" placeholder="e.g., User Management">
+              <div class="text-danger small mt-1" *ngIf="endpointForm.get('endpoint_name')?.invalid && endpointForm.get('endpoint_name')?.touched">
+                Endpoint name is required
+              </div>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label for="endpoint_description" class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="endpoint_description" formControlName="endpoint_description" rows="2" placeholder="Describe this endpoint..."></textarea>
+              <div class="text-danger small mt-1" *ngIf="endpointForm.get('endpoint_description')?.invalid && endpointForm.get('endpoint_description')?.touched">
+                Description is required
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="endpoint_slug" class="form-label">Endpoint Slug <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="endpoint_slug" formControlName="endpoint_slug" placeholder="e.g., users">
+              <small class="text-muted d-block">Enter just the endpoint part (e.g., "users")</small>
+              <small class="text-primary d-block mt-1" *ngIf="endpointForm.get('section_id')?.value && endpointForm.get('endpoint_slug')?.value">
+                Full slug: <code>{{ getFullSlug() }}</code>
+              </small>
+              <div class="text-danger small mt-1" *ngIf="endpointForm.get('endpoint_slug')?.invalid && endpointForm.get('endpoint_slug')?.touched">
+                Endpoint slug is required
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="order" class="form-label">Display Order <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="order" formControlName="order" min="0">
+              <small class="text-muted">Lower numbers appear first</small>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label class="form-label d-block mb-2">Options</label>
+              <div class="d-flex gap-4">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="in_navigation" formControlName="in_navigation">
+                  <label class="form-check-label" for="in_navigation">
+                    Show in Navigation
+                  </label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="twofa_required" formControlName="twofa_required">
+                  <label class="form-check-label" for="twofa_required">
+                    Require 2FA
+                  </label>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="status" formControlName="status">
+                  <label class="form-check-label" for="status">
+                    Active
+                  </label>
+                </div>
+              </div>
+              <small class="text-muted d-block mt-1">2FA requires two-factor authentication to change this endpoint</small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelForm()">
+          <i class="fa fa-times me-2"></i> Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveEndpoint()" [disabled]="loading || endpointForm.invalid">
+          <i class="fa fa-save me-2"></i> {{ editMode ? 'Update' : 'Create' }} Endpoint
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade" 
+     [class.show]="showForm" 
+     *ngIf="showForm">
+</div>

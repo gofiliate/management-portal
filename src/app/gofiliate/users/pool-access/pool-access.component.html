@@ -1,0 +1,141 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2>Manage Pool Access</h2>
+          <p class="text-muted mb-0" *ngIf="user">{{ user.username }} - {{ user.first_name }} {{ user.last_name }}</p>
+        </div>
+        <button class="btn btn-secondary" (click)="onCancel()">
+          <i class="bi bi-arrow-left"></i> Back to User
+        </button>
+      </div>
+
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <div *ngIf="!loading">
+        <!-- Client Access (col-12) -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="access-card">
+              <div class="card-header">
+                <h5 class="mb-0">Client Access</h5>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-1" *ngFor="let client of clients">
+                    <div class="access-item" [class.selected]="client.selected" (click)="toggleClientAccess(client)">
+                      <div class="access-item-content">
+                        <div class="access-logo-container">
+                          <img *ngIf="client.client_logo" [src]="client.client_logo" alt="Client Logo" class="access-logo" (error)="client.client_logo = null">
+                          <div *ngIf="!client.client_logo" class="access-logo bg-secondary d-flex align-items-center justify-content-center rounded-circle">
+                            <i class="bi bi-building text-white"></i>
+                          </div>
+                        </div>
+                        <div class="access-item-name">{{ client.client_name }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instance Access (col-12) -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="access-card">
+              <div class="card-header">
+                <h5 class="mb-0">Instance Access</h5>
+              </div>
+              <div class="card-body">
+                <div *ngIf="selectedClientIds.size === 0" class="text-muted text-center py-4">
+                  Select clients above to view their instances
+                </div>
+                <div *ngFor="let clientId of Array.from(selectedClientIds)" class="mb-4">
+                  <h6 class="text-muted mb-3">{{ getClientName(clientId) }}</h6>
+                  <div class="row g-3">
+                    <div class="col-md-1" *ngFor="let instance of getInstancesForClient(clientId)">
+                      <div class="access-item" [class.selected]="instance.selected" (click)="toggleInstanceAccess(instance)">
+                        <div class="access-item-content">
+                          <div class="access-logo-container">
+                            <img *ngIf="instance.client_logo" [src]="instance.client_logo" alt="Instance Logo" class="access-logo" (error)="instance.client_logo = null">
+                            <div *ngIf="!instance.client_logo" class="access-logo bg-secondary d-flex align-items-center justify-content-center rounded-circle">
+                              <i class="bi bi-building text-white"></i>
+                            </div>
+                          </div>
+                          <div class="access-item-name">{{ instance.instance_name }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager/Affiliate Access (col-12) -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="access-card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Affiliate Manager Access</h5>
+                <div class="filter-input-container" *ngIf="user?.has_managers && selectedInstanceIds.size > 0">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-sm" 
+                    placeholder="Filter by username..." 
+                    [(ngModel)]="managerFilter"
+                    style="width: 250px;">
+                </div>
+              </div>
+              <div class="card-body">
+                <div *ngIf="!user?.has_managers" class="text-muted text-center py-4">
+                  Enable "Has Managers" permission in user settings to assign manager access
+                </div>
+                <div *ngIf="user?.has_managers && selectedInstanceIds.size === 0" class="text-muted text-center py-4">
+                  Select instances above to view their managers
+                </div>
+                <div *ngIf="user?.has_managers && selectedInstanceIds.size > 0">
+                  <div *ngFor="let instanceId of Array.from(selectedInstanceIds)" class="mb-4">
+                    <h6 class="text-muted mb-3">{{ getInstanceName(instanceId) }}</h6>
+                    <div class="row g-3">
+                      <div class="col-md-2" *ngFor="let manager of getManagersForInstance(instanceId)">
+                        <div class="access-item" [class.selected]="manager.selected" (click)="toggleManagerAccess(manager)">
+                          <div class="access-item-content">
+                            <div>
+                              <div class="access-item-name">{{ manager.username }}</div>
+                              <div class="access-item-meta">{{ manager.affiliate_count }} affiliates</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+          <div class="col-12">
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+              <button type="button" class="btn btn-primary" (click)="savePoolAccess()">
+                <i class="bi bi-save"></i> Save Pool Access
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

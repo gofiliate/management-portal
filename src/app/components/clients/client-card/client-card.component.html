@@ -1,0 +1,52 @@
+<div class="card client-card">
+  <div class="card-body">
+    <!-- Client Logo & Name -->
+    <div class="client-header text-center mb-3">
+      <div class="client-logo-wrapper mb-3">
+        <img
+          [src]="client.logo"
+          [alt]="client.name"
+          class="client-logo"
+          onerror="this.src='assets/images/default-avatar.png'"
+        />
+      </div>
+      <h5 class="client-name mb-2">
+        <a 
+          [href]="client.website" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="text-decoration-none"
+        >
+          {{ client.name }}
+        </a>
+      </h5>
+    </div>
+
+    <!-- Stats -->
+    <div class="client-stats">
+      <div class="stat-item">
+        <div class="stat-value">{{ client.instances }}</div>
+        <div class="stat-label">Instances</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ client.brands }}</div>
+        <div class="stat-label">Brands</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">{{ client.onboarding }}</div>
+        <div class="stat-label">Onboarding</div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="client-actions mt-3">
+      <a
+        class="btn btn-primary btn-sm w-100"
+        [routerLink]="['/clients/dashboard', client.id]"
+      >
+        <i class="fa fa-tachometer-alt me-2"></i>
+        View Dashboard
+      </a>
+    </div>
+  </div>
+</div>

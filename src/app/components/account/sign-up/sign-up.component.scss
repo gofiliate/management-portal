@@ -1,0 +1,22 @@
+.card-body {
+  width: 60%;
+  margin: 5rem auto; // centers the div horizontally and adds vertical spacing
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-social-title {
+  margin: 2rem 0;
+  text-align: center;
+  position: relative;
+  
+  h6 {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin: 0;
+  }
+}

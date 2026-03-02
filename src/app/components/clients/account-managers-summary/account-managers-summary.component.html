@@ -1,0 +1,97 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Account Manager Summary</h5>
+  </div>
+  <div class="card-body">
+    <!-- Account Managers Summary -->
+    <div *ngIf="managers.length > 0; else noData">
+      <h6 class="text-muted mb-3">User Account Summary</h6>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="fw-bold">Total Accounts:</span>
+        <span class="badge bg-primary rounded-pill">{{ totalManagers }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-success">
+          <i class="fa fa-check-circle me-1"></i>
+          Allowed:
+        </span>
+        <span class="badge bg-success rounded-pill">{{ allowedManagers }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-danger">
+          <i class="fa fa-times-circle me-1"></i>
+          Denied:
+        </span>
+        <span class="badge bg-danger rounded-pill">{{ deniedManagers }}</span>
+      </div>
+      
+      <hr class="my-3">
+      
+      <!-- Role Breakdown -->
+      <h6 class="text-muted mb-3">By Role</h6>
+      <div *ngFor="let item of roleBreakdownEntries" class="d-flex justify-content-between mb-2">
+        <span>
+          <i class="fa fa-user me-1"></i>
+          {{ item.role }}:
+        </span>
+        <span class="badge bg-secondary rounded-pill">{{ item.count }}</span>
+      </div>
+      
+      <hr class="my-3">
+      
+      <!-- Sync Buttons -->
+      <div class="d-grid gap-2">
+        <button 
+          class="btn btn-sm btn-outline-primary" 
+          (click)="onSync()"
+          [disabled]="syncing"
+        >
+          <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync me-1'"></i>
+          {{ syncing ? 'Syncing...' : 'Sync from Platform' }}
+        </button>
+        
+        <button 
+          class="btn btn-sm btn-outline-warning" 
+          (click)="onForceSync()"
+          [disabled]="syncing"
+        >
+          <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync-alt me-1'"></i>
+          {{ syncing ? 'Force Syncing...' : 'Force Sync from Platform' }}
+        </button>
+        
+        <button 
+          class="btn btn-sm btn-outline-info" 
+          [routerLink]="['/clients/manage-brands', instanceId]"
+          [disabled]="syncing"
+        >
+          <i class="fa fa-cog me-1"></i>
+          Administer Account Managers
+        </button>
+      </div>
+      
+      <small class="text-muted d-block mt-2">
+        <i class="fa fa-info-circle me-1"></i>
+        Last data source: {{ dataSourceLabel }}
+      </small>
+    </div>
+    
+    <!-- Empty State -->
+    <ng-template #noData>
+      <div class="text-center text-muted py-3">
+        <i class="fa fa-users fa-3x mb-3 opacity-25"></i>
+        <p class="mb-0 small">Connect a platform account to load account manager stats</p>
+        <button 
+          class="btn btn-sm btn-primary mt-3" 
+          (click)="onSync()"
+          [disabled]="syncing || !hasLinkedToken"
+        >
+          <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync me-1'"></i>
+          {{ syncing ? 'Loading...' : 'Load Data' }}
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</div>

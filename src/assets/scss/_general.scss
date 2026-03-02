@@ -1,0 +1,117 @@
+/**=====================
+  2.3 General CSS start
+==========================**/
+app-svg-icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.jvector-map-height{
+  .map-container{
+    height: 310px !important;
+    width: 100% !important;
+    @media only screen and (max-width: 1700px) {
+      // width: 400px !important;
+    }
+    @media only screen and (max-width: 1550px) {
+      height: 191px !important;
+      // width: 475px !important;
+    }
+    @media only screen and (max-width: 1200px) {
+      height: 268px !important;
+    }
+  }
+}
+// Modal
+.modal {
+  .modal-header {
+    .product-box {
+      .product-details {
+        padding: 25px 0;
+
+        h4{
+          text-transform: capitalize;
+        }
+
+        .product-price {
+          font-size: 22px;
+          margin-bottom: 10px;
+        }
+
+        .product-view {
+          padding: 20px 0;
+          border-top: 1px solid #59667a;
+          border-bottom: 1px solid #59667a;
+        }
+
+        .product-qnty{
+          .input-group{
+            .btn-primary{
+              background-color: #59667a !important;
+              border: 1px solid #59667a !important;
+              padding: 5px 12px;
+            }
+
+            input{
+              margin-left: calc(var(--bs-border-width) * -1);
+              padding: 0 12px;
+            }
+          }
+        }
+
+        .product-size {
+          margin: 20px 0;
+
+          ul {
+            padding-left: 0px;
+            list-style-type: none;
+            margin-bottom: 0;
+
+            li {
+              display: inline-block;
+              padding: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.product-sidebar{
+  .product-filter{
+    .owl-carousel{
+      .owl-item{
+        .product-box{
+          margin-top: 15px;
+        }
+      }
+    }
+  }
+}
+
+// Copy Text Alert
+.alert{
+  &.alert-copy{
+    &.notify-alert{
+      margin: 0px auto;
+      position: fixed;
+      transition: all 0.5s ease-in-out 0s;
+      z-index: 1000;
+      bottom: 20px;
+      right: 20px;
+
+      >button{
+            position: absolute;
+    right: 10px;
+    top: 5px;
+    z-index: 1002;
+      }
+    }
+  }
+}
+/**=====================
+  2.3 General CSS start
+==========================**/

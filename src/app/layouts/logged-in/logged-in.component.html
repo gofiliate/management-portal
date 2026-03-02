@@ -1,0 +1,19 @@
+<h1>Testing...</h1>
+<div class="page-wrapper" [ngClass]="layout.config.settings.sidebar_type">
+  <div class="page-header" [class.close_icon]="navService.closeSidebar" [ngStyle]="{'display' :  navService.hideNav ? 'none' : 'block' }">
+    <app-header></app-header>
+  </div>
+  <div class="page-body-wrapper" [class.scorlled]="navService.hideNav">
+    <div class="sidebar-wrapper" [attr.data-layout]="layout.config.settings.icon" [class.close_icon]="navService.closeSidebar">
+      <app-sidebar></app-sidebar>
+    </div>
+    <div class="page-body">
+      <app-breadcrumb></app-breadcrumb>
+      <router-outlet></router-outlet>
+    </div>
+    <footer class="footer" [class.footer-light]="footerLight" [class.footer-dark]="footerDark" [class.footer-fix]="footerFix">
+      <app-footer></app-footer>
+    </footer>
+  </div>
+</div>
+

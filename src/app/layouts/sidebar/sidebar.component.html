@@ -1,0 +1,133 @@
+<div>
+  <div class="logo-wrapper"><a href="javascript:void(0)"><img class="img-fluid for-light" src="assets/images/logo/client-header.png" alt=""><img class="img-fluid for-dark" src="assets/images/logo/logo-dark.png" alt=""></a>
+    <div class="back-btn" (click)="closeSidebar()"><i class="fa fa-angle-left"></i></div>
+    <div class="toggle-sidebar">
+      <app-feather-icons [icon]="'grid'" [class]="'status_toggle middle sidebar-toggle'"></app-feather-icons>
+    </div>
+  </div>
+  <div class="logo-icon-wrapper">
+    <a href="javascript:void(0)">
+      <img class="img-fluid" src="assets/images/logo/logo-icon.png" alt="">
+    </a>
+  </div>
+  <nav class="sidebar-main">
+    @if(leftArrow){
+      <div class="left-arrow" (click)="scrollLeft()">
+        <app-feather-icons [icon]="'arrow-left'"></app-feather-icons>
+      </div>
+    }
+    <div id="sidebar-menu" [ngStyle]="{ 'margin-left': layout.margin + 'px' }">
+      <ul class="sidebar-links custom-scrollbar" id="simple-bar">
+        <li class="back-btn"><a href="javascript:void(0)"><img class="img-fluid" src="assets/images/logo/logo-icon.png" alt=""></a>
+          <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
+        </li>
+        <li class="pin-title sidebar-main-title" [class.show]="pinList.length >= 1">
+          <div>
+            <h6>Pinned</h6>
+          </div>
+        </li>
+        
+        <!-- Hardcoded Section Title -->
+        <li class="sidebar-main-title">
+          <div>
+            <h6 class="lan-1">One True Portal</h6>
+          </div>
+        </li>
+        
+        <!-- Hardcoded Dashboard Menu Item -->
+        <li class="sidebar-list">
+          <a class="sidebar-link sidebar-title" routerLink="/dashboard" routerLinkActive="active">
+            <i class="ti-home"></i>
+            <span class="lan-3">Dashboard</span>
+          </a>
+        </li>
+        
+        <!-- Loading Indicator -->
+        @if(isLoadingNav){
+          <li class="sidebar-list">
+            <div class="sidebar-link sidebar-title" style="opacity: 0.6; cursor: default;">
+              <i class="ti-reload" style="animation: spin 1s linear infinite;"></i>
+              <span class="lan-3">Loading...</span>
+            </div>
+          </li>
+        }
+        
+        @for(menuItem of menu; track menuItem){
+          @if(menuItem.headTitle1){
+            <li class="sidebar-main-title">
+              <div>
+                <h6 class="lan-1">{{ menuItem.headTitle1 }}</h6>
+              </div>
+            </li>
+          }@else {
+            <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: menuItem }"></div>
+            <ng-template #recursiveMenu let-menuItem>
+                <li [class.sidebar-list]="menuItem.level == 1" [class.mega-menu]="menuItem.megaMenu" [class.pined]="menuItem.pined">
+                  @if(menuItem.level == 1){
+                    <i class="fa fa-thumb-tack" (click)="pined(menuItem)"></i>
+                  }
+                  <a [ngClass]="{ 'sidebar-link sidebar-title' : menuItem.level == 1, 'submenu-title' : menuItem.level == 2, 'active': menuItem.active }" href="javascript:void(0)" (click)="toggleMenu(menuItem)" [routerLink]="menuItem.path" routerLinkActive="active">
+                    @if(menuItem.icon && menuItem.level == 1){
+                      <i [class]="menuItem.icon"></i>
+                    }
+                    @if(menuItem.megaMenu){
+                      <span> {{ menuItem.title }} </span>
+                    }@else {
+                    @if(menuItem.level == 1){
+                      <span class="lan-3">{{ menuItem.title }}</span>
+                    }@else {
+                      {{ menuItem.title }}
+                      }
+                    }
+                    @if(menuItem.children){
+                      <div class="according-menu">
+                        <i class="fa" [ngClass]="menuItem.active ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                      </div>
+                    }
+                  </a>
+                  @if(!menuItem.megaMenu){
+                    @if(menuItem.children){
+                      <ul [ngClass]="{ 'sidebar-submenu': menuItem.level == 1 ,'nav-sub-childmenu submenu-content': menuItem.level == 2,  'd-block': menuItem.active, 'd-none': !menuItem.active}">
+                        @for(child of menuItem.children; track child){
+                          <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: child }"></div>
+                        }
+                      </ul>
+                    }
+                  }@else{
+                  <div class="mega-menu-container menu-content" [ngClass]="{'d-block': menuItem.active, 'd-none': !menuItem.active}">
+                    <div class="container-fluid">
+                      <div class="row">
+                        @for(item of menuItem.children; track item){
+                          <div class="col mega-box">
+                            <div class="link-section">
+                              <div class="submenu-title" [class.active]="item.active">
+                                <h5 (click)="toggleMenu(item)">{{ item.title }}</h5>
+                                @if(item.children){
+                                  <div class="according-menu">
+                                    <i class="fa" [ngClass]="item.active ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                                  </div>
+                                }
+                              </div>
+                              <ul class="submenu-content opensubmegamenu" [ngClass]="{'d-block': item.active && layout.config.settings.sidebar_type != 'horizontal-wrapper', 'd-none': !item.active && layout.config.settings.sidebar_type != 'horizontal-wrapper'}">
+                                @for(child of item.children; track child){
+                                  <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: child }"></div>
+                                }
+                              </ul>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </li>
+            </ng-template>
+          }
+        }
+      </ul>
+    </div>
+    @if(rightArrow){
+      <div class="right-arrow" (click)="scrollRight()"><app-feather-icons [icon]="'arrow-right'"></app-feather-icons></div>
+    }
+  </nav>
+</div>

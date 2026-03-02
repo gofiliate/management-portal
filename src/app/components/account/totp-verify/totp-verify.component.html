@@ -1,0 +1,84 @@
+<div class="totp-verify-container">
+  <div class="totp-verify-card">
+    <div class="header">
+      <h2>Two-Factor Authentication</h2>
+      <p *ngIf="!showBackupCodeEntry">Enter the 6-digit code from your authenticator app</p>
+      <p *ngIf="showBackupCodeEntry">Enter one of your backup codes</p>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- TOTP Code Entry -->
+    <div class="code-entry" *ngIf="!showBackupCodeEntry">
+      <input
+        type="text"
+        [(ngModel)]="code"
+        (input)="onCodeInput($event)"
+        placeholder="000000"
+        maxlength="6"
+        class="code-input"
+        [disabled]="isLoading"
+        autofocus
+      />
+      
+      <button 
+        class="btn btn-primary" 
+        (click)="onVerifyCode()"
+        [disabled]="isLoading || code.length !== 6"
+      >
+        <span *ngIf="!isLoading">Verify</span>
+        <span *ngIf="isLoading">Verifying...</span>
+      </button>
+
+      <button 
+        class="btn btn-link" 
+        (click)="toggleBackupCodeEntry()"
+        [disabled]="isLoading"
+      >
+        Use a backup code instead
+      </button>
+    </div>
+
+    <!-- Backup Code Entry -->
+    <div class="code-entry" *ngIf="showBackupCodeEntry">
+      <input
+        type="text"
+        [(ngModel)]="backupCode"
+        placeholder="XXXX-XXXX"
+        maxlength="9"
+        class="code-input"
+        [disabled]="isLoading"
+        autofocus
+      />
+      
+      <button 
+        class="btn btn-primary" 
+        (click)="onUseBackupCode()"
+        [disabled]="isLoading || backupCode.length < 8"
+      >
+        <span *ngIf="!isLoading">Verify Backup Code</span>
+        <span *ngIf="isLoading">Verifying...</span>
+      </button>
+
+      <button 
+        class="btn btn-link" 
+        (click)="toggleBackupCodeEntry()"
+        [disabled]="isLoading"
+      >
+        Use authenticator code instead
+      </button>
+    </div>
+
+    <div class="help-text">
+      <p>
+        <small>Can't access your authenticator? Contact support.</small>
+      </p>
+    </div>
+
+    <button class="btn btn-secondary btn-back" (click)="goBack()">
+      Back to Sign In
+    </button>
+  </div>
+</div>

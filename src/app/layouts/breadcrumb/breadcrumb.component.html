@@ -1,0 +1,23 @@
+<div class="container-fluid">
+  <div class="page-title">
+    <div class="row">
+      <div class="col-12 col-sm-6">
+        <h3>{{ title }}</h3>
+      </div>
+      <div class="col-12 col-sm-6">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="javascript:void(0)">
+              <app-feather-icons [icon]="'home'"></app-feather-icons>
+            </a>
+          </li>
+          @if(breadcrumbs && breadcrumbs.parentBreadcrumb){
+            <li class="breadcrumb-item">{{ breadcrumbs.parentBreadcrumb }}</li>
+          }
+          @if(breadcrumbs.childBreadcrumb){
+            <li class="breadcrumb-item active">{{ breadcrumbs.childBreadcrumb }} </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </div>

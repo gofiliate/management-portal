@@ -1,0 +1,119 @@
+<div class="totp-setup-container">
+  <div class="totp-setup-card">
+    
+    <!-- Loading State -->
+    <div *ngIf="step === 'loading'" class="loading-state">
+      <h2>Setting up Two-Factor Authentication</h2>
+      <p>Please wait...</p>
+    </div>
+
+    <!-- QR Code Step -->
+    <div *ngIf="step === 'qr-code'" class="qr-code-step">
+      <div class="header">
+        <h2>Two-Factor Authentication Required</h2>
+        <p>To access the platform, you must set up 2FA. Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
+      </div>
+
+      <div class="qr-code-container" *ngIf="setupData">
+        <qrcode 
+          [qrdata]="setupData.qr_code_url" 
+          [width]="256" 
+          [errorCorrectionLevel]="'M'"
+        ></qrcode>
+      </div>
+
+      <div class="manual-entry" *ngIf="setupData">
+        <p class="label">Or enter this code manually:</p>
+        <div class="secret-code">
+          <code>{{ setupData.manual_entry }}</code>
+          <button class="btn-copy" (click)="copySecret()">Copy</button>
+        </div>
+      </div>
+
+      <div class="backup-codes-section" *ngIf="setupData">
+        <h3>Backup Codes</h3>
+        <p class="warning">Save these codes! You can use them if you lose access to your authenticator.</p>
+        
+        <div class="backup-codes-list">
+          <div class="backup-code" *ngFor="let code of setupData.backup_codes; let i = index">
+            {{ i + 1 }}. {{ code }}
+          </div>
+        </div>
+
+        <button class="btn btn-primary" (click)="downloadBackupCodes()">
+          Download Backup Codes
+        </button>
+
+        <div class="confirmation" *ngIf="backupCodesDownloaded">
+          <span class="check-icon">✓</span> Backup codes downloaded
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button 
+          class="btn btn-primary" 
+          (click)="proceedToVerification()"
+          [disabled]="!backupCodesDownloaded"
+        >
+          Next: Verify
+        </button>
+      </div>
+    </div>
+
+    <!-- Verification Step -->
+    <div *ngIf="step === 'verify'" class="verify-step">
+      <div class="header">
+        <h2>Verify Your Setup</h2>
+        <p>Enter the 6-digit code from your authenticator app</p>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="code-entry">
+        <input
+          type="text"
+          [(ngModel)]="verificationCode"
+          (input)="onCodeInput($event)"
+          placeholder="000000"
+          maxlength="6"
+          class="code-input"
+          [disabled]="isLoading"
+          autofocus
+        />
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" (click)="step = 'qr-code'" [disabled]="isLoading">
+          Back
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="onVerifyCode()"
+          [disabled]="isLoading || verificationCode.length !== 6"
+        >
+          <span *ngIf="!isLoading">Verify & Enable 2FA</span>
+          <span *ngIf="isLoading">Verifying...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Step -->
+    <div *ngIf="step === 'success'" class="success-step">
+      <div class="success-icon">✓</div>
+      <h2>Two-Factor Authentication Enabled!</h2>
+      <p>Your account is now protected with 2FA. You'll need to enter a code from your authenticator app each time you sign in.</p>
+      
+      <button class="btn btn-primary" (click)="complete()">
+        Continue to Dashboard
+      </button>
+    </div>
+
+  </div>
+</div>

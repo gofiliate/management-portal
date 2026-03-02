@@ -1,0 +1,66 @@
+/**=====================
+    2.21 Loader CSS Start
+==========================**/
+.loader-wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  background-color: $white;
+  z-index: 11;
+  top: 0;
+  
+  .loader1 {
+    display: inline-block;
+    font-size: 0px;
+    padding: 0px;
+  }
+  .loader1 span {
+    vertical-align: middle;
+    border-radius:100%;
+    display:inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 3px 10px;
+    animation:loader1 0.8s linear infinite alternate;
+  }
+  .loader1 span:nth-child(1) {
+    -webkit-animation-delay:-1s;
+    animation-delay:-1s;
+    background: #79a94a;
+  }
+  .loader1 span:nth-child(2) {
+    -webkit-animation-delay:-0.8s;
+    animation-delay:-0.8s;
+    background:#79a94a;
+  }
+  .loader1 span:nth-child(3) {
+    -webkit-animation-delay:-0.26666s;
+    animation-delay:-0.26666s;
+    background:#79a94a;
+  }
+  .loader1 span:nth-child(4) {
+    -webkit-animation-delay:-0.8s;
+    animation-delay:-0.8s;
+    background:#79a94a;
+  }
+  .loader1 span:nth-child(5) {
+    -webkit-animation-delay:-1s;
+    animation-delay:-1s;
+    background:#79a94a;
+  }
+  @keyframes loader1 {
+    from {transform: scale(0, 0);}
+    to {transform: scale(1, 1);}
+  }
+  @-webkit-keyframes loader1 {
+    from {-webkit-transform: scale(0, 0);}
+    to {-webkit-transform: scale(1, 1);}
+  }
+}
+ 
+/**=====================
+    2.21 Loader CSS Ends
+==========================**/

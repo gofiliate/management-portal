@@ -1,0 +1,139 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Affiliate Summary</h5>
+  </div>
+  <div class="card-body">
+    <!-- Affiliates Summary -->
+    <div *ngIf="affiliates.length > 0; else noData">
+      <h6 class="text-muted mb-3">Affiliate Summary</h6>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="fw-bold">Total Affiliates:</span>
+        <span class="badge bg-primary rounded-pill">{{ totalAffiliates }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-info">
+          <i class="fa fa-user-plus me-1"></i>
+          New:
+        </span>
+        <span class="badge bg-info rounded-pill">{{ newAffiliates }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-warning">
+          <i class="fa fa-clock me-1"></i>
+          Pending:
+        </span>
+        <span class="badge bg-warning rounded-pill">{{ pendingAffiliates }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-success">
+          <i class="fa fa-check-circle me-1"></i>
+          Allowed:
+        </span>
+        <span class="badge bg-success rounded-pill">{{ allowedAffiliates }}</span>
+      </div>
+      
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-danger">
+          <i class="fa fa-times-circle me-1"></i>
+          Denied:
+        </span>
+        <span class="badge bg-danger rounded-pill">{{ deniedAffiliates }}</span>
+      </div>
+      
+      <hr class="my-3">
+      
+      <!-- Status Breakdown -->
+      <h6 class="text-muted mb-3">By Status</h6>
+      <div *ngFor="let item of statusBreakdownEntries" class="d-flex justify-content-between mb-2">
+        <span>
+          <i class="fa fa-users me-1"></i>
+          {{ item.status }}:
+        </span>
+        <span class="badge bg-secondary rounded-pill">{{ item.count }}</span>
+      </div>
+      
+      <hr class="my-3">
+      
+      <!-- Sync Buttons -->
+      <div class="d-grid gap-2">
+        <button 
+          class="btn btn-sm btn-outline-primary" 
+          (click)="onSync()"
+          [disabled]="syncing"
+        >
+          <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync me-1'"></i>
+          {{ syncing ? 'Syncing...' : 'Sync from Platform' }}
+        </button>
+        
+        <button 
+          class="btn btn-sm btn-outline-warning" 
+          (click)="onForceSync()"
+          [disabled]="syncing"
+        >
+          <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync-alt me-1'"></i>
+          {{ syncing ? 'Force Syncing...' : 'Force Sync from Platform' }}
+        </button>
+        
+        <button 
+          class="btn btn-sm btn-outline-info" 
+          [routerLink]="['/clients/manage-affiliates', instanceId]"
+          [disabled]="syncing"
+        >
+          <i class="fa fa-cog me-1"></i>
+          Administer Affiliates
+        </button>
+      </div>
+      
+      <small class="text-muted d-block mt-2">
+        <i class="fa fa-info-circle me-1"></i>
+        Last data source: {{ dataSourceLabel }}
+      </small>
+    </div>
+    
+    <!-- Empty State -->
+    <ng-template #noData>
+      <div class="text-center text-muted py-3">
+        <h6 class="text-muted mb-3">Affiliates</h6>
+        
+        <div class="alert alert-info mb-3" role="alert">
+          <i class="fa fa-info-circle me-2"></i>
+          No affiliate data loaded yet. Click "Sync from Platform" to fetch affiliate records.
+        </div>
+        
+        <!-- Sync Buttons -->
+        <div class="d-grid gap-2">
+          <button 
+            class="btn btn-sm btn-primary" 
+            (click)="onSync()"
+            [disabled]="syncing || !hasLinkedToken"
+          >
+            <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync me-1'"></i>
+            {{ syncing ? 'Loading...' : 'Sync from Platform' }}
+          </button>
+          
+          <button 
+            class="btn btn-sm btn-outline-warning" 
+            (click)="onForceSync()"
+            [disabled]="syncing || !hasLinkedToken"
+          >
+            <i [class]="syncing ? 'fa fa-spinner fa-spin me-1' : 'fa fa-sync-alt me-1'"></i>
+            {{ syncing ? 'Force Syncing...' : 'Force Sync from Platform' }}
+          </button>
+          
+          <button 
+            class="btn btn-sm btn-outline-info" 
+            [routerLink]="['/clients/manage-affiliates', instanceId]"
+            [disabled]="syncing"
+          >
+            <i class="fa fa-cog me-1"></i>
+            Administer Affiliates
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="modal-backdrop" *ngIf="show" (click)="onCancel()"></div>
+<div class="modal-dialog-wrapper" *ngIf="show">
+  <div class="modal-dialog">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ headerText }}</h5>
+        <button type="button" class="btn-close" (click)="onCancel()"></button>
+      </div>
+      <div class="modal-body" *ngIf="showBody">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+          <i *ngIf="showWarningIcon" class="fa fa-exclamation-triangle fa-2x me-3"></i>
+          <div class="flex-grow-1">
+            <ng-content></ng-content>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          <i class="fa fa-times me-2"></i>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onConfirm()">
+          <i *ngIf="buttonIcon" [class]="buttonIcon + ' me-2'"></i>
+          {{ buttonText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
