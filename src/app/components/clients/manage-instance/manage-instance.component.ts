@@ -167,6 +167,17 @@ export class ManageInstanceComponent implements OnInit {
         this.statusActive = data.status === 1;
         this.singleBrandActive = data.is_single_brand === 1;
         this.liveActive = data.is_live === 1;
+        
+        // If keys are empty and user is a god, enable edit mode for easier setup
+        if (this.isGod) {
+          if (!this.instance.api_key || this.instance.api_key === '') {
+            this.editAPIKey = true;
+          }
+          if (!this.instance.jwt_key || this.instance.jwt_key === '') {
+            this.editJWTKey = true;
+          }
+        }
+        
         this.loading = false;
       },
       error: (error) => {
