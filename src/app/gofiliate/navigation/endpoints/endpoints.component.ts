@@ -123,11 +123,7 @@ export class EndpointsComponent implements OnInit {
   }
 
   getEndpointFullSlug(endpoint: NavigationEndpoint): string {
-    // Endpoint slug in DB should already be full format /{section_slug}/{endpoint_slug}
-    // But if not, construct it
-    if (endpoint.endpoint_slug.startsWith('/')) {
-      return endpoint.endpoint_slug;
-    }
+    // Always construct the full path from section + endpoint slugs
     const sectionSlug = this.getSectionSlug(endpoint.section_id);
     return sectionSlug ? `/${sectionSlug}/${endpoint.endpoint_slug}` : endpoint.endpoint_slug;
   }
@@ -166,22 +162,12 @@ export class EndpointsComponent implements OnInit {
     this.editMode = true;
     this.showForm = true;
     
-    // Extract the endpoint slug part (remove section slug prefix)
-    let endpointSlugOnly = endpoint.endpoint_slug;
-    const section = this.sections.find(s => s.section_id === endpoint.section_id);
-    if (section) {
-      const prefix = `/${section.section_slug}/`;
-      if (endpoint.endpoint_slug.startsWith(prefix)) {
-        endpointSlugOnly = endpoint.endpoint_slug.substring(prefix.length);
-      }
-    }
-    
     this.endpointForm.patchValue({
       endpoint_id: endpoint.endpoint_id,
       section_id: endpoint.section_id,
       endpoint_name: endpoint.endpoint_name,
       endpoint_description: endpoint.endpoint_description,
-      endpoint_slug: endpointSlugOnly,
+      endpoint_slug: endpoint.endpoint_slug,
       interface_component: endpoint.interface_component || '',
       order: endpoint.order,
       in_navigation: endpoint.in_navigation,
@@ -203,14 +189,13 @@ export class EndpointsComponent implements OnInit {
 
     const formValue = this.endpointForm.value;
     
-    // Generate full slug
-    const fullSlug = this.getFullSlug();
-    
+    // Use just the endpoint slug (not the full path)
+    // The backend will construct the full path by concatenating section + endpoint slugs
     const request: SaveEndpointRequest = {
       section_id: Number(formValue.section_id),
       endpoint_name: formValue.endpoint_name,
       endpoint_description: formValue.endpoint_description,
-      endpoint_slug: fullSlug,
+      endpoint_slug: formValue.endpoint_slug,
       interface_component: formValue.interface_component || undefined,
       order: Number(formValue.order),
       in_navigation: formValue.in_navigation,

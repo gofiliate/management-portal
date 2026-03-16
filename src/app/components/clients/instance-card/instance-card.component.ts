@@ -30,9 +30,14 @@ export class InstanceCardComponent implements OnInit {
   public heartbeatStatus: 'checking' | 'online' | 'offline' = 'checking';
   public authStatus: 'checking' | 'authorized' | 'unauthorized' = 'checking';
   public adServerStatus: 'checking' | 'online' | 'offline' = 'checking';
-  public adProcessorStatus: 'checking' | 'online' | 'offline' = 'checking';
+  public logoError = false;
+  public fallbackLogo = 'assets/images/user/user.png';
 
   constructor(private http: HttpClient) {}
+
+  onLogoError(): void {
+    this.logoError = true;
+  }
 
   ngOnInit(): void {
     this.checkStatuses();
@@ -54,9 +59,6 @@ export class InstanceCardComponent implements OnInit {
     
     // Check Ad Server
     this.checkAdServer();
-    
-    // Check Ad Processor
-    this.checkAdProcessor();
   }
 
   private checkHeartbeat(): void {
@@ -117,28 +119,6 @@ export class InstanceCardComponent implements OnInit {
       error: (err) => {
         console.log('Ad Server failed:', err);
         this.adServerStatus = 'offline';
-      }
-    });
-  }
-
-  private checkAdProcessor(): void {
-    if (!this.instance.ip_address || !this.instance.heartbeat_port) {
-      console.log('No ip_address or heartbeat_port configured');
-      this.adProcessorStatus = 'offline';
-      return;
-    }
-
-    const adProcessorUrl = `http://${this.instance.ip_address}:${this.instance.heartbeat_port}/heartbeat`;
-    console.log('Checking Ad Processor:', adProcessorUrl);
-    
-    this.http.get(adProcessorUrl, { observe: 'response', responseType: 'text' }).subscribe({
-      next: (response) => {
-        console.log('Ad Processor response:', response.status);
-        this.adProcessorStatus = (response.status >= 200 && response.status < 300) ? 'online' : 'offline';
-      },
-      error: (err) => {
-        console.log('Ad Processor failed:', err);
-        this.adProcessorStatus = 'offline';
       }
     });
   }

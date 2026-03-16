@@ -3,12 +3,19 @@
     <!-- Instance Logo & Name -->
     <div class="instance-header mb-3">
       <div class="d-flex align-items-center mb-3">
-        <div class="instance-logo-wrapper me-3" *ngIf="instance.logo">
+        <div class="instance-logo-wrapper me-3" *ngIf="instance.logo && !logoError">
           <img
             [src]="instance.logo"
             [alt]="instance.name"
             class="instance-logo"
-            onerror="this.src='assets/images/default-avatar.png'"
+            (error)="onLogoError()"
+          />
+        </div>
+        <div class="instance-logo-wrapper me-3" *ngIf="!instance.logo || logoError">
+          <img
+            [src]="fallbackLogo"
+            [alt]="instance.name"
+            class="instance-logo"
           />
         </div>
         <h5 class="instance-name mb-0">
@@ -51,7 +58,7 @@
           </div>
         </div>
 
-        <!-- Row 2: Ad Server | Processor -->
+        <!-- Row 2: Ad Server | Live -->
         <div class="status-row d-flex justify-content-between mb-2">
           <div class="status-item d-flex align-items-center">
             <span class="status-label me-2">Ad Server</span>
@@ -64,20 +71,6 @@
             </span>
           </div>
           <div class="status-item d-flex align-items-center">
-            <span class="status-label me-2">Processor</span>
-            <span class="status-dot" 
-                  [ngClass]="{
-                    'dot-warning': adProcessorStatus === 'checking',
-                    'dot-success': adProcessorStatus === 'online',
-                    'dot-danger': adProcessorStatus === 'offline'
-                  }">
-            </span>
-          </div>
-        </div>
-
-        <!-- Row 3: Live | Status -->
-        <div class="status-row d-flex justify-content-between">
-          <div class="status-item d-flex align-items-center">
             <span class="status-label me-2">Live</span>
             <span class="status-dot" 
                   [ngClass]="{
@@ -86,6 +79,10 @@
                   }">
             </span>
           </div>
+        </div>
+
+        <!-- Row 3: Status -->
+        <div class="status-row d-flex justify-content-between">
           <div class="status-item d-flex align-items-center">
             <span class="status-label me-2">Status</span>
             <span class="status-dot" 

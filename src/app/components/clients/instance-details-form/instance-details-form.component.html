@@ -1,0 +1,231 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Instance Information</h5>
+  </div>
+  <div class="card-body">
+    <form>
+      <div class="row">
+        <!-- Instance Name -->
+        <div class="col-md-6 mb-3">
+          <label for="instanceName" class="form-label">Instance Name</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="instanceName" 
+            [(ngModel)]="instance.instance_name"
+            name="instanceName"
+            maxlength="255"
+            pattern="[a-zA-Z0-9\s\-_]+"
+            title="Only letters, numbers, spaces, hyphens and underscores allowed"
+          >
+        </div>
+
+        <!-- Hostname -->
+        <div class="col-md-6 mb-3">
+          <label for="hostname" class="form-label">Instance Hostname</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="hostname" 
+            [(ngModel)]="instance.hostname"
+            name="hostname"
+            maxlength="255"
+            pattern="[a-zA-Z0-9\-_.]+"
+            title="Only letters, numbers, hyphens, underscores and dots allowed"
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- IP Address -->
+        <div class="col-md-6 mb-3">
+          <label for="ipAddress" class="form-label">IP Address</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="ipAddress" 
+            [(ngModel)]="instance.ip_address"
+            name="ipAddress"
+            maxlength="45"
+            pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"
+            title="Please enter a valid IPv4 or IPv6 address"
+          >
+        </div>
+
+        <!-- Client Logo -->
+        <div class="col-md-6 mb-3">
+          <label for="clientLogo" class="form-label">Client Logo (Optional)</label>
+          <input 
+            type="url" 
+            class="form-control" 
+            id="clientLogo" 
+            [(ngModel)]="instance.client_logo"
+            name="clientLogo"
+            maxlength="255"
+            pattern="https?://.+"
+            title="Please enter a valid URL starting with http:// or https://"
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Affiliate Endpoint -->
+        <div class="col-md-6 mb-3">
+          <label for="affEndpoint" class="form-label">Affiliate Endpoint</label>
+          <input 
+            type="url" 
+            class="form-control" 
+            id="affEndpoint" 
+            [(ngModel)]="instance.aff_endpoint"
+            name="affEndpoint"
+            maxlength="255"
+            pattern="https?://.+"
+            title="Please enter a valid URL starting with http:// or https://"
+          >
+        </div>
+
+        <!-- Admin Endpoint -->
+        <div class="col-md-6 mb-3">
+          <label for="adminEndpoint" class="form-label">Admin Endpoint</label>
+          <input 
+            type="url" 
+            class="form-control" 
+            id="adminEndpoint" 
+            [(ngModel)]="instance.admin_endpoint"
+            name="adminEndpoint"
+            maxlength="255"
+            pattern="https?://.+"
+            title="Please enter a valid URL starting with http:// or https://"
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- API Endpoint -->
+        <div class="col-md-6 mb-3">
+          <label for="apiEndpoint" class="form-label">API Endpoint</label>
+          <input 
+            type="url" 
+            class="form-control" 
+            id="apiEndpoint" 
+            [(ngModel)]="instance.api_endpoint"
+            name="apiEndpoint"
+            maxlength="255"
+            pattern="https?://.+"
+            title="Please enter a valid URL starting with http:// or https://"
+          >
+        </div>
+
+        <!-- Ad Endpoint -->
+        <div class="col-md-6 mb-3">
+          <label for="adEndpoint" class="form-label">Ad Endpoint (Optional)</label>
+          <input 
+            type="url" 
+            class="form-control" 
+            id="adEndpoint" 
+            [(ngModel)]="instance.ad_endpoint"
+            name="adEndpoint"
+            maxlength="255"
+            pattern="https?://.+"
+            title="Please enter a valid URL starting with http:// or https://"
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- API Key -->
+        <div class="col-md-6 mb-3">
+          <label for="apiKey" class="form-label">API Key</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control" 
+              id="apiKey"
+              [(ngModel)]="apiKeyDisplay"
+              name="api_key"
+              [readonly]="!editAPIKey"
+              title="API Key"
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="toggleEditAPIKey()"
+              [title]="editAPIKey ? 'Lock to hide' : 'Edit to show'"
+              *ngIf="isGod"
+            >
+              <i [class]="editAPIKey ? 'fa fa-lock' : 'fa fa-pencil'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- JWT Key -->
+        <div class="col-md-6 mb-3">
+          <label for="jwtKey" class="form-label">JWT Key (Optional)</label>
+          <div class="input-group">
+            <input 
+              type="text" 
+              class="form-control" 
+              id="jwtKey"
+              [(ngModel)]="jwtKeyDisplay"
+              name="jwt_key"
+              [readonly]="!editJWTKey"
+              placeholder="No JWT Key set"
+              title="JWT Key"
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="toggleEditJWTKey()"
+              [title]="editJWTKey ? 'Lock to hide' : 'Edit to show'"
+              *ngIf="isGod"
+            >
+              <i [class]="editJWTKey ? 'fa fa-lock' : 'fa fa-pencil'"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Heartbeat Port -->
+        <div class="col-md-6 mb-3">
+          <label for="heartbeatPort" class="form-label">Heartbeat Port (Optional)</label>
+          <input 
+            type="number" 
+            class="form-control" 
+            id="heartbeatPort" 
+            [(ngModel)]="instance.heartbeat_port"
+            name="heartbeatPort"
+            min="1"
+            max="65535"
+            title="Enter a valid port number (1-65535)"
+          >
+        </div>
+
+        <!-- Created Date -->
+        <div class="col-md-6 mb-3">
+          <label for="created" class="form-label">Created Date</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="created" 
+            [value]="instance.created | date:'medium'"
+            name="created"
+            readonly
+          >
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary" (click)="onSave()">
+          <i class="fa fa-save me-2"></i>
+          Save Changes
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onDelete()">
+          <i class="fa fa-trash me-2"></i>
+          Delete Instance
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

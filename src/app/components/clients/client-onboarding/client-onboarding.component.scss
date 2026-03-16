@@ -1,0 +1,77 @@
+// Client onboarding navigation cards
+
+.onboarding-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  margin-bottom: 20px;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  &[data-color="primary"]:hover {
+    border-color: var(--theme-default);
+    
+    .icon-wrapper i {
+      color: var(--theme-default);
+    }
+  }
+  
+  &[data-color="success"]:hover {
+    border-color: #51bb25;
+    
+    .icon-wrapper i {
+      color: #51bb25;
+    }
+  }
+  
+  &[data-color="warning"]:hover {
+    border-color: #f8d62b;
+    
+    .icon-wrapper i {
+      color: #f8d62b;
+    }
+  }
+  
+  &[data-color="info"]:hover {
+    border-color: #4099ff;
+    
+    .icon-wrapper i {
+      color: #4099ff;
+    }
+  }
+  
+  .card-body {
+    padding: 40px 20px;
+    position: relative;
+  }
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.02);
+  
+  i {
+    font-size: 40px;
+    color: #7e7e7e;
+    transition: color 0.3s ease;
+  }
+}
+
+.count-badge {
+  margin-top: 15px;
+  
+  .badge {
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+  }
+}
+

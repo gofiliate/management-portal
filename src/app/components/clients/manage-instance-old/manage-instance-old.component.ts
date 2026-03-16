@@ -18,8 +18,6 @@ import { AccountManagersSummaryComponent } from '../account-managers-summary/acc
 import { AffiliatesSummaryComponent } from '../affiliates-summary/affiliates-summary.component';
 import { BrandsSummaryComponent } from '../brands-summary/brands-summary.component';
 import { LandingPagesSummaryComponent } from '../landing-pages-summary/landing-pages-summary.component';
-import { InstanceDetailsFormComponent } from '../instance-details-form/instance-details-form.component';
-import { PlatformActionsGridComponent } from '../platform-actions-grid/platform-actions-grid.component';
 
 interface InstanceDetails {
   instance_id: number;
@@ -75,13 +73,13 @@ interface Role {
 }
 
 @Component({
-  selector: 'app-manage-instance',
+  selector: 'app-manage-instance-old',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule, LoginModalComponent, ConfirmationModalComponent, TotpChallengeComponent, AccountManagersSummaryComponent, AffiliatesSummaryComponent, BrandsSummaryComponent, LandingPagesSummaryComponent, InstanceDetailsFormComponent, PlatformActionsGridComponent],
-  templateUrl: './manage-instance.component.html',
-  styleUrl: './manage-instance.component.scss'
+  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule, LoginModalComponent, ConfirmationModalComponent, TotpChallengeComponent, AccountManagersSummaryComponent, AffiliatesSummaryComponent, BrandsSummaryComponent, LandingPagesSummaryComponent],
+  templateUrl: './manage-instance-old.component.html',
+  styleUrl: './manage-instance-old.component.scss'
 })
-export class ManageInstanceComponent implements OnInit {
+export class ManageInstanceOldComponent implements OnInit {
   
   public instanceId: number = 0;
   public loading = false;
@@ -109,7 +107,7 @@ export class ManageInstanceComponent implements OnInit {
   public lastAffiliatesSyncWasForced = false;
   public lastBrandsSyncWasForced = false;
   public lastLandingPagesSyncWasForced = false;
-  public currentSection: 'instance-details' | 'users' | 'affiliates' | 'brands' | 'landing-pages' | null = null;
+  public currentSection: 'users' | 'affiliates' | 'brands' | 'landing-pages' | null = null;
   public canLogin = false;
   public checkingCanLogin = false;
   public showManagerSelectionModal = false;
@@ -667,12 +665,6 @@ export class ManageInstanceComponent implements OnInit {
   }
 
   public managePlatformSection(section: string): void {
-    // Instance details doesn't require linked token
-    if (section === 'instance-details') {
-      this.currentSection = 'instance-details';
-      return;
-    }
-
     if (!this.linkedToken) {
       this.toast.warning('Please connect a platform administrator account first', 'Account Required');
       return;

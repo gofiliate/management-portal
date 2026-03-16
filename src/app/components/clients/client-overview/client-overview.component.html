@@ -1,32 +1,43 @@
-<!-- Loading State -->
-<div class="row" *ngIf="loading">
-  <div class="col-12">
-    <div class="text-center p-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title">
+        <h3>Clients Dashboard</h3>
+        <p class="text-muted">Select a client to manage</p>
       </div>
+    </div>
+  </div>
+  
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <i class="fa fa-spinner fa-spin fa-3x text-primary"></i>
       <p class="mt-3 text-muted">Loading clients...</p>
     </div>
   </div>
-</div>
 
-<!-- Empty State -->
-<div class="row" *ngIf="!loading && clients.length === 0">
-  <div class="col-12">
-    <div class="alert alert-info text-center">
-      <i class="fa fa-info-circle me-2"></i>
-      No clients found
+  <div class="row" *ngIf="!loading && clients.length === 0">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <i class="fa fa-info-circle me-2"></i>
+        No clients found. Please contact an administrator.
+      </div>
     </div>
   </div>
-</div>
-
-<!-- Client Cards -->
-<div class="row" *ngIf="!loading && clients.length > 0">
-  <div
-    class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4"
-    *ngFor="let client of clients"
-  >
-    <app-client-card [client]="client"></app-client-card>
+  
+  <div class="row" *ngIf="!loading && clients.length > 0">
+    <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let client of clients">
+      <div class="card client-card" (click)="navigateToClient(client.client_id)">
+        <div class="card-body text-center">
+          <div class="icon-wrapper mb-3" *ngIf="!client.client_logo">
+            <i class="fa fa-building"></i>
+          </div>
+          <div class="logo-wrapper mb-3" *ngIf="client.client_logo">
+            <img [src]="client.client_logo" [alt]="client.client_name" class="client-logo">
+          </div>
+          <h5 class="mb-0">{{ client.client_name }}</h5>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

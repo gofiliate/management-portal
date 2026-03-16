@@ -1,0 +1,30 @@
+<!-- Page Header -->
+<div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+  <div>
+    <h2 class="main-content-title fs-24 mb-1">{{ title }}</h2>
+    <nav aria-label="breadcrumb" *ngIf="breadcrumbs.length > 0">
+      <ol class="breadcrumb mb-0">
+        <ng-container *ngFor="let crumb of breadcrumbs; let isLast = last">
+          <li class="breadcrumb-item" [class.active]="isLast" [attr.aria-current]="isLast ? 'page' : null">
+            <a *ngIf="!isLast && crumb.link" [routerLink]="crumb.link">{{ crumb.label }}</a>
+            <a *ngIf="!isLast && !crumb.link" href="javascript:void(0)">{{ crumb.label }}</a>
+            <span *ngIf="isLast">{{ crumb.label }}</span>
+          </li>
+        </ng-container>
+      </ol>
+    </nav>
+  </div>
+  <div *ngIf="headerButtons?.length" class="d-flex align-items-center gap-3 flex-wrap mt-3 mt-md-0">
+    <ng-container *ngFor="let btn of headerButtons">
+      <button
+        *ngIf="btn.show !== false"
+        type="button"
+        class="btn btn-icon-text {{ btn.class || 'btn-white' }}"
+        (click)="btn.fn && btn.fn()"
+      >
+        <i class="{{ btn.icon }} me-2 fs-14"></i> {{ btn.text }}
+      </button>
+    </ng-container>
+  </div>
+</div>
+<!-- End Page Header -->

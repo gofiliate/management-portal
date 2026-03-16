@@ -1,0 +1,40 @@
+.page-header-breadcrumb {
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.main-content-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item {
+  font-size: 0.875rem;
+  
+  a {
+    color: #6c757d;
+    text-decoration: none;
+    
+    &:hover {
+      color: #495057;
+      text-decoration: underline;
+    }
+  }
+  
+  &.active {
+    color: #495057;
+  }
+}
+
+.btn-icon-text {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}

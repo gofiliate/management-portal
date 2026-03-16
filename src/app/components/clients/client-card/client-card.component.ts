@@ -9,6 +9,7 @@ export interface Client {
   website: string;
   instances: number;
   brands: number;
+  live: number;
   onboarding: number;
 }
 

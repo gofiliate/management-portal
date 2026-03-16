@@ -1,0 +1,122 @@
+// Platform actions grid styles
+
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.25rem;
+
+    h5 {
+      color: #333;
+      font-weight: 600;
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+.platform-action-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  margin-bottom: 0;
+  height: 100%;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  &[data-color="primary"]:hover:not(.disabled) {
+    border-color: var(--theme-default);
+    
+    .icon-wrapper i {
+      color: var(--theme-default);
+    }
+  }
+  
+  &[data-color="success"]:hover:not(.disabled) {
+    border-color: #51bb25;
+    
+    .icon-wrapper i {
+      color: #51bb25;
+    }
+  }
+  
+  &[data-color="warning"]:hover:not(.disabled) {
+    border-color: #f8d62b;
+    
+    .icon-wrapper i {
+      color: #f8d62b;
+    }
+  }
+  
+  &[data-color="info"]:hover:not(.disabled) {
+    border-color: #4099ff;
+    
+    .icon-wrapper i {
+      color: #4099ff;
+    }
+  }
+
+  &[data-color="secondary"]:hover:not(.disabled) {
+    border-color: #6c757d;
+    
+    .icon-wrapper i {
+      color: #6c757d;
+    }
+  }
+
+  &[data-color="dark"]:hover:not(.disabled) {
+    border-color: #343a40;
+    
+    .icon-wrapper i {
+      color: #343a40;
+    }
+  }
+  
+  .card-body {
+    padding: 30px 20px;
+  }
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.02);
+  
+  i {
+    font-size: 40px;
+    color: #7e7e7e;
+    transition: color 0.3s ease;
+  }
+}
+
+h5 {
+  font-weight: 600;
+  color: #333;
+}
+
+.text-muted {
+  font-size: 0.9rem;
+}

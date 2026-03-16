@@ -1,13 +1,18 @@
 import { Routes } from '@angular/router';
 import { LoggedInComponent } from './layouts/logged-in/logged-in.component';
 import { LoggedOutComponent } from './layouts/logged-out/logged-out.component';
+import { WelcomeComponent } from './components/welcome/welcome.component';
 import { DynamicDashboardLoaderComponent } from './components/dashboards/dynamic-dashboard-loader/dynamic-dashboard-loader.component';
 import { SignInComponent } from './components/account/sign-in/sign-in.component';
 import { TotpVerifyComponent } from './components/account/totp-verify/totp-verify.component';
 import { TotpSetupComponent } from './components/account/totp-setup/totp-setup.component';
 import { SecuritySettingsComponent } from './components/account/security-settings/security-settings.component';import {InvitationAcceptComponent} from './components/account/invitation-accept/invitation-accept.component';import { ClientOverviewComponent } from './components/clients/client-overview/client-overview.component';
+import { ClientDetailsComponent } from './components/clients/client-details/client-details.component';
+import { ClientInstancesComponent } from './components/clients/client-instances/client-instances.component';
+import { ClientOnboardingComponent } from './components/clients/client-onboarding/client-onboarding.component';
 import { ClientDashboardComponent } from './components/clients/client-dashboard/client-dashboard.component';
 import { ManageInstanceComponent } from './components/clients/manage-instance/manage-instance.component';
+import { ManageInstanceOldComponent } from './components/clients/manage-instance-old/manage-instance-old.component';
 import { ManageEmailsComponent } from './components/clients/manage-emails/manage-emails.component';
 import { ManageTermsConditionsComponent } from './components/clients/manage-terms-conditions/manage-terms-conditions.component';
 import { ManageBrandsComponent } from './components/clients/manage-brands/manage-brands.component';
@@ -39,11 +44,15 @@ export const routes: Routes = [
     path: 'clients',
     component: LoggedInComponent,
     children: [
-     //{ path: '', canActivate: [AuthGuard], component: DynamicDashboardLoaderComponent }
-     { path: 'overview', canActivate: [AuthGuard], component: ClientOverviewComponent },
-     { path: 'onboarding', canActivate: [AuthGuard], component: ClientOverviewComponent },
+     { path: '', canActivate: [AuthGuard], component: ClientOverviewComponent },
+     { path: 'dashboard', canActivate: [AuthGuard], component: ClientOverviewComponent },
+     { path: 'details', canActivate: [AuthGuard], component: ClientDetailsComponent },
+     { path: 'details/:client_id', canActivate: [AuthGuard], component: ClientDetailsComponent },
      { path: 'dashboard/:id', canActivate: [AuthGuard], component: ClientDashboardComponent },
+     { path: 'instances/:id', canActivate: [AuthGuard], component: ClientInstancesComponent },
+     { path: 'onboarding', canActivate: [AuthGuard], component: ClientOnboardingComponent },
      { path: 'manage-instance/:id', canActivate: [AuthGuard], component: ManageInstanceComponent },
+     { path: 'manage-instance-old/:id', canActivate: [AuthGuard], component: ManageInstanceOldComponent },
     { path: 'manage-emails/:id', canActivate: [AuthGuard], component: ManageEmailsComponent },
     { path: 'manage-terms-conditions/:id', canActivate: [AuthGuard], component: ManageTermsConditionsComponent },
      { path: 'manage-brands/:id', canActivate: [AuthGuard], component: ManageBrandsComponent },
@@ -81,6 +90,7 @@ export const routes: Routes = [
    
     component: LoggedOutComponent,
     children: [
+      { path: '', component: WelcomeComponent },
       { path: 'sign-in', component: SignInComponent },
       { path: 'verify-totp', component: TotpVerifyComponent },
       { path: 'totp-setup', component: TotpSetupComponent },
