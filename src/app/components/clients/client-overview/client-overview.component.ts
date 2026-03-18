@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 interface Client {
   client_id: number;
   client_name: string;
-  client_logo: string | null;
+  logo_url: string | null;
   created: string;
   updated: string;
   status: number;
@@ -54,6 +54,10 @@ export class ClientOverviewComponent implements OnInit {
 
   navigateToClient(clientId: number): void {
     this.router.navigate(['/clients/dashboard', clientId]);
+  }
+
+  navigateToOnboarding(): void {
+    this.router.navigate(['/clients/details']);
   }
 }
 

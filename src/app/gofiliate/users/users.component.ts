@@ -28,6 +28,9 @@ export class UsersComponent implements OnInit {
   // Pagination for invitations
   invitationPage = 1;
   invitationPageSize = 10;
+  
+  // Active tab for invitations (pending or expired)
+  activeInvitationTab: 'pending' | 'expired' = 'pending';
 
   constructor(
     private gofiliateService: GofiliateService,
@@ -179,18 +182,41 @@ export class UsersComponent implements OnInit {
     return Array.from({ length: this.userTotalPages }, (_, i) => i + 1);
   }
 
+  // Filter invitations by status
+  get pendingInvitations(): UserInvitation[] {
+    return this.invitations.filter(inv => 
+      inv.accepted !== 1 && new Date(inv.expires_at) >= new Date()
+    );
+  }
+
+  get expiredInvitations(): UserInvitation[] {
+    return this.invitations.filter(inv => 
+      inv.accepted !== 1 && new Date(inv.expires_at) < new Date()
+    );
+  }
+
+  get filteredInvitations(): UserInvitation[] {
+    return this.activeInvitationTab === 'pending' ? this.pendingInvitations : this.expiredInvitations;
+  }
+
   // Pagination helpers for invitations
   get paginatedInvitations(): UserInvitation[] {
+    const filtered = this.filteredInvitations;
     const start = (this.invitationPage - 1) * this.invitationPageSize;
-    return this.invitations.slice(start, start + this.invitationPageSize);
+    return filtered.slice(start, start + this.invitationPageSize);
   }
 
   get invitationTotalPages(): number {
-    return Math.ceil(this.invitations.length / this.invitationPageSize);
+    return Math.ceil(this.filteredInvitations.length / this.invitationPageSize);
   }
 
   get invitationPages(): number[] {
     return Array.from({ length: this.invitationTotalPages }, (_, i) => i + 1);
+  }
+
+  setInvitationTab(tab: 'pending' | 'expired'): void {
+    this.activeInvitationTab = tab;
+    this.invitationPage = 1; // Reset to first page when switching tabs
   }
 
   getInvitationStatusBadge(accepted: number, expiresAt: string): string {

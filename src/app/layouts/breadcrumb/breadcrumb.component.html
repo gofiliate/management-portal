@@ -1,23 +1,33 @@
 <div class="container-fluid">
   <div class="page-title">
     <div class="row">
-      <div class="col-12 col-sm-6">
-        <h3>{{ title }}</h3>
-      </div>
-      <div class="col-12 col-sm-6">
+      <div class="col-12">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="javascript:void(0)">
-              <app-feather-icons [icon]="'home'"></app-feather-icons>
+            <a (click)="navigateToHome()" style="cursor: pointer" title="Go to Dashboard">
+              <i class="ti-home"></i>
             </a>
           </li>
           @if(breadcrumbs && breadcrumbs.parentBreadcrumb){
-            <li class="breadcrumb-item">{{ breadcrumbs.parentBreadcrumb }}</li>
+            <li class="breadcrumb-item">
+              <a (click)="navigateToParent()" style="cursor: pointer" title="Go back">
+                {{ breadcrumbs.parentBreadcrumb }}
+              </a>
+            </li>
           }
-          @if(breadcrumbs.childBreadcrumb){
+          @if(breadcrumbs?.childBreadcrumb){
             <li class="breadcrumb-item active">{{ breadcrumbs.childBreadcrumb }} </li>
           }
         </ol>
       </div>
     </div>
+    @if(breadcrumbs && (breadcrumbs.parentBreadcrumb || breadcrumbs.childBreadcrumb)){
+      <div class="row mt-2">
+        <div class="col-12 text-end">
+          <button class="btn btn-sm btn-outline-secondary" (click)="goBack()" title="Go to previous page">
+            <i class="ti-arrow-left"></i> Back
+          </button>
+        </div>
+      </div>
+    }
   </div>

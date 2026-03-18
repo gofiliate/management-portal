@@ -79,9 +79,22 @@
   <!-- Empty State -->
   <div class="row" *ngIf="!loading && instances.length === 0">
     <div class="col-12">
-      <div class="alert alert-info text-center">
-        <i class="fa fa-info-circle me-2"></i>
-        No instances found for this client
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <div class="mb-3">
+            <i class="fa fa-server fa-4x text-muted"></i>
+          </div>
+          <h5 class="mb-2">No Instances Created Yet</h5>
+          <p class="text-muted mb-3">Get started by adding your first instance for this client.</p>
+          <button 
+            class="btn btn-primary" 
+            *ngIf="actionGuard.canCreate()"
+            (click)="openModal()"
+          >
+            <i class="fa fa-plus me-2"></i>
+            Add First Instance
+          </button>
+        </div>
       </div>
     </div>
   </div>

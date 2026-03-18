@@ -1,4 +1,3 @@
-<h1>Testing...</h1>
 <div class="page-wrapper" [ngClass]="layout.config.settings.sidebar_type">
   <div class="page-header" [class.close_icon]="navService.closeSidebar" [ngStyle]="{'display' :  navService.hideNav ? 'none' : 'block' }">
     <app-header></app-header>
@@ -11,9 +10,9 @@
       <app-breadcrumb></app-breadcrumb>
       <router-outlet></router-outlet>
     </div>
-    <footer class="footer" [class.footer-light]="footerLight" [class.footer-dark]="footerDark" [class.footer-fix]="footerFix">
-      <app-footer></app-footer>
-    </footer>
   </div>
+  <footer class="footer" [class.footer-light]="footerLight" [class.footer-dark]="footerDark" [class.footer-fix]="footerFix">
+    <app-footer></app-footer>
+  </footer>
 </div>
 

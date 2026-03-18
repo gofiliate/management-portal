@@ -133,16 +133,41 @@
     </div>
   </div>
 
-  <!-- Pending Invitations -->
+  <!-- Pending & Expired Invitations -->
   <div class="row mt-4" *ngIf="!loading">
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Pending Invitations ({{ invitations.length }})</h5>
+          <h5 class="mb-0">User Invitations</h5>
           <button class="btn btn-sm btn-secondary" (click)="loadInvitations()">
             <i class="fa fa-refresh me-2"></i> Refresh
           </button>
         </div>
+        
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs px-3 pt-2" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button 
+              class="nav-link"
+              [class.active]="activeInvitationTab === 'pending'"
+              (click)="setInvitationTab('pending')"
+              type="button" 
+              role="tab">
+              <i class="fa fa-clock-o me-2"></i>Pending ({{ pendingInvitations.length }})
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button 
+              class="nav-link"
+              [class.active]="activeInvitationTab === 'expired'"
+              (click)="setInvitationTab('expired')"
+              type="button" 
+              role="tab">
+              <i class="fa fa-times-circle me-2"></i>Expired ({{ expiredInvitations.length }})
+            </button>
+          </li>
+        </ul>
+        
         <div class="card-body">
           <!-- Loading Indicator -->
           <div class="text-center py-3" *ngIf="loadingInvitations">
@@ -152,14 +177,15 @@
           </div>
 
           <!-- Empty State -->
-          <div class="text-center py-4" *ngIf="!loadingInvitations && invitations.length === 0">
+          <div class="text-center py-4" *ngIf="!loadingInvitations && filteredInvitations.length === 0">
             <i class="fa fa-envelope fa-3x text-muted mb-3"></i>
-            <h6 class="text-muted">No invitations found</h6>
-            <p class="text-muted mb-0 small">Send an invitation to get started</p>
+            <h6 class="text-muted">No {{ activeInvitationTab }} invitations found</h6>
+            <p class="text-muted mb-0 small" *ngIf="activeInvitationTab === 'pending'">Send an invitation to get started</p>
+            <p class="text-muted mb-0 small" *ngIf="activeInvitationTab === 'expired'">No expired invitations</p>
           </div>
 
           <!-- Invitations Table -->
-          <div class="table-responsive" *ngIf="!loadingInvitations && invitations.length > 0">
+          <div class="table-responsive" *ngIf="!loadingInvitations && filteredInvitations.length > 0">
             <table class="table table-hover table-sm">
               <thead>
                 <tr>

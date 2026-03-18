@@ -4,6 +4,9 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0">Role Management</h4>
+          <button class="btn btn-success" (click)="createNewRole()" title="Create New Role">
+            <i class="ti-plus"></i> Add New Role
+          </button>
         </div>
         <div class="card-body">
           <div *ngIf="loading" class="text-center py-5">
@@ -23,7 +26,7 @@
                   <th>ID</th>
                   <th>Role Name</th>
                   <th>Description</th>
-                  <th>Protected</th>
+                  <th>Type</th>
                   <th>Status</th>
                   <th class="text-end">Actions</th>
                 </tr>
@@ -34,10 +37,13 @@
                   <td><strong>{{ role.role_name }}</strong></td>
                   <td>{{ role.role_description }}</td>
                   <td>
+                    <span *ngIf="role.is_guest === 1" class="badge bg-info me-1">
+                      <i class="ti-user"></i> Guest
+                    </span>
                     <span *ngIf="role.protected === 1" class="badge bg-warning">
                       <i class="ti-lock"></i> Protected
                     </span>
-                    <span *ngIf="role.protected !== 1" class="text-muted">-</span>
+                    <span *ngIf="role.protected !== 1 && role.is_guest !== 1" class="text-muted">-</span>
                   </td>
                   <td>
                     <span class="badge" [class.bg-success]="role.status === 1" [class.bg-secondary]="role.status !== 1">

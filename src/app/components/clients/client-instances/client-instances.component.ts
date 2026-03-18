@@ -161,12 +161,18 @@ export class ClientInstancesComponent implements OnInit {
     this.loading = true;
     
     this.api.get(`/clients/instances/${this.clientId}`, false).subscribe({
-      next: (data: InstanceData[]) => {
-        this.instances = this.transformInstances(data);
+      next: (data: InstanceData[] | null) => {
+        // Handle null/undefined response gracefully
+        if (data && Array.isArray(data)) {
+          this.instances = this.transformInstances(data);
+        } else {
+          this.instances = [];
+        }
         this.loading = false;
       },
       error: (error) => {
         this.toast.error('Cannot get instances from the API. Please try again later', 'API Error');
+        this.instances = [];
         this.loading = false;
       }
     });

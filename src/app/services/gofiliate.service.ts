@@ -69,6 +69,7 @@ export interface User {
   can_login: number;
   has_managers: number;
   is_internal: boolean;
+  is_guest: boolean;
   is_god: boolean;
   created: string;
   updated: string;
@@ -95,6 +96,7 @@ export interface SaveUserRequest {
   has_managers: number;
   can_login: number;
   is_internal: number;
+  is_guest: number;
   is_god: number;
   status: number;
 }
@@ -295,10 +297,10 @@ export class GofiliateService {
   }
 
   validateInvitation(token: string): Observable<any> {
-    return this.apiService.get(`gofiliate/invitations/${token}`, false);
+    return this.apiService.getNoAuth(`gofiliate/invitations/${token}`);
   }
 
   acceptInvitation(data: AcceptInvitationRequest): Observable<any> {
-    return this.apiService.post('gofiliate/invitations/accept', data, false);
+    return this.apiService.postNoAuth('gofiliate/invitations/accept', data);
   }
 }

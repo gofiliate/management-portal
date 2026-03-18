@@ -48,14 +48,6 @@ export class ApiService {
     return base + path;
   }
 
-  getNoAuth(slug: string) {
-
-    const endpoint = this.buildEndpoint(slug);
-
-    return this.http.get<any>(endpoint);
-
-  }
-
   // Generalized GET method to handle requests with optional user_id
   get(slug: string, use_user: boolean | null): Observable<any> {
 
@@ -79,6 +71,13 @@ export class ApiService {
       console.error('Bearer token is missing');
       throw new Error('User is not authenticated');
     }
+  }
+
+  getNoAuth(slug: string): Observable<any> {
+    // Construct the endpoint
+    const endpoint = this.buildEndpoint(slug);
+
+    return this.http.get<any>(endpoint);
   }
 
   postNoAuth(slug: string, data: any): Observable<any> {
@@ -120,8 +119,9 @@ export class ApiService {
     }
   }
 
-  put(slug: string, data: any, user_id: number): Observable<any> {
+  put(slug: string, data: any, use_user: boolean | null): Observable<any> {
     const token = this.getBearerToken();
+    const user_id = this.getUserId();
 
     if (token) {
       const headers = new HttpHeaders({
@@ -129,8 +129,11 @@ export class ApiService {
         'Content-Type': 'application/json'
       });
 
-      // Construct the endpoint with user_id
-      const endpoint = `${this.api}${slug}/${user_id}`;
+      // Construct the endpoint
+      var endpoint = this.buildEndpoint(slug);
+      if (use_user) {
+        endpoint += `/${user_id}`;  // Append user_id if it's provided
+      }
 
       // Convert data to JSON
       const body = JSON.stringify(data);

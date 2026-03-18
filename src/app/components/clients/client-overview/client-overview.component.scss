@@ -80,3 +80,30 @@
   font-size: 0.875rem;
 }
 
+// Add new client card specific styling
+.add-client-card {
+  border: 2px dashed #007bff;
+  background-color: rgba(0, 123, 255, 0.02);
+  
+  &:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-style: solid;
+
+    .icon-wrapper {
+      background-color: #007bff;
+      
+      i {
+        color: white;
+      }
+    }
+  }
+
+  .icon-wrapper {
+    background-color: rgba(0, 123, 255, 0.15);
+    
+    i {
+      color: #007bff;
+    }
+  }
+}
+

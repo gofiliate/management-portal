@@ -35,54 +35,58 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: LoggedInComponent,
+    data: { title: 'Dashboard', main: 'Home' },
     children: [
      //{ path: '', canActivate: [AuthGuard], component: DynamicDashboardLoaderComponent }
-     { path: '', component: DynamicDashboardLoaderComponent }
+     { path: '', component: DynamicDashboardLoaderComponent, data: { title: 'Dashboard' } }
     ]
   },
   {
     path: 'clients',
     component: LoggedInComponent,
+    data: { title: 'Clients', main: 'Home', breadcrumb: 'Clients', mainUrl: '/dashboard' },
     children: [
-     { path: '', canActivate: [AuthGuard], component: ClientOverviewComponent },
-     { path: 'dashboard', canActivate: [AuthGuard], component: ClientOverviewComponent },
-     { path: 'details', canActivate: [AuthGuard], component: ClientDetailsComponent },
-     { path: 'details/:client_id', canActivate: [AuthGuard], component: ClientDetailsComponent },
-     { path: 'dashboard/:id', canActivate: [AuthGuard], component: ClientDashboardComponent },
-     { path: 'instances/:id', canActivate: [AuthGuard], component: ClientInstancesComponent },
-     { path: 'onboarding', canActivate: [AuthGuard], component: ClientOnboardingComponent },
-     { path: 'manage-instance/:id', canActivate: [AuthGuard], component: ManageInstanceComponent },
-     { path: 'manage-instance-old/:id', canActivate: [AuthGuard], component: ManageInstanceOldComponent },
-    { path: 'manage-emails/:id', canActivate: [AuthGuard], component: ManageEmailsComponent },
-    { path: 'manage-terms-conditions/:id', canActivate: [AuthGuard], component: ManageTermsConditionsComponent },
-     { path: 'manage-brands/:id', canActivate: [AuthGuard], component: ManageBrandsComponent },
-     { path: 'manage-affiliates/:id', canActivate: [AuthGuard], component: ManageAffiliatesComponent },
-     { path: 'affiliate-dashboard/:uuid', canActivate: [AuthGuard], component: AffiliateDashboardComponent }
+     { path: '', canActivate: [AuthGuard], component: ClientOverviewComponent, data: { title: 'Client Overview', breadcrumb: 'Overview' } },
+     { path: 'dashboard', canActivate: [AuthGuard], component: ClientOverviewComponent, data: { title: 'Client Overview', breadcrumb: 'Overview' } },
+     { path: 'details', canActivate: [AuthGuard], component: ClientDetailsComponent, data: { title: 'Client Details', breadcrumb: 'Details' } },
+     { path: 'details/:client_id', canActivate: [AuthGuard], component: ClientDetailsComponent, data: { title: 'Client Details', breadcrumb: 'Details' } },
+     { path: 'dashboard/:id', canActivate: [AuthGuard], component: ClientDashboardComponent, data: { title: 'Client Dashboard', breadcrumb: 'Dashboard', breadcrumbUrl: '/clients' } },
+     { path: 'instances/:id', canActivate: [AuthGuard], component: ClientInstancesComponent, data: { title: 'Client Instances', breadcrumb: 'Instances' } },
+     { path: 'onboarding', canActivate: [AuthGuard], component: ClientOnboardingComponent, data: { title: 'Client Onboarding', breadcrumb: 'Onboarding' } },
+     { path: 'manage-instance/:id', canActivate: [AuthGuard], component: ManageInstanceComponent, data: { title: 'Manage Instance', breadcrumb: 'Manage Instance' } },
+     { path: 'manage-instance-old/:id', canActivate: [AuthGuard], component: ManageInstanceOldComponent, data: { title: 'Manage Instance (Legacy)', breadcrumb: 'Manage Instance' } },
+    { path: 'manage-emails/:id', canActivate: [AuthGuard], component: ManageEmailsComponent, data: { title: 'Manage Emails', breadcrumb: 'Emails' } },
+    { path: 'manage-terms-conditions/:id', canActivate: [AuthGuard], component: ManageTermsConditionsComponent, data: { title: 'Terms & Conditions', breadcrumb: 'Terms' } },
+     { path: 'manage-brands/:id', canActivate: [AuthGuard], component: ManageBrandsComponent, data: { title: 'Manage Brands', breadcrumb: 'Brands' } },
+     { path: 'manage-affiliates/:id', canActivate: [AuthGuard], component: ManageAffiliatesComponent, data: { title: 'Manage Affiliates', breadcrumb: 'Affiliates' } },
+     { path: 'affiliate-dashboard/:uuid', canActivate: [AuthGuard], component: AffiliateDashboardComponent, data: { title: 'Affiliate Dashboard', breadcrumb: 'Affiliate' } }
     ]
   },
   {
     path: 'gofiliate',
     component: LoggedInComponent,
+    data: { title: 'Gofiliate', main: 'Home', breadcrumb: 'Gofiliate', mainUrl: '/dashboard' },
     children: [
-      { path: 'navigation', canActivate: [AuthGuard], component: NavigationComponent },
-      { path: 'navigation/roles', canActivate: [AuthGuard], component: RolesComponent },
-      { path: 'navigation/roles/:id', canActivate: [AuthGuard], component: RoleEditComponent },
-      { path: 'navigation/sections', canActivate: [AuthGuard], component: SectionsComponent },
-      { path: 'navigation/endpoints', canActivate: [AuthGuard], component: EndpointsComponent },
-      { path: 'navigation/api', canActivate: [AuthGuard], component: ApiComponent },
-      { path: 'users', canActivate: [AuthGuard], component: UsersComponent },
-      { path: 'users/pool-access/:user_id', canActivate: [AuthGuard], component: PoolAccessComponent },
-      { path: 'users/:user_id', canActivate: [AuthGuard], component: UserEditComponent },
-      { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
-      { path: 'emails', canActivate: [AuthGuard], component: EmailsComponent },
-      { path: 'emails/:email_id', canActivate: [AuthGuard], component: EmailEditComponent }
+      { path: 'navigation', canActivate: [AuthGuard], component: NavigationComponent, data: { title: 'Navigation Management', breadcrumb: 'Navigation' } },
+      { path: 'navigation/roles', canActivate: [AuthGuard], component: RolesComponent, data: { title: 'Roles', breadcrumb: 'Roles', breadcrumbUrl: '/gofiliate/navigation' } },
+      { path: 'navigation/roles/:id', canActivate: [AuthGuard], component: RoleEditComponent, data: { title: 'Edit Role', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/navigation/roles' } },
+      { path: 'navigation/sections', canActivate: [AuthGuard], component: SectionsComponent, data: { title: 'Sections', breadcrumb: 'Sections', breadcrumbUrl: '/gofiliate/navigation' } },
+      { path: 'navigation/endpoints', canActivate: [AuthGuard], component: EndpointsComponent, data: { title: 'Endpoints', breadcrumb: 'Endpoints', breadcrumbUrl: '/gofiliate/navigation' } },
+      { path: 'navigation/api', canActivate: [AuthGuard], component: ApiComponent, data: { title: 'API', breadcrumb: 'API', breadcrumbUrl: '/gofiliate/navigation' } },
+      { path: 'users', canActivate: [AuthGuard], component: UsersComponent, data: { title: 'Users', breadcrumb: 'Users' } },
+      { path: 'users/pool-access/:user_id', canActivate: [AuthGuard], component: PoolAccessComponent, data: { title: 'Pool Access', breadcrumb: 'Pool Access', breadcrumbUrl: '/gofiliate/users' } },
+      { path: 'users/:user_id', canActivate: [AuthGuard], component: UserEditComponent, data: { title: 'Edit User', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/users' } },
+      { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent, data: { title: 'Settings', breadcrumb: 'Settings' } },
+      { path: 'emails', canActivate: [AuthGuard], component: EmailsComponent, data: { title: 'Emails', breadcrumb: 'Emails' } },
+      { path: 'emails/:email_id', canActivate: [AuthGuard], component: EmailEditComponent, data: { title: 'Edit Email', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/emails' } }
     ]
   },
   {
     path: 'account',
     component: LoggedInComponent,
+    data: { title: 'Account', main: 'Home', breadcrumb: 'Account', mainUrl: '/dashboard' },
     children: [
-      { path: 'security', canActivate: [AuthGuard], component: SecuritySettingsComponent }
+      { path: 'security', canActivate: [AuthGuard], component: SecuritySettingsComponent, data: { title: 'Security Settings', breadcrumb: 'Security' } }
     ]
   },
   {

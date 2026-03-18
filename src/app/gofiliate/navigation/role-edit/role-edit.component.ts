@@ -10,6 +10,7 @@ interface Role {
   role_id: number;
   role_name: string;
   role_description: string;
+  is_guest: number;
   protected: number;
   status: number;
 }
@@ -65,6 +66,7 @@ export class RoleEditComponent implements OnInit {
     role_id: 0,
     role_name: '',
     role_description: '',
+    is_guest: 0,
     protected: 0,
     status: 1
   };
@@ -80,6 +82,10 @@ export class RoleEditComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
+  get isCreating(): boolean {
+    return this.roleId === null;
+  }
+
   ngOnInit(): void {
     console.log('RoleEditComponent ngOnInit');
     
@@ -90,9 +96,16 @@ export class RoleEditComponent implements OnInit {
     this.route.params.subscribe(params => {
       console.log('Route params:', params);
       if (params['id']) {
-        this.roleId = parseInt(params['id']);
-        console.log('Setting roleId to:', this.roleId);
-        this.loadRoleData();
+        const idParam = params['id'];
+        if (idParam === 'new') {
+          console.log('Creating new role');
+          this.roleId = null;
+          this.loadNavigationData();
+        } else {
+          this.roleId = parseInt(idParam);
+          console.log('Setting roleId to:', this.roleId);
+          this.loadRoleData();
+        }
       } else {
         console.log('No ID in params, redirecting');
         this.router.navigate(['/gofiliate/navigation/roles']);
@@ -127,6 +140,7 @@ export class RoleEditComponent implements OnInit {
             role_id: this.role!.role_id,
             role_name: this.role!.role_name,
             role_description: this.role!.role_description,
+            is_guest: this.role!.is_guest,
             protected: this.role!.protected,
             status: this.role!.status
           };
@@ -145,6 +159,48 @@ export class RoleEditComponent implements OnInit {
     });
   }
 
+  loadNavigationData(): void {
+    console.log('loadNavigationData called for new role');
+    const url = `/gofiliate/navigation-structure`;
+    console.log('Making API call to:', url);
+    
+    this.loading = true;
+    this.apiService.get(url, false).subscribe({
+      next: (response) => {
+        console.log('Navigation structure response:', response);
+        if (response.result) {
+          this.sections = response.sections || [];
+          this.endpoints = response.endpoints || [];
+          this.availableActions = response.available_actions || [];
+          this.enabledActions = [];
+
+          console.log('Sections:', this.sections);
+          console.log('Endpoints:', this.endpoints);
+
+          // Initialize empty form for new role
+          this.roleForm = {
+            role_id: 0,
+            role_name: '',
+            role_description: '',
+            is_guest: 0,
+            protected: 0,
+            status: 1
+          };
+
+          // Initialize permissions (all unchecked)
+          this.permissions = {};
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load navigation structure:', err);
+        this.toastr.error('Failed to load navigation structure');
+        this.loading = false;
+        this.router.navigate(['/gofiliate/navigation/roles']);
+      }
+    });
+  }
+
   initializePermissions(): void {
     this.permissions = {};
     
@@ -156,7 +212,9 @@ export class RoleEditComponent implements OnInit {
   }
 
   getPermissionKey(endpointId: number, sectionId: number, actionId: number): string {
-    return `r${this.roleId}_e${endpointId}_s${sectionId}_a${actionId}`;
+    // Use 0 for new roles
+    const roleIdKey = this.roleId || 0;
+    return `r${roleIdKey}_e${endpointId}_s${sectionId}_a${actionId}`;
   }
 
   getEndpointsForSection(sectionId: number): NavigationEndpoint[] {
@@ -168,8 +226,6 @@ export class RoleEditComponent implements OnInit {
   }
 
   saveRole(): void {
-    if (!this.roleId) return;
-
     if (!this.roleForm.role_name.trim()) {
       this.toastr.error('Role name is required');
       return;
@@ -188,9 +244,9 @@ export class RoleEditComponent implements OnInit {
         // Parse key format: r{roleId}_e{endpointId}_s{sectionId}_a{actionId}
         const match = key.match(/r(\d+)_e(\d+)_s(\d+)_a(\d+)/);
         if (match) {
-          const [, roleId, endpointId, sectionId, actionId] = match;
+          const [, , endpointId, sectionId, actionId] = match;
           enabledActions.push({
-            role_id: parseInt(roleId),
+            role_id: this.roleId || 0,
             endpoint_id: parseInt(endpointId),
             section_id: parseInt(sectionId),
             action_id: parseInt(actionId)
@@ -205,10 +261,16 @@ export class RoleEditComponent implements OnInit {
     };
 
     this.loading = true;
-    this.apiService.post(`/gofiliate/roles/permissions/${this.roleId}`, saveData, false).subscribe({
+    
+    // Use different endpoints for create vs update
+    const apiCall = this.roleId 
+      ? this.apiService.post(`/gofiliate/roles/permissions/${this.roleId}`, saveData, false)
+      : this.apiService.post('/gofiliate/roles', { role: this.roleForm, enabled_actions: enabledActions }, false);
+
+    apiCall.subscribe({
       next: (response) => {
         if (response.result) {
-          this.toastr.success('Role updated successfully');
+          this.toastr.success(this.roleId ? 'Role updated successfully' : 'Role created successfully');
           this.router.navigate(['/gofiliate/navigation/roles']);
         }
         this.loading = false;

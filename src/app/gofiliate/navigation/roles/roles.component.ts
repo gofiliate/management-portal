@@ -8,6 +8,7 @@ interface Role {
   role_id: number;
   role_name: string;
   role_description: string;
+  is_guest: number;
   protected: number;
   status: number;
 }
@@ -52,6 +53,10 @@ export class RolesComponent implements OnInit {
 
   editRole(role: Role): void {
     this.router.navigate(['/gofiliate/navigation/roles', role.role_id]);
+  }
+
+  createNewRole(): void {
+    this.router.navigate(['/gofiliate/navigation/roles', 'new']);
   }
 
   deleteRole(role: Role): void {

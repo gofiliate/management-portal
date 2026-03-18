@@ -2,13 +2,13 @@
   <div class="row">
     <div class="col-12">
       <div class="page-title">
-        <h3>Client Details</h3>
+        <h3>{{ isCreating ? 'Create New Client' : 'Client Details' }}</h3>
       </div>
     </div>
   </div>
   
-  <!-- Tabs -->
-  <div class="row mb-4">
+  <!-- Tabs (only show when editing existing client) -->
+  <div class="row mb-4" *ngIf="!isCreating">
     <div class="col-12">
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -20,6 +20,17 @@
           >
             <i class="fa fa-building me-2"></i>
             Company Info
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link" 
+            [class.active]="activeTab === 'billing'"
+            (click)="setActiveTab('billing')"
+            type="button"
+          >
+            <i class="fa fa-file-invoice-dollar me-2"></i>
+            Billing Info
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -49,10 +60,10 @@
               class="btn btn-primary"
               *ngIf="actionGuard.canEdit()"
               (click)="saveCompanyInfo()"
-              [disabled]="savingCompanyInfo"
+              [disabled]="savingCompanyInfo || !companyForm.valid"
             >
               <i class="fa fa-save me-2"></i>
-              {{ savingCompanyInfo ? 'Saving...' : 'Save Changes' }}
+              {{ savingCompanyInfo ? (isCreating ? 'Creating...' : 'Saving...') : (isCreating ? 'Create Client' : 'Save Changes') }}
             </button>
           </div>
           <div class="card-body">
@@ -177,6 +188,277 @@
                       maxlength="500"
                     >
                     <small class="text-muted">URL to the company logo image</small>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Billing Info Tab -->
+      <div *ngIf="activeTab === 'billing'" class="tab-content-wrapper">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Billing Information</h5>
+            <button 
+              class="btn btn-primary"
+              *ngIf="actionGuard.canEdit()"
+              (click)="saveBillingInfo()"
+              [disabled]="savingBillingInfo"
+            >
+              <i class="fa fa-save me-2"></i>
+              {{ savingBillingInfo ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+          <div class="card-body">
+            <form #billingForm="ngForm">
+              <!-- Billing Identity -->
+              <h6 class="mb-3 text-muted">Billing Identity</h6>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="billingCompanyName" class="form-label">Legal Company Name <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingCompanyName"
+                      [(ngModel)]="billingInfo.billing_company_name"
+                      name="billingCompanyName"
+                      required
+                      maxlength="255"
+                    >
+                    <small class="text-muted">Legal name for invoicing purposes</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="taxId" class="form-label">Tax ID / VAT Number</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="taxId"
+                      [(ngModel)]="billingInfo.tax_id"
+                      name="taxId"
+                      maxlength="100"
+                      placeholder="e.g., VAT123456789"
+                    >
+                    <small class="text-muted">VAT/Tax ID/EIN number</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Billing Address -->
+              <h6 class="mb-3 mt-4 text-muted">Billing Address</h6>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label for="billingAddress1" class="form-label">Address Line 1 <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingAddress1"
+                      [(ngModel)]="billingInfo.billing_address_line1"
+                      name="billingAddress1"
+                      required
+                      maxlength="255"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label for="billingAddress2" class="form-label">Address Line 2</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingAddress2"
+                      [(ngModel)]="billingInfo.billing_address_line2"
+                      name="billingAddress2"
+                      maxlength="255"
+                      placeholder="Suite, Apt, Floor (optional)"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingCity" class="form-label">City <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingCity"
+                      [(ngModel)]="billingInfo.billing_city"
+                      name="billingCity"
+                      required
+                      maxlength="100"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingState" class="form-label">State/Province</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingState"
+                      [(ngModel)]="billingInfo.billing_state_province"
+                      name="billingState"
+                      maxlength="100"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingPostalCode" class="form-label">Postal Code <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingPostalCode"
+                      [(ngModel)]="billingInfo.billing_postal_code"
+                      name="billingPostalCode"
+                      required
+                      maxlength="20"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label for="billingCountry" class="form-label">Country <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingCountry"
+                      [(ngModel)]="billingInfo.billing_country"
+                      name="billingCountry"
+                      required
+                      maxlength="100"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Billing Contact -->
+              <h6 class="mb-3 mt-4 text-muted">Billing Contact</h6>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingContactName" class="form-label">Contact Name</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="billingContactName"
+                      [(ngModel)]="billingInfo.billing_contact_name"
+                      name="billingContactName"
+                      maxlength="255"
+                      placeholder="Primary billing contact"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingEmail" class="form-label">Billing Email <span class="text-danger">*</span></label>
+                    <input 
+                      type="email" 
+                      class="form-control" 
+                      id="billingEmail"
+                      [(ngModel)]="billingInfo.billing_email"
+                      name="billingEmail"
+                      required
+                      maxlength="255"
+                      placeholder="invoices@company.com"
+                    >
+                    <small class="text-muted">Email for invoice delivery</small>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="billingPhone" class="form-label">Billing Phone</label>
+                    <input 
+                      type="tel" 
+                      class="form-control" 
+                      id="billingPhone"
+                      [(ngModel)]="billingInfo.billing_phone"
+                      name="billingPhone"
+                      maxlength="50"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Terms -->
+              <h6 class="mb-3 mt-4 text-muted">Payment Terms</h6>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="paymentTerms" class="form-label">Payment Terms <span class="text-danger">*</span></label>
+                    <select 
+                      class="form-select" 
+                      id="paymentTerms"
+                      [(ngModel)]="billingInfo.payment_terms"
+                      name="paymentTerms"
+                      required
+                    >
+                      <option *ngFor="let term of paymentTermsOptions" [value]="term.value">
+                        {{ term.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label for="currency" class="form-label">Currency <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="currency"
+                      [(ngModel)]="billingInfo.currency"
+                      name="currency"
+                      required
+                      maxlength="3"
+                      placeholder="USD"
+                      pattern="[A-Z]{3}"
+                    >
+                    <small class="text-muted">ISO 4217 code (e.g., USD, EUR, GBP)</small>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label d-block">Purchase Order</label>
+                    <div class="form-check">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="poRequired"
+                        [(ngModel)]="billingInfo.purchase_order_required"
+                        name="poRequired"
+                      >
+                      <label class="form-check-label" for="poRequired">
+                        PO Required for Invoicing
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Notes -->
+              <h6 class="mb-3 mt-4 text-muted">Additional Information</h6>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label for="billingNotes" class="form-label">Billing Notes</label>
+                    <textarea 
+                      class="form-control" 
+                      id="billingNotes"
+                      [(ngModel)]="billingInfo.notes"
+                      name="billingNotes"
+                      rows="3"
+                      placeholder="Any additional billing instructions or notes..."
+                    ></textarea>
                   </div>
                 </div>
               </div>

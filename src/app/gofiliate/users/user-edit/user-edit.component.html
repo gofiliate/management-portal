@@ -95,7 +95,17 @@
                   </div>
                 </div>
 
-                <div class="mb-3" *ngIf="isGod">
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="is_guest" formControlName="is_guest">
+                    <label class="form-check-label" for="is_guest">
+                      Guest User
+                    </label>
+                  </div>
+                  <small class="form-text text-muted">Guest users have limited access</small>
+                </div>
+
+                <div class="mb-3" *ngIf="currentUserIsGod">
                   <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="is_god" formControlName="is_god">
                     <label class="form-check-label" for="is_god">

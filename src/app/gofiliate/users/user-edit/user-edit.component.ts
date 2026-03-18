@@ -63,6 +63,7 @@ export class UserEditComponent implements OnInit {
       has_managers: [false],
       can_login: [true],
       is_internal: [false],
+      is_guest: [false],
       is_god: [false],
       status: [true]
     });
@@ -85,6 +86,7 @@ export class UserEditComponent implements OnInit {
               has_managers: !!user.has_managers,
               can_login: user.can_login !== 0,
               is_internal: !!user.is_internal,
+              is_guest: !!user.is_guest,
               is_god: !!user.is_god,
               status: user.status === 1
             });
@@ -129,6 +131,7 @@ export class UserEditComponent implements OnInit {
         has_managers: formValue.has_managers ? 1 : 0,
         can_login: formValue.can_login ? 1 : 0,
         is_internal: formValue.is_internal ? 1 : 0,
+        is_guest: formValue.is_guest ? 1 : 0,
         is_god: this.currentUserIsGod ? (formValue.is_god ? 1 : 0) : 0, // Only send is_god if current user is god
         status: formValue.status ? 1 : 0
       };
