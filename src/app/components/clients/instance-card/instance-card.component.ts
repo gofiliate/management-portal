@@ -15,6 +15,7 @@ export interface Instance {
   ip_address?: string;
   heartbeat_port?: number;
   is_live?: number;
+  is_public?: number;
 }
 
 @Component({

@@ -20,6 +20,7 @@ export interface InstanceDetails {
   updated: string;
   status: number;
   client_logo?: string;
+  is_public: number;
 }
 
 @Component({

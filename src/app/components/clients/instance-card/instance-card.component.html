@@ -1,5 +1,12 @@
 <div class="card instance-card">
   <div class="card-body">
+    <!-- Public Badge -->
+    <div class="badge-container" *ngIf="instance.is_public === 1">
+      <span class="badge bg-success">
+        <i class="fa fa-globe me-1"></i>Public
+      </span>
+    </div>
+    
     <!-- Instance Logo & Name -->
     <div class="instance-header mb-3">
       <div class="d-flex align-items-center mb-3">

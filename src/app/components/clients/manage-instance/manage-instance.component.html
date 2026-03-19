@@ -67,6 +67,24 @@
                 </label>
               </div>
 
+              <!-- Public Switch (GOD only) -->
+              <div class="vr" *ngIf="isGod"></div>
+
+              <div class="form-check form-switch mb-0" *ngIf="isGod">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="publicSwitch"
+                  [(ngModel)]="publicActive"
+                  (change)="onPublicChange()"
+                  name="publicSwitch"
+                >
+                <label class="form-check-label" for="publicSwitch">
+                  {{ publicActive ? 'Public' : 'Private' }}
+                </label>
+              </div>
+
               <div class="vr"></div>
 
               <!-- Quick Action Buttons -->

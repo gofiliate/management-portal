@@ -1,0 +1,30 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title">
+        <h3>Dashboards & Widgets</h3>
+        <p class="text-muted">Manage dashboard templates and widget configurations</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <div class="card quick-link-card" (click)="navigateToTemplates()">
+        <div class="card-body text-center">
+          <i class="fa fa-clone fa-2x mb-2 text-primary"></i>
+          <h5 class="mb-0">Dashboard Templates</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card quick-link-card" (click)="navigateToWidgets()">
+        <div class="card-body text-center">
+          <i class="fa fa-th fa-2x mb-2 text-success"></i>
+          <h5 class="mb-0">Widgets</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

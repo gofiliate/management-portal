@@ -1,0 +1,44 @@
+// Dashboards & Widgets component styles
+
+.page-title {
+  padding: 20px 0;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 30px;
+
+  h3 {
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+}
+
+.quick-link-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  margin-bottom: 20px;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--theme-default);
+  }
+
+  .card-body {
+    padding: 40px 25px;
+  }
+
+  i {
+    display: block;
+  }
+
+  h5 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+}

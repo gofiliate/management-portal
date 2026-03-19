@@ -184,6 +184,23 @@ export interface AcceptInvitationRequest {
   password: string;
 }
 
+export interface Dashboard {
+  dashboard_id: number;
+  dashboard_type: 'management-portal' | 'admin-portal' | 'affiliate-portal';
+  description: string;
+  created_at: string;
+  updated_at: string;
+  status: number;
+}
+
+export interface SaveDashboardRequest {
+  dashboard_id?: number;
+  dashboard_type: 'management-portal' | 'admin-portal' | 'affiliate-portal';
+  description: string;
+  status?: number;
+  deactivate?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -302,5 +319,23 @@ export class GofiliateService {
 
   acceptInvitation(data: AcceptInvitationRequest): Observable<any> {
     return this.apiService.postNoAuth('gofiliate/invitations/accept', data);
+  }
+
+  // Dashboards API
+  getDashboards(dashboardType?: string): Observable<{ result: boolean; dashboards: Dashboard[]; count: number }> {
+    const url = dashboardType ? `gofiliate/dashboards?dashboard_type=${dashboardType}` : 'gofiliate/dashboards';
+    return this.apiService.get(url, false);
+  }
+
+  saveDashboard(data: SaveDashboardRequest): Observable<any> {
+    return this.apiService.post('gofiliate/dashboards', data, false);
+  }
+
+  updateDashboard(dashboardId: number, data: SaveDashboardRequest): Observable<any> {
+    return this.apiService.put(`gofiliate/dashboards/${dashboardId}`, data, false);
+  }
+
+  deactivateDashboard(dashboardId: number): Observable<any> {
+    return this.apiService.post('gofiliate/dashboards', { dashboard_id: dashboardId, deactivate: true }, false);
   }
 }

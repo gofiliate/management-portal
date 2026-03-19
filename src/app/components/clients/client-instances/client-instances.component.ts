@@ -20,6 +20,7 @@ interface InstanceData {
   is_single_brand?: number;
   is_live?: number;
   status: number;
+  is_public?: number;
 }
 
 @Component({
@@ -43,11 +44,14 @@ export class ClientInstancesComponent implements OnInit {
     ip_address: '',
     api_endpoint: '',
     ad_endpoint: '',
+    aff_endpoint: '',
+    admin_endpoint: '',
     api_key: '',
     jwt_key: '',
     heartbeat_port: undefined as number | undefined,
     is_single_brand: 1,
-    is_live: 0
+    is_live: 0,
+    is_public: 0
   };
 
   constructor(
@@ -83,18 +87,22 @@ export class ClientInstancesComponent implements OnInit {
       ip_address: '',
       api_endpoint: '',
       ad_endpoint: '',
+      aff_endpoint: '',
+      admin_endpoint: '',
       api_key: '',
       jwt_key: '',
       heartbeat_port: undefined,
       is_single_brand: 1,
-      is_live: 0
+      is_live: 0,
+      is_public: 0
     };
   }
 
   submitInstance(): void {
     // Validate required fields
     if (!this.newInstance.instance_name || !this.newInstance.hostname || 
-        !this.newInstance.ip_address || !this.newInstance.api_endpoint) {
+        !this.newInstance.ip_address || !this.newInstance.api_endpoint ||
+        !this.newInstance.aff_endpoint || !this.newInstance.admin_endpoint) {
       this.toast.error('Please fill in all required fields', 'Validation Error');
       return;
     }
@@ -114,9 +122,12 @@ export class ClientInstancesComponent implements OnInit {
       ip_address: this.newInstance.ip_address,
       api_endpoint: this.newInstance.api_endpoint,
       ad_endpoint: this.newInstance.ad_endpoint,
+      aff_endpoint: this.newInstance.aff_endpoint,
+      admin_endpoint: this.newInstance.admin_endpoint,
       heartbeat_port: this.newInstance.heartbeat_port,
       is_single_brand: this.newInstance.is_single_brand,
-      is_live: this.newInstance.is_live
+      is_live: this.newInstance.is_live,
+      is_public: this.isGod ? this.newInstance.is_public : 0
     };
 
     // Only GODs can send api_key and jwt_key, non-GODs send KEY_NEEDED
@@ -192,7 +203,8 @@ export class ClientInstancesComponent implements OnInit {
       ad_endpoint: instanceData.ad_endpoint,
       ip_address: instanceData.ip_address,
       heartbeat_port: instanceData.heartbeat_port,
-      is_live: instanceData.is_live
+      is_live: instanceData.is_live,
+      is_public: instanceData.is_public
     }));
   }
 }

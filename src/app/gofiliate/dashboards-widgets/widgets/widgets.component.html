@@ -1,0 +1,107 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title">
+        <h3>Dashboard Widgets</h3>
+        <p class="text-muted">Manage dashboard widgets for each platform</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widgets Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Widgets by Platform</h4>
+        </div>
+        <div class="card-body">
+          <!-- Tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'management-portal'" 
+                (click)="setActiveTab('management-portal')"
+                type="button">
+                <i class="fa fa-cogs me-2"></i>Management Portal
+              </button>
+            </li>
+            <li class="nav-item">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'admin-portal'" 
+                (click)="setActiveTab('admin-portal')"
+                type="button">
+                <i class="fa fa-user-shield me-2"></i>Admin Portal
+              </button>
+            </li>
+            <li class="nav-item">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'affiliate-portal'" 
+                (click)="setActiveTab('affiliate-portal')"
+                type="button">
+                <i class="fa fa-users me-2"></i>Affiliate Portal
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tab Content -->
+          <div class="tab-content mt-4">
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading && !showForm">
+              <!-- Widgets Grid -->
+              <div class="widgets-grid">
+                <!-- Add Widget Button -->
+                <div class="widget-item add-item" (click)="openCreateForm()">
+                  <i class="fa fa-plus"></i>
+                  <span>Add Widget</span>
+                </div>
+
+                <!-- Widget Items -->
+                <div class="widget-item" *ngFor="let widget of filteredWidgets">
+                  <div class="widget-content">
+                    <i class="fa fa-th"></i>
+                    <span class="widget-title">{{ widget.name || widget.description }}</span>
+                  </div>
+                  <div class="widget-actions">
+                    <button class="btn btn-sm btn-primary" (click)="openEditForm(widget)" title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteWidget(widget)" title="Delete">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div *ngIf="filteredWidgets.length === 0" class="text-center py-5">
+                <i class="fa fa-th fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No widgets found for this platform.</p>
+                <button class="btn btn-primary" (click)="openCreateForm()">
+                  <i class="fa fa-plus me-2"></i>Create Widget
+                </button>
+              </div>
+            </div>
+
+            <!-- Create/Edit Form -->
+            <div *ngIf="showForm" class="widget-form">
+              <h5>{{ editMode ? 'Edit' : 'Create' }} Widget</h5>
+              <p class="text-muted">Form coming soon...</p>
+              <button class="btn btn-secondary" (click)="cancelForm()">
+                <i class="fa fa-times me-2"></i>Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

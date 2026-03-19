@@ -25,6 +25,9 @@ import { RoleEditComponent } from './gofiliate/navigation/role-edit/role-edit.co
 import { SectionsComponent } from './gofiliate/navigation/sections/sections.component';
 import { EndpointsComponent } from './gofiliate/navigation/endpoints/endpoints.component';
 import { ApiComponent } from './gofiliate/navigation/api/api.component';
+import { DashboardsWidgetsComponent } from './gofiliate/dashboards-widgets/dashboards-widgets.component';
+import { TemplatesComponent } from './gofiliate/dashboards-widgets/templates/templates.component';
+import { WidgetsComponent } from './gofiliate/dashboards-widgets/widgets/widgets.component';
 import { UsersComponent } from './gofiliate/users/users.component';
 import { UserEditComponent } from './gofiliate/users/user-edit/user-edit.component';
 import { PoolAccessComponent } from './gofiliate/users/pool-access/pool-access.component';
@@ -73,6 +76,9 @@ export const routes: Routes = [
       { path: 'navigation/sections', canActivate: [AuthGuard], component: SectionsComponent, data: { title: 'Sections', breadcrumb: 'Sections', breadcrumbUrl: '/gofiliate/navigation' } },
       { path: 'navigation/endpoints', canActivate: [AuthGuard], component: EndpointsComponent, data: { title: 'Endpoints', breadcrumb: 'Endpoints', breadcrumbUrl: '/gofiliate/navigation' } },
       { path: 'navigation/api', canActivate: [AuthGuard], component: ApiComponent, data: { title: 'API', breadcrumb: 'API', breadcrumbUrl: '/gofiliate/navigation' } },
+      { path: 'dashboards-widgets', canActivate: [AuthGuard], component: DashboardsWidgetsComponent, data: { title: 'Dashboards & Widgets', breadcrumb: 'Dashboards & Widgets' } },
+      { path: 'dashboards-widgets/templates', canActivate: [AuthGuard], component: TemplatesComponent, data: { title: 'Dashboard Templates', breadcrumb: 'Templates', breadcrumbUrl: '/gofiliate/dashboards-widgets' } },
+      { path: 'dashboards-widgets/widgets', canActivate: [AuthGuard], component: WidgetsComponent, data: { title: 'Dashboard Widgets', breadcrumb: 'Widgets', breadcrumbUrl: '/gofiliate/dashboards-widgets' } },
       { path: 'users', canActivate: [AuthGuard], component: UsersComponent, data: { title: 'Users', breadcrumb: 'Users' } },
       { path: 'users/pool-access/:user_id', canActivate: [AuthGuard], component: PoolAccessComponent, data: { title: 'Pool Access', breadcrumb: 'Pool Access', breadcrumbUrl: '/gofiliate/users' } },
       { path: 'users/:user_id', canActivate: [AuthGuard], component: UserEditComponent, data: { title: 'Edit User', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/users' } },

@@ -39,6 +39,7 @@ interface InstanceDetails {
   updated: string;
   status: number;
   client_logo?: string;
+  is_public: number;
 }
 
 interface StoredToken {
@@ -109,6 +110,7 @@ export class ManageInstanceComponent implements OnInit {
   public lastAffiliatesSyncWasForced = false;
   public lastBrandsSyncWasForced = false;
   public lastLandingPagesSyncWasForced = false;
+  public publicActive = false;
   public currentSection: 'instance-details' | 'users' | 'affiliates' | 'brands' | 'landing-pages' | null = null;
   public canLogin = false;
   public checkingCanLogin = false;
@@ -132,7 +134,8 @@ export class ManageInstanceComponent implements OnInit {
     is_live: 0,
     created: '',
     updated: '',
-    status: 1
+    status: 1,
+    is_public: 0
   };
 
   constructor(
@@ -169,6 +172,7 @@ export class ManageInstanceComponent implements OnInit {
         this.statusActive = data.status === 1;
         this.singleBrandActive = data.is_single_brand === 1;
         this.liveActive = data.is_live === 1;
+        this.publicActive = data.is_public === 1;
         
         // If keys are empty and user is a god, enable edit mode for easier setup
         if (this.isGod) {
@@ -202,6 +206,10 @@ export class ManageInstanceComponent implements OnInit {
     this.instance.is_live = this.liveActive ? 1 : 0;
   }
 
+  onPublicChange(): void {
+    this.instance.is_public = this.publicActive ? 1 : 0;
+  }
+
   onSave(): void {
     // Validate required fields
     if (!this.instance.instance_name || !this.instance.hostname || 
@@ -230,7 +238,8 @@ export class ManageInstanceComponent implements OnInit {
       admin_endpoint: this.instance.admin_endpoint,
       heartbeat_port: this.instance.heartbeat_port || null,
       is_single_brand: this.instance.is_single_brand,
-      is_live: this.instance.is_live
+      is_live: this.instance.is_live,
+      is_public: this.isGod ? this.instance.is_public : 0
     };
 
     // Only GODs can send api_key and jwt_key

@@ -11,6 +11,7 @@ interface Client {
   created: string;
   updated: string;
   status: number;
+  is_public: number;
 }
 
 @Component({

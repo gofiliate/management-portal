@@ -41,6 +41,13 @@
     <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let client of clients">
       <div class="card client-card" (click)="navigateToClient(client.client_id)">
         <div class="card-body text-center">
+          <!-- Public Badge -->
+          <div class="badge-container" *ngIf="client.is_public === 1">
+            <span class="badge bg-success">
+              <i class="fa fa-globe me-1"></i>Public
+            </span>
+          </div>
+          
           <div class="icon-wrapper mb-3" *ngIf="!client.logo_url">
             <i class="fa fa-building"></i>
           </div>
