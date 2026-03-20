@@ -507,9 +507,15 @@ export class ManageInstanceComponent implements OnInit {
       // GODs can impersonate - show manager selection modal
       this.showManagerSelectionModal = true;
     } else {
-      // Regular users proceed directly to TOTP challenge
+      // Regular users: check if public instance to skip TOTP
       this.loginUsername = session.username;
-      this.showTotpChallenge = true;
+      if (this.instance.is_public === 1) {
+        // Public instance - skip TOTP and go directly to login
+        this.handleTotpVerification('');
+      } else {
+        // Private instance - show TOTP challenge
+        this.showTotpChallenge = true;
+      }
     }
   }
 
@@ -532,19 +538,38 @@ export class ManageInstanceComponent implements OnInit {
 
     this.loginUsername = selectedManager.username;
     this.showManagerSelectionModal = false;
-    this.showTotpChallenge = true;
+    
+    // Check if public instance to skip TOTP
+    if (this.instance.is_public === 1) {
+      // Public instance - skip TOTP and go directly to login
+      this.handleTotpVerification('');
+    } else {
+      // Private instance - show TOTP challenge
+      this.showTotpChallenge = true;
+    }
   }
 
   public handleTotpVerification(code: string): void {
     console.log('TOTP verification for user:', this.loginUsername, 'Code:', code);
     this.toast.info('Creating login request...', 'Processing');
     
-    // TODO: Regular users need to use their configured account manager from permissions
-    // For now, only GOD users with selectedManagerUserId will work
-    const userId = this.selectedManagerUserId;
+    // Get user_id: for PUBLIC instances use admin_id 1, otherwise use selected manager or current user
+    let userId: number | null = null;
+    
+    if (this.instance.is_public === 1) {
+      // Public instances default to admin_id 1
+      userId = 1;
+      console.log('Public instance - using default admin_id: 1');
+    } else if (this.isGod && this.selectedManagerUserId) {
+      // GOD user selected a manager
+      userId = this.selectedManagerUserId;
+    } else {
+      // Regular user or GOD without selection - use their own ID
+      userId = this.auth.getUserId();
+    }
     
     if (!userId) {
-      this.toast.error('Manager user ID not available - configured manager feature required', 'Error');
+      this.toast.error('User ID not available', 'Error');
       return;
     }
 
@@ -571,7 +596,9 @@ export class ManageInstanceComponent implements OnInit {
           const validationToken = response.payload.validation_token;
           
           // Build admin portal access URL and open in new tab
-          const adminAccessUrl = `${this.instance.admin_endpoint}/2fa/${validationToken}`;
+          // Include API endpoint as query parameter so admin-angular knows where to validate
+          const encodedApi = encodeURIComponent(this.instance.api_endpoint);
+          const adminAccessUrl = `${this.instance.admin_endpoint}/2fa/${validationToken}?api=${encodedApi}`;
           
           console.log('Opening admin portal:', adminAccessUrl);
           window.open(adminAccessUrl, '_blank');

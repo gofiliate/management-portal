@@ -1,0 +1,44 @@
+.widget-card {
+  border: 1px solid #dee2e6;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+
+    .widget-title {
+      font-size: 1rem;
+    }
+  }
+
+  .card-body {
+    .instance-logo {
+      max-width: 120px;
+      max-height: 60px;
+      object-fit: contain;
+    }
+
+    .instance-details {
+      .instance-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #333;
+      }
+
+      .client-name {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+  }
+}

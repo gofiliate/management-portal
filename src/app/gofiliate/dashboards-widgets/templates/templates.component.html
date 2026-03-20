@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="page-title">
         <h3>Dashboard Templates</h3>
-        <p class="text-muted">Manage dashboard templates for each platform</p>
+        <p class="text-muted">Manage dashboard templates and their widget layouts</p>
       </div>
     </div>
   </div>
@@ -12,95 +12,426 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <h4>Templates by Platform</h4>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 *ngIf="viewMode === 'list'">Templates by Platform</h4>
+          <div *ngIf="viewMode === 'builder'" class="d-flex align-items-center w-100">
+            <button class="btn btn-secondary btn-sm me-3" (click)="backToList()">
+              <i class="fa fa-arrow-left me-2"></i>Back to List
+            </button>
+            <h4 class="mb-0">{{ selectedDashboard?.description }} - Layout Builder</h4>
+          </div>
         </div>
         <div class="card-body">
-          <!-- Tabs -->
-          <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-              <button 
-                class="nav-link" 
-                [class.active]="activeTab === 'management-portal'" 
-                (click)="setActiveTab('management-portal')"
-                type="button">
-                <i class="fa fa-cogs me-2"></i>Management Portal
-              </button>
-            </li>
-            <li class="nav-item">
-              <button 
-                class="nav-link" 
-                [class.active]="activeTab === 'admin-portal'" 
-                (click)="setActiveTab('admin-portal')"
-                type="button">
-                <i class="fa fa-user-shield me-2"></i>Admin Portal
-              </button>
-            </li>
-            <li class="nav-item">
-              <button 
-                class="nav-link" 
-                [class.active]="activeTab === 'affiliate-portal'" 
-                (click)="setActiveTab('affiliate-portal')"
-                type="button">
-                <i class="fa fa-users me-2"></i>Affiliate Portal
-              </button>
-            </li>
-          </ul>
-
-          <!-- Tab Content -->
-          <div class="tab-content mt-4">
-            <div *ngIf="loading" class="text-center py-5">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-
-            <div *ngIf="!loading && !showForm">
-              <!-- Templates Grid -->
-              <div class="templates-grid">
-                <!-- Add Template Button -->
-                <div class="template-item add-item" (click)="openCreateForm()">
-                  <i class="fa fa-plus"></i>
-                  <span>Add Template</span>
-                </div>
-
-                <!-- Template Items -->
-                <div class="template-item" *ngFor="let template of filteredTemplates">
-                  <div class="template-content">
-                    <i class="fa fa-clone"></i>
-                    <span class="template-title">{{ template.name || template.description }}</span>
-                  </div>
-                  <div class="template-actions">
-                    <button class="btn btn-sm btn-primary" (click)="openEditForm(template)" title="Edit">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteTemplate(template)" title="Delete">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Empty State -->
-              <div *ngIf="filteredTemplates.length === 0" class="text-center py-5">
-                <i class="fa fa-clone fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No templates found for this platform.</p>
-                <button class="btn btn-primary" (click)="openCreateForm()">
-                  <i class="fa fa-plus me-2"></i>Create Template
+          <!-- LIST VIEW -->
+          <div *ngIf="viewMode === 'list'">
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <button 
+                  class="nav-link" 
+                  [class.active]="activeTab === 'management-portal'" 
+                  (click)="setActiveTab('management-portal')"
+                  type="button">
+                  <i class="fa fa-cogs me-2"></i>Management Portal
                 </button>
+              </li>
+              <li class="nav-item">
+                <button 
+                  class="nav-link" 
+                  [class.active]="activeTab === 'admin-portal'" 
+                  (click)="setActiveTab('admin-portal')"
+                  type="button">
+                  <i class="fa fa-user-shield me-2"></i>Admin Portal
+                </button>
+              </li>
+              <li class="nav-item">
+                <button 
+                  class="nav-link" 
+                  [class.active]="activeTab === 'affiliate-portal'" 
+                  (click)="setActiveTab('affiliate-portal')"
+                  type="button">
+                  <i class="fa fa-users me-2"></i>Affiliate Portal
+                </button>
+              </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content mt-4">
+              <div *ngIf="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+
+              <div *ngIf="!loading && !showDashboardForm">
+                <!-- Dashboards Grid -->
+                <div class="templates-grid">
+                  <!-- Add Dashboard Button -->
+                  <div class="template-item add-item" (click)="openCreateForm()">
+                    <i class="fa fa-plus"></i>
+                    <span>Add Dashboard</span>
+                  </div>
+
+                  <!-- Dashboard Items -->
+                  <div class="template-item" *ngFor="let dashboard of filteredDashboards">
+                    <div class="template-content">
+                      <i class="fa fa-th-large"></i>
+                      <span class="template-title">{{ dashboard.description }}</span>
+                    </div>
+                    <div class="template-actions">
+                      <button class="btn btn-sm btn-success" (click)="openLayoutBuilder(dashboard)" title="Edit Layout">
+                        <i class="fa fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deleteDashboard(dashboard)" title="Delete">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="filteredDashboards.length === 0" class="text-center py-5">
+                  <i class="fa fa-th-large fa-3x text-muted mb-3"></i>
+                  <p class="text-muted">No dashboards found for this platform.</p>
+                  <button class="btn btn-primary" (click)="openCreateForm()">
+                    <i class="fa fa-plus me-2"></i>Create Dashboard
+                  </button>
+                </div>
+              </div>
+
+              <!-- Create Dashboard Form -->
+              <div *ngIf="showDashboardForm" class="dashboard-form">
+                <h5>{{ editMode ? 'Edit' : 'Create' }} Dashboard</h5>
+                
+                <form [formGroup]="dashboardForm" (ngSubmit)="saveDashboard()">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="description" class="form-label">Dashboard Name *</label>
+                      <input 
+                        type="text" 
+                        id="description" 
+                        class="form-control" 
+                        formControlName="description" 
+                        maxlength="255"
+                        placeholder="Executive Overview">
+                      <div *ngIf="dashboardForm.get('description')?.invalid && dashboardForm.get('description')?.touched" class="text-danger">
+                        <small *ngIf="dashboardForm.get('description')?.errors?.['required']">Dashboard name is required</small>
+                        <small *ngIf="dashboardForm.get('description')?.errors?.['maxlength']">Name must be 255 characters or less</small>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Platform</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        [value]="activeTab" 
+                        disabled>
+                      <small class="form-text text-muted">Determined by active tab</small>
+                    </div>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" [disabled]="loading || dashboardForm.invalid">
+                      <i class="fa fa-save me-2"></i>{{ loading ? 'Saving...' : (editMode ? 'Update' : 'Create') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="loading">
+                      <i class="fa fa-times me-2"></i>Cancel
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
+          </div>
 
-            <!-- Create/Edit Form -->
-            <div *ngIf="showForm" class="template-form">
-              <h5>{{ editMode ? 'Edit' : 'Create' }} Template</h5>
-              <p class="text-muted">Form coming soon...</p>
-              <button class="btn btn-secondary" (click)="cancelForm()">
-                <i class="fa fa-times me-2"></i>Cancel
-              </button>
+          <!-- GRID BUILDER VIEW -->
+          <div *ngIf="viewMode === 'builder'" class="grid-builder">
+            <div class="row">
+              <!-- Widget Library Sidebar -->
+              <div class="col-md-3">
+                <div class="widget-library">
+                  <h5><i class="fa fa-cube me-2"></i>Available Widgets</h5>
+                  <p class="text-muted small">Drag widgets to the grid</p>
+                  
+                  <div 
+                    cdkDropList
+                    id="widget-library"
+                    [cdkDropListData]="availableWidgets"
+                    [cdkDropListConnectedTo]="getRowIds()"
+                    [cdkDropListSortingDisabled]="true"
+                    class="widget-library-list">
+                    <div 
+                      class="widget-library-item" 
+                      *ngFor="let widget of availableWidgets"
+                      cdkDrag
+                      [cdkDragData]="widget">
+                      <i [class]="'fa ' + widget.icon"></i>
+                      <div class="widget-info">
+                        <strong>{{ widget.header }}</strong>
+                        <small class="text-muted d-block">{{ widget.slug }}</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="availableWidgets.length === 0" class="text-center text-muted py-4">
+                    <small>No widgets available</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grid Area -->
+              <div class="col-md-9">
+                <div class="dashboard-grid">
+                  <div class="grid-header mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5 class="mb-1">Dashboard Grid</h5>
+                        <small class="text-muted">Bootstrap 12-column layout</small>
+                      </div>
+                      <button class="btn btn-sm btn-outline-primary" (click)="addNewRow()">
+                        <i class="fa fa-plus me-2"></i>Add Row
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Loading State -->
+                  <div *ngIf="loading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading layout...</span>
+                    </div>
+                  </div>
+
+                  <!-- Grid Rows -->
+                  <div *ngIf="!loading" class="grid-container">
+                    <div 
+                      class="grid-row" 
+                      *ngFor="let row of gridRows; let rowIndex = index"
+                      cdkDropList
+                      cdkDropListOrientation="horizontal"
+                      [id]="'row-' + rowIndex"
+                      [cdkDropListData]="row"
+                      [cdkDropListConnectedTo]="getConnectedLists(rowIndex)"
+                      (cdkDropListDropped)="onWidgetDrop($event, rowIndex)">
+                      
+                      <div class="row-header">
+                        <span class="row-label">Row {{ rowIndex + 1 }}</span>
+                        <span class="row-width" [class.text-danger]="getRowTotalWidth(row) > 12">
+                          {{ getRowTotalWidth(row) }} / 12 columns
+                        </span>
+                      </div>
+
+                      <div class="row-content">
+                        <div 
+                          class="grid-widget" 
+                          *ngFor="let widget of row"
+                          [class.col-1]="widget.col_width === 1"
+                          [class.col-2]="widget.col_width === 2"
+                          [class.col-3]="widget.col_width === 3"
+                          [class.col-4]="widget.col_width === 4"
+                          [class.col-6]="widget.col_width === 6"
+                          [class.col-8]="widget.col_width === 8"
+                          [class.col-9]="widget.col_width === 9"
+                          [class.col-12]="widget.col_width === 12"
+                          cdkDrag
+                          cdkDragLockAxis="x"
+                          [cdkDragData]="widget">
+                          
+                          <!-- Custom placeholder -->
+                          <div class="drag-placeholder" *cdkDragPlaceholder>
+                            <div class="placeholder-content">
+                              <i class="fa fa-arrows-h"></i>
+                              <span>Drop here</span>
+                            </div>
+                          </div>
+                          
+                          <div class="widget-card">
+                            <div class="drag-indicator">
+                              <i class="fa fa-grip-vertical"></i>
+                            </div>
+                            
+                            <div class="widget-header">
+                              <i [class]="'fa ' + widget.icon"></i>
+                              <span class="widget-title">{{ getWidgetDisplayTitle(widget) }}</span>
+                            </div>
+                            <div class="widget-meta">
+                              <small>{{ widget.component_name }}</small>
+                              <small class="text-muted">col-{{ widget.col_width }}</small>
+                              <small *ngIf="getWidgetReferenceId(widget)" class="text-info">
+                                <i class="fa fa-link"></i> ID: {{ getWidgetReferenceId(widget) }}
+                              </small>
+                            </div>
+                            <div class="widget-actions">
+                              <button 
+                                class="btn btn-sm btn-primary me-1" 
+                                (click)="editWidgetConfig(widget)"
+                                title="Configure">
+                                <i class="fa fa-cog"></i>
+                              </button>
+                              <button 
+                                class="btn btn-sm btn-danger" 
+                                (click)="removeWidgetFromDashboard(widget)"
+                                title="Remove">
+                                <i class="fa fa-times"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Empty row placeholder -->
+                        <div *ngIf="row.length === 0" class="empty-row-placeholder">
+                          <i class="fa fa-plus-circle"></i>
+                          <span>Drop widgets here</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div *ngIf="gridRows.length === 0" class="text-center py-5">
+                      <i class="fa fa-th fa-3x text-muted mb-3"></i>
+                      <p class="text-muted">No widgets added yet. Drag widgets from the library to get started.</p>
+                      <button class="btn btn-primary" (click)="addNewRow()">
+                        <i class="fa fa-plus me-2"></i>Add First Row
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Dashboard Confirmation Modal -->
+<app-confirmation-modal
+  [show]="showDeleteDashboardModal"
+  [headerText]="'Delete Dashboard'"
+  [buttonText]="'Delete'"
+  [buttonIcon]="'fa fa-trash'"
+  (confirm)="confirmDeleteDashboard()"
+  (cancel)="cancelDeleteDashboard()"
+>
+  <p *ngIf="dashboardToDelete">
+    Are you sure you want to delete "<strong>{{ dashboardToDelete.description }}</strong>"?
+  </p>
+  <p class="mb-0">This action cannot be undone.</p>
+</app-confirmation-modal>
+
+<!-- Remove Widget Confirmation Modal -->
+<app-confirmation-modal
+  [show]="showRemoveWidgetModal"
+  [headerText]="'Remove Widget'"
+  [buttonText]="'Remove'"
+  [buttonIcon]="'fa fa-times'"
+  (confirm)="confirmRemoveWidget()"
+  (cancel)="cancelRemoveWidget()"
+>
+  <p *ngIf="widgetToRemove">
+    Remove "<strong>{{ widgetToRemove.header }}</strong>" from dashboard?
+  </p>
+  <p class="mb-0">You can add it back later from the widget library.</p>
+</app-confirmation-modal>
+
+<!-- Widget Configuration Modal -->
+<div class="modal-backdrop" *ngIf="showWidgetConfigModal" (click)="cancelWidgetConfiguration()"></div>
+<div class="modal-dialog-wrapper" *ngIf="showWidgetConfigModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-cog me-2"></i>
+          Configure Widget
+          <span *ngIf="widgetToConfig" class="text-muted small ms-2">({{ widgetToConfig.widget.slug }})</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="cancelWidgetConfiguration()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="widgetConfigForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="widgetTitle" class="form-label">Widget Title *</label>
+              <input 
+                type="text" 
+                id="widgetTitle" 
+                class="form-control" 
+                formControlName="title"
+                placeholder="Enter widget title">
+              <small class="form-text text-muted">Custom title for this widget instance</small>
+              <div *ngIf="widgetConfigForm.get('title')?.invalid && widgetConfigForm.get('title')?.touched" class="text-danger">
+                <small *ngIf="widgetConfigForm.get('title')?.errors?.['required']">Title is required</small>
+                <small *ngIf="widgetConfigForm.get('title')?.errors?.['maxlength']">Title must be 100 characters or less</small>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="colWidth" class="form-label">Column Width *</label>
+              <select 
+                id="colWidth" 
+                class="form-select" 
+                formControlName="col_width">
+                <option *ngFor="let width of colWidthOptions" [value]="width">
+                  col-{{ width }} ({{ width }}/12 columns)
+                </option>
+              </select>
+              <small class="form-text text-muted">Bootstrap column width (max 12)</small>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label for="referenceId" class="form-label">
+                {{ isLoginWidget() ? 'Select Instance *' : 'Instance / Reference ID' }}
+              </label>
+              
+              <!-- Dropdown for login widgets -->
+              <select 
+                *ngIf="isLoginWidget()"
+                id="referenceId" 
+                class="form-select" 
+                formControlName="reference_id"
+                [disabled]="loadingInstances">
+                <option [value]="null" disabled>{{ loadingInstances ? 'Loading instances...' : 'Select an instance' }}</option>
+                <option *ngFor="let instance of availableInstances" [value]="instance.instance_id">
+                  {{ instance.instance_name }}{{ instance.client_name ? ' (' + instance.client_name + ')' : '' }}
+                </option>
+              </select>
+              
+              <!-- Text input for other widget types -->
+              <input 
+                *ngIf="!isLoginWidget()"
+                type="number" 
+                id="referenceId" 
+                class="form-control" 
+                formControlName="reference_id"
+                placeholder="Enter event ID or other reference">
+              
+              <small class="form-text text-muted">
+                <span *ngIf="isLoginWidget()">Select the instance this widget should connect to</span>
+                <span *ngIf="!isLoginWidget()">
+                  For instance-login widgets: Instance ID to connect to<br>
+                  For metric widgets: Event ID or other reference
+                </span>
+              </small>
+            </div>
+          </div>
+
+          <div class="alert alert-info" *ngIf="widgetToConfig?.widget">
+            <strong><i class="fa fa-info-circle me-2"></i>Widget Type:</strong> {{ widgetToConfig!.widget.slug }}<br>
+            <strong>Component:</strong> {{ widgetToConfig!.widget.slug }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelWidgetConfiguration()" [disabled]="saving">
+          <i class="fa fa-times me-2"></i>Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="saveWidgetConfiguration()"
+          [disabled]="saving || widgetConfigForm.invalid">
+          <i class="fa fa-save me-2"></i>{{ saving ? 'Saving...' : (widgetToConfig?.existingWidget ? 'Update' : 'Add to Dashboard') }}
+        </button>
       </div>
     </div>
   </div>

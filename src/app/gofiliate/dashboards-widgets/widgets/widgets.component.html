@@ -67,8 +67,9 @@
                 <!-- Widget Items -->
                 <div class="widget-item" *ngFor="let widget of filteredWidgets">
                   <div class="widget-content">
-                    <i class="fa fa-th"></i>
-                    <span class="widget-title">{{ widget.name || widget.description }}</span>
+                    <i [class]="'fa ' + widget.icon"></i>
+                    <span class="widget-title">{{ widget.header }}</span>
+                    <small class="text-muted d-block">{{ getWidgetTypeName(widget.type_id) }}</small>
                   </div>
                   <div class="widget-actions">
                     <button class="btn btn-sm btn-primary" (click)="openEditForm(widget)" title="Edit">
@@ -94,10 +95,103 @@
             <!-- Create/Edit Form -->
             <div *ngIf="showForm" class="widget-form">
               <h5>{{ editMode ? 'Edit' : 'Create' }} Widget</h5>
-              <p class="text-muted">Form coming soon...</p>
-              <button class="btn btn-secondary" (click)="cancelForm()">
-                <i class="fa fa-times me-2"></i>Cancel
-              </button>
+              
+              <form [formGroup]="widgetForm" (ngSubmit)="saveWidget()">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="type_id" class="form-label">Widget Type *</label>
+                    <select id="type_id" class="form-select" formControlName="type_id">
+                      <option [value]="null">Select a widget type...</option>
+                      <option *ngFor="let type of widgetTypes" [value]="type.type_id">
+                        {{ type.slug }} - {{ type.description }}
+                      </option>
+                    </select>
+                    <div *ngIf="widgetForm.get('type_id')?.invalid && widgetForm.get('type_id')?.touched" class="text-danger">
+                      <small>Widget type is required</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="slug" class="form-label">Slug *</label>
+                    <input 
+                      type="text" 
+                      id="slug" 
+                      class="form-control" 
+                      formControlName="slug" 
+                      maxlength="32"
+                      placeholder="unique-widget-slug">
+                    <div *ngIf="widgetForm.get('slug')?.invalid && widgetForm.get('slug')?.touched" class="text-danger">
+                      <small *ngIf="widgetForm.get('slug')?.errors?.['required']">Slug is required</small>
+                      <small *ngIf="widgetForm.get('slug')?.errors?.['maxlength']">Slug must be 32 characters or less</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="header" class="form-label">Header *</label>
+                    <input 
+                      type="text" 
+                      id="header" 
+                      class="form-control" 
+                      formControlName="header" 
+                      maxlength="32"
+                      placeholder="Widget Title">
+                    <div *ngIf="widgetForm.get('header')?.invalid && widgetForm.get('header')?.touched" class="text-danger">
+                      <small *ngIf="widgetForm.get('header')?.errors?.['required']">Header is required</small>
+                      <small *ngIf="widgetForm.get('header')?.errors?.['maxlength']">Header must be 32 characters or less</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="footer" class="form-label">Footer</label>
+                    <input 
+                      type="text" 
+                      id="footer" 
+                      class="form-control" 
+                      formControlName="footer" 
+                      maxlength="32"
+                      placeholder="Optional footer text">
+                    <div *ngIf="widgetForm.get('footer')?.invalid && widgetForm.get('footer')?.touched" class="text-danger">
+                      <small *ngIf="widgetForm.get('footer')?.errors?.['maxlength']">Footer must be 32 characters or less</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="icon" class="form-label">Icon *</label>
+                    <input 
+                      type="text" 
+                      id="icon" 
+                      class="form-control" 
+                      formControlName="icon" 
+                      maxlength="32"
+                      placeholder="fa-chart-line">
+                    <small class="form-text text-muted">FontAwesome icon class (e.g., fa-chart-line)</small>
+                    <div *ngIf="widgetForm.get('icon')?.invalid && widgetForm.get('icon')?.touched" class="text-danger">
+                      <small *ngIf="widgetForm.get('icon')?.errors?.['required']">Icon is required</small>
+                      <small *ngIf="widgetForm.get('icon')?.errors?.['maxlength']">Icon must be 32 characters or less</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="reference_id" class="form-label">Reference ID</label>
+                    <input 
+                      type="number" 
+                      id="reference_id" 
+                      class="form-control" 
+                      formControlName="reference_id"
+                      placeholder="Instance ID or Event ID">
+                    <small class="form-text text-muted">Instance ID for login widgets, Event ID for metric widgets</small>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary" [disabled]="saving || widgetForm.invalid">
+                    <i class="fa fa-save me-2"></i>{{ saving ? 'Saving...' : (editMode ? 'Update' : 'Create') }}
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="saving">
+                    <i class="fa fa-times me-2"></i>Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -105,3 +199,18 @@
     </div>
   </div>
 </div>
+
+<!-- Delete Widget Confirmation Modal -->
+<app-confirmation-modal
+  [show]="showDeleteModal"
+  [headerText]="'Delete Widget'"
+  [buttonText]="'Delete'"
+  [buttonIcon]="'fa fa-trash'"
+  (confirm)="confirmDeleteWidget()"
+  (cancel)="cancelDeleteWidget()"
+>
+  <p *ngIf="widgetToDelete">
+    Are you sure you want to delete "<strong>{{ widgetToDelete.header }}</strong>"?
+  </p>
+  <p class="mb-0">This will remove the widget definition from the library. It will also be removed from any dashboards using it.</p>
+</app-confirmation-modal>

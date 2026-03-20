@@ -67,6 +67,17 @@
                 </div>
 
                 <div class="mb-3">
+                  <label for="dashboard_id" class="form-label">Default Dashboard</label>
+                  <select class="form-select" id="dashboard_id" formControlName="dashboard_id">
+                    <option [ngValue]="null">No default dashboard</option>
+                    <option *ngFor="let dashboard of dashboards" [ngValue]="dashboard.dashboard_id">
+                      {{ dashboard.description }}
+                    </option>
+                  </select>
+                  <small class="form-text text-muted">Dashboard shown on login (Location: Main)</small>
+                </div>
+
+                <div class="mb-3">
                   <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="has_managers" formControlName="has_managers">
                     <label class="form-check-label" for="has_managers">

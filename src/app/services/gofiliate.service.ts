@@ -201,6 +201,78 @@ export interface SaveDashboardRequest {
   deactivate?: boolean;
 }
 
+export interface WidgetType {
+  type_id: number;
+  slug: string;
+  component_name: string;
+  description: string;
+  status: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SaveWidgetTypeRequest {
+  type_id?: number;
+  slug: string;
+  component_name: string;
+  description: string;
+  status?: number;
+  deactivate?: boolean;
+}
+
+export interface Widget {
+  widget_id: number;
+  type_id: number;
+  slug: string;
+  header: string;
+  footer: string;
+  icon: string;
+  reference_id?: number | null;
+  status: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SaveWidgetRequest {
+  widget_id?: number;
+  type_id: number;
+  slug: string;
+  header: string;
+  footer: string;
+  icon: string;
+  reference_id?: number | null;
+  status?: number;
+  deactivate?: boolean;
+}
+
+export interface DashboardWidget {
+  dashboard_id: number;
+  row_id: number;
+  position_id: number;
+  widget_id: number;
+  col_width: number;
+  widget_config?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined widget data
+  type_id: number;
+  slug: string;
+  header: string;
+  footer: string;
+  icon: string;
+  reference_id?: number | null;
+  component_name: string;
+}
+
+export interface SaveDashboardWidgetRequest {
+  dashboard_id: number;
+  row_id: number;
+  position_id: number;
+  widget_id: number;
+  col_width: number;
+  widget_config?: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -265,6 +337,11 @@ export class GofiliateService {
     return this.apiService.get(`clients/instances/${clientId}`, false);
   }
 
+  // Get all instances (with future permission filtering)
+  listAllInstances(): Observable<any> {
+    return this.apiService.get('instances', false);
+  }
+
   getInstanceManagers(instanceId: number): Observable<any> {
     return this.apiService.get(`clients/instance/managers/${instanceId}`, false);
   }
@@ -285,6 +362,21 @@ export class GofiliateService {
 
   savePoolAccess(userId: number, data: { client_ids: number[]; instance_ids: number[]; manager_access: { instance_id: number; manager_id: number }[]; creator_id: number }): Observable<any> {
     return this.apiService.post(`gofiliate/users/${userId}/pool-access`, data, false);
+  }
+
+  // User Dashboard Assignment API
+  getUserDashboards(userId: number, locationId?: number): Observable<any> {
+    const params = locationId ? `?location_id=${locationId}` : '';
+    return this.apiService.get(`gofiliate/user-dashboards/${userId}${params}`, false);
+  }
+
+  saveUserDashboard(data: { user_id: number; dashboard_id: number; location_id: number; is_default: boolean }): Observable<any> {
+    return this.apiService.post('gofiliate/user-dashboards', data, false);
+  }
+
+  // Dashboard Layout API (for rendering widgets)
+  getDashboardLayout(dashboardId: number): Observable<any> {
+    return this.apiService.get(`gofiliate/dashboard-layout/${dashboardId}`, false);
   }
 
   // Email Templates API
@@ -337,5 +429,45 @@ export class GofiliateService {
 
   deactivateDashboard(dashboardId: number): Observable<any> {
     return this.apiService.post('gofiliate/dashboards', { dashboard_id: dashboardId, deactivate: true }, false);
+  }
+
+  // Widget Types API
+  getWidgetTypes(): Observable<{ result: string; widget_types: WidgetType[]; count: number }> {
+    return this.apiService.get('gofiliate/widget-types', false);
+  }
+
+  saveWidgetType(data: SaveWidgetTypeRequest): Observable<any> {
+    return this.apiService.post('gofiliate/widget-types', data, false);
+  }
+
+  deactivateWidgetType(typeId: number): Observable<any> {
+    return this.apiService.post('gofiliate/widget-types', { type_id: typeId, deactivate: true }, false);
+  }
+
+  // Widgets API
+  getWidgets(typeId?: number): Observable<{ result: string; widgets: Widget[]; count: number }> {
+    const url = typeId ? `gofiliate/widgets?type_id=${typeId}` : 'gofiliate/widgets';
+    return this.apiService.get(url, false);
+  }
+
+  saveWidget(data: SaveWidgetRequest): Observable<any> {
+    return this.apiService.post('gofiliate/widgets', data, false);
+  }
+
+  deactivateWidget(widgetId: number): Observable<any> {
+    return this.apiService.post('gofiliate/widgets', { widget_id: widgetId, deactivate: true }, false);
+  }
+
+  // Dashboard Widgets API
+  getDashboardWidgets(dashboardId: number): Observable<{ result: string; widgets: DashboardWidget[]; count: number }> {
+    return this.apiService.get(`gofiliate/dashboards/widgets/${dashboardId}`, false);
+  }
+
+  saveDashboardWidget(data: SaveDashboardWidgetRequest): Observable<any> {
+    return this.apiService.post('gofiliate/dashboards/widgets', data, false);
+  }
+
+  deleteDashboardWidget(dashboardId: number, rowId: number, positionId: number): Observable<any> {
+    return this.apiService.delete(`gofiliate/dashboards/widgets/${dashboardId}/${rowId}/${positionId}`, false);
   }
 }

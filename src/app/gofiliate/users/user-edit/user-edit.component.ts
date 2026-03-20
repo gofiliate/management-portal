@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GofiliateService, User, Role } from '../../../services/gofiliate.service';
+import { GofiliateService, User, Role, Dashboard } from '../../../services/gofiliate.service';
 import { AuthService } from '../../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -18,8 +18,10 @@ export class UserEditComponent implements OnInit {
   userId: number = 0;
   loading = true;
   roles: Role[] = [];
+  dashboards: Dashboard[] = [];
   profilePicturePreview = '';
   currentUserIsGod = false;
+  originalDashboardId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -48,6 +50,8 @@ export class UserEditComponent implements OnInit {
       if (this.userId) {
         this.loadUser();
         this.loadRoles();
+        this.loadDashboards();
+        this.loadUserDashboard();
       }
     });
   }
@@ -60,6 +64,7 @@ export class UserEditComponent implements OnInit {
       last_name: ['', Validators.required],
       profile_picture: [''],
       role_id: [null, Validators.required],
+      dashboard_id: [null],
       has_managers: [false],
       can_login: [true],
       is_internal: [false],
@@ -118,6 +123,38 @@ export class UserEditComponent implements OnInit {
     });
   }
 
+  loadDashboards(): void {
+    this.gofiliateService.getDashboards('management-portal').subscribe({
+      next: (response: any) => {
+        if (!response.error && response.dashboards) {
+          this.dashboards = response.dashboards;
+        }
+      },
+      error: () => {
+        this.toastr.error('Failed to load dashboards');
+      }
+    });
+  }
+
+  loadUserDashboard(): void {
+    this.gofiliateService.getUserDashboards(this.userId, 1).subscribe({
+      next: (dashboards: any[]) => {
+        if (dashboards && dashboards.length > 0) {
+          const defaultDashboard = dashboards.find(d => d.is_default === 1);
+          if (defaultDashboard) {
+            this.originalDashboardId = defaultDashboard.dashboard_id;
+            this.userForm.patchValue({
+              dashboard_id: defaultDashboard.dashboard_id
+            });
+          }
+        }
+      },
+      error: () => {
+        // No dashboard assigned yet, that's okay
+      }
+    });
+  }
+
   onSubmit(): void {
     if (this.userForm.valid) {
       const formValue = this.userForm.value;
@@ -139,7 +176,13 @@ export class UserEditComponent implements OnInit {
       this.gofiliateService.saveUser(saveData).subscribe({
         next: (response: any) => {
           if (!response.error) {
-            this.toastr.success('User updated successfully');
+            // Save dashboard assignment if changed
+            const dashboardId = formValue.dashboard_id;
+            if (dashboardId && dashboardId !== this.originalDashboardId) {
+              this.saveUserDashboard(this.userId, dashboardId);
+            } else {
+              this.toastr.success('User updated successfully');
+            }
           } else {
             this.toastr.error(response.message || 'Failed to update user');
           }
@@ -164,6 +207,23 @@ export class UserEditComponent implements OnInit {
 
   navigateToPoolAccess(): void {
     this.router.navigate(['/gofiliate/users/pool-access', this.userId]);
+  }
+
+  saveUserDashboard(userId: number, dashboardId: number): void {
+    this.gofiliateService.saveUserDashboard({
+      user_id: userId,
+      dashboard_id: dashboardId,
+      location_id: 1,
+      is_default: true
+    }).subscribe({
+      next: () => {
+        this.toastr.success('User and dashboard updated successfully');
+        this.originalDashboardId = dashboardId;
+      },
+      error: () => {
+        this.toastr.error('Failed to assign dashboard');
+      }
+    });
   }
 
   get isGod(): boolean {

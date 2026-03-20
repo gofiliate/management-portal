@@ -153,6 +153,11 @@ isExpired(session: JWTUser): boolean {
     return session?.user_id ?? 0;
   }
 
+  getLoggedInUsername(): string | null {
+    const session = this.getSession();
+    return session?.username ?? null;
+  }
+
   // ========== TOTP / 2FA Methods ==========
 
   /**
