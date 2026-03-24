@@ -1,0 +1,78 @@
+.badge-lg {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #495057;
+  }
+
+  .form-control {
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  }
+
+  .form-control-color {
+    width: 100px;
+    height: 40px;
+    padding: 5px;
+  }
+
+  small.form-text {
+    display: block;
+    margin-top: 5px;
+  }
+}
+
+.card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+
+    h6 {
+      color: #495057;
+    }
+  }
+}
+
+// Required field indicator
+.text-danger {
+  font-weight: bold;
+}
+
+// Help section
+ul {
+  padding-left: 20px;
+
+  li {
+    margin-bottom: 8px;
+    color: #6c757d;
+  }
+}
+
+// Empty state
+.fa-3x {
+  font-size: 3rem;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .col-md-6 {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}

@@ -1,0 +1,53 @@
+.request-card {
+  transition: all 0.2s ease-in-out;
+  border-left: 4px solid transparent;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.status-draft {
+    border-left-color: #6c757d;
+  }
+
+  &.status-in_progress {
+    border-left-color: #007bff;
+  }
+
+  &.status-pending_review {
+    border-left-color: #ffc107;
+  }
+
+  &.status-approved {
+    border-left-color: #28a745;
+  }
+
+  &.status-rejected {
+    border-left-color: #dc3545;
+  }
+}
+
+.nav-pills {
+  .nav-link {
+    &.active {
+      .badge {
+        background-color: rgba(255, 255, 255, 0.3) !important;
+        color: white;
+      }
+    }
+  }
+}
+
+.badge-light {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.progress {
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}

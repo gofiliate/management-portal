@@ -84,7 +84,7 @@ export class ClientDetailsComponent implements OnInit {
     billing_phone: '',
     billing_contact_name: '',
     payment_terms: 'NET_30',
-    currency: 'USD',
+    currency: 'EUR',
     purchase_order_required: false,
     notes: ''
   };
@@ -200,7 +200,7 @@ export class ClientDetailsComponent implements OnInit {
     if (!this.clientId) return;
     
     this.loading = true;
-    this.api.get(`/clients/${this.clientId}/billing`, false).subscribe({
+    this.api.get(`/clients/billing/${this.clientId}`, false).subscribe({
       next: (response: any) => {
         if (response && response.billing_id) {
           this.billingInfo = {
@@ -216,7 +216,7 @@ export class ClientDetailsComponent implements OnInit {
             billing_phone: response.billing_phone || '',
             billing_contact_name: response.billing_contact_name || '',
             payment_terms: response.payment_terms || 'NET_30',
-            currency: response.currency || 'USD',
+            currency: response.currency || 'EUR',
             purchase_order_required: response.purchase_order_required || false,
             notes: response.notes || ''
           };
@@ -234,7 +234,7 @@ export class ClientDetailsComponent implements OnInit {
     if (!this.clientId) return;
     
     this.savingBillingInfo = true;
-    this.api.post(`/clients/${this.clientId}/billing`, this.billingInfo, false).subscribe({
+    this.api.post(`/clients/billing/${this.clientId}`, this.billingInfo, false).subscribe({
       next: () => {
         this.savingBillingInfo = false;
         this.toast.success('Billing information saved successfully', 'Success');

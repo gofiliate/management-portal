@@ -374,6 +374,10 @@ export class GofiliateService {
     return this.apiService.post('gofiliate/user-dashboards', data, false);
   }
 
+  deleteUserDashboard(data: { user_id: number; dashboard_id: number; location_id: number }): Observable<any> {
+    return this.apiService.deleteWithBody('gofiliate/user-dashboards', data, false);
+  }
+
   // Dashboard Layout API (for rendering widgets)
   getDashboardLayout(dashboardId: number): Observable<any> {
     return this.apiService.get(`gofiliate/dashboard-layout/${dashboardId}`, false);
@@ -469,5 +473,55 @@ export class GofiliateService {
 
   deleteDashboardWidget(dashboardId: number, rowId: number, positionId: number): Observable<any> {
     return this.apiService.delete(`gofiliate/dashboards/widgets/${dashboardId}/${rowId}/${positionId}`, false);
+  }
+
+  // Onboarding Requests API
+  createOnboardingRequest(data: any): Observable<any> {
+    return this.apiService.post('gofiliate/onboarding-requests', data, false);
+  }
+
+  getOnboardingRequests(status?: string): Observable<any> {
+    const params = status ? `?status=${status}` : '';
+    return this.apiService.get(`gofiliate/onboarding-requests${params}`, false);
+  }
+
+  getOnboardingRequest(requestId: number): Observable<any> {
+    return this.apiService.get(`gofiliate/onboarding-requests/${requestId}`, false);
+  }
+
+  getOnboardingRequestByReference(reference: string): Observable<any> {
+    return this.apiService.get(`gofiliate/onboarding-requests/reference/${reference}`, false);
+  }
+
+  updateOnboardingRequest(requestId: number, data: any): Observable<any> {
+    return this.apiService.put(`gofiliate/onboarding-requests/${requestId}`, data, false);
+  }
+
+  approveOnboardingRequest(requestId: number, data: any): Observable<any> {
+    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/approve`, data, false);
+  }
+
+  rejectOnboardingRequest(requestId: number, data: any): Observable<any> {
+    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/reject`, data, false);
+  }
+
+  linkClientToRequest(requestId: number, clientId: number): Observable<any> {
+    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/link-client`, { client_id: clientId }, false);
+  }
+
+  getRequestActivity(requestId: number): Observable<any> {
+    return this.apiService.get(`gofiliate/onboarding-requests/${requestId}/activity`, false);
+  }
+
+  updateSection(requestId: number, sectionId: number, data: any): Observable<any> {
+    return this.apiService.put(`gofiliate/onboarding-requests/${requestId}/sections/${sectionId}`, data, false);
+  }
+
+  assignUserToSection(requestId: number, data: any): Observable<any> {
+    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/assignments`, data, false);
+  }
+
+  getUserAssignments(): Observable<any> {
+    return this.apiService.get('gofiliate/onboarding-assignments', false);
   }
 }

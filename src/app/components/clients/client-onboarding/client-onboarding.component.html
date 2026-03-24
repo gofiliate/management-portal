@@ -7,7 +7,10 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-4 col-md-6" *ngFor="let option of onboardingOptions">
-      <div class="card onboarding-card" (click)="navigateTo(option.route)" [attr.data-color]="option.color">
+      <div class="card onboarding-card" 
+           *ngIf="option.route !== '/clients/onboarding/new' || actionGuard.canCreateSupplemental('clients/onboarding')" 
+           (click)="navigateTo(option.route)" 
+           [attr.data-color]="option.color">
         <div class="card-body text-center">
           <div class="icon-wrapper mb-3">
             <i [class]="option.icon"></i>

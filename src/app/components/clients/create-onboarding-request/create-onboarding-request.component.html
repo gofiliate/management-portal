@@ -1,0 +1,463 @@
+<app-page-header
+  title="Create Onboarding Request"
+  [breadcrumbs]="breadcrumbs">
+  <button class="btn btn-outline-secondary" (click)="cancel()">
+    <i class="fa fa-times"></i> Cancel
+  </button>
+</app-page-header>
+
+<div class="container-fluid">
+  <!-- Progress Steps -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="steps-progress">
+        <div 
+          *ngFor="let step of [1, 2, 3]" 
+          class="step" 
+          [class.active]="currentStep === step"
+          [class.completed]="currentStep > step"
+          (click)="goToStep(step)">
+          <div class="step-number">{{ step }}</div>
+          <div class="step-label">
+            <span *ngIf="step === 1">Company Info</span>
+            <span *ngIf="step === 2">Sections</span>
+            <span *ngIf="step === 3">Review</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: Company Information -->
+  <div *ngIf="currentStep === 1" class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Step 1: Company Information</h5>
+    </div>
+    <div class="card-body">
+      <form>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Company Name <span class="text-danger">*</span></label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="companyName"
+                name="companyName"
+                placeholder="Enter company name"
+                required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Contact Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                [(ngModel)]="contactEmail"
+                name="contactEmail"
+                placeholder="contact@company.com">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Contact Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="contactName"
+                name="contactName"
+                placeholder="John Doe">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Contact Phone</label>
+              <input 
+                type="tel" 
+                class="form-control" 
+                [(ngModel)]="contactPhone"
+                name="contactPhone"
+                placeholder="+1234567890">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Assigned Admin</label>
+              <div class="admin-search-wrapper">
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="adminSearchTerm"
+                    (ngModelChange)="filterAdminUsers()"
+                    (focus)="focusAdminSearch()"
+                    (blur)="showAdminDropdown = false"
+                    name="adminSearch"
+                    placeholder="Search by name or username..."
+                    autocomplete="off">
+                  <div class="input-group-append" *ngIf="assignedAdminId">
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="clearAdmin()"
+                      title="Clear selection">
+                      <i class="fa fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Dropdown Results -->
+                <div class="admin-dropdown" *ngIf="showAdminDropdown && filteredAdminUsers.length > 0">
+                  <div 
+                    *ngFor="let user of filteredAdminUsers.slice(0, 8)"
+                    class="admin-dropdown-item"
+                    (mousedown)="selectAdmin(user)">
+                    <div class="admin-info">
+                      <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                      <span class="badge badge-secondary ml-2">ID: {{ user.user_id }}</span>
+                    </div>
+                    <small class="text-muted">{{ '@' + user.username }}</small>
+                  </div>
+                  
+                  <!-- Too many results -->
+                  <div *ngIf="filteredAdminUsers.length > 8" class="admin-dropdown-item text-muted text-center">
+                    <small>Showing 8 of {{ filteredAdminUsers.length }} results</small>
+                  </div>
+                </div>
+                
+                <!-- No results -->
+                <div class="admin-dropdown" *ngIf="showAdminDropdown && filteredAdminUsers.length === 0">
+                  <div class="admin-dropdown-item text-muted text-center">
+                    <small>No internal users found</small>
+                  </div>
+                </div>
+              </div>
+              <small class="form-text text-muted">Optional - Leave empty to assign later</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Invitation/Assignment -->
+        <div class="row">
+          <div class="col-md-12">
+            <hr class="my-4">
+            <h6 class="mb-3">Guest User</h6>
+            <p class="text-muted small">Invite a new guest to complete this onboarding, or assign to an existing guest user.</p>
+            
+            <div class="form-group">
+              <div class="custom-control custom-radio custom-control-inline">
+                <input 
+                  type="radio" 
+                  id="inviteNew" 
+                  name="guestInviteMethod" 
+                  class="custom-control-input"
+                  [(ngModel)]="guestInviteMethod"
+                  value="new">
+                <label class="custom-control-label" for="inviteNew">Invite New Guest</label>
+              </div>
+              <div class="custom-control custom-radio custom-control-inline">
+                <input 
+                  type="radio" 
+                  id="assignExisting" 
+                  name="guestInviteMethod" 
+                  class="custom-control-input"
+                  [(ngModel)]="guestInviteMethod"
+                  value="existing">
+                <label class="custom-control-label" for="assignExisting">Assign to Existing Guest</label>
+              </div>
+            </div>
+
+            <!-- New Guest Email Input -->
+            <div class="form-group" *ngIf="guestInviteMethod === 'new'">
+              <label>Guest Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                [(ngModel)]="guestEmail"
+                name="guestEmail"
+                placeholder="guest@newclient.com">
+              <small class="form-text text-muted">An invitation email will be sent to this address</small>
+            </div>
+
+            <!-- Existing Guest User Dropdown -->
+            <div class="form-group" *ngIf="guestInviteMethod === 'existing'">
+              <label>Select Guest User</label>
+              <div class="guest-search-wrapper">
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="guestSearchTerm"
+                    (ngModelChange)="filterGuestUsers()"
+                    (focus)="focusGuestSearch()"
+                    (blur)="showGuestDropdown = false"
+                    name="guestSearch"
+                    placeholder="Search guest users..."
+                    autocomplete="off">
+                  <div class="input-group-append" *ngIf="guestUserId">
+                    <button 
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="clearGuest()"
+                      title="Clear selection">
+                      <i class="fa fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Dropdown Results -->
+                <div class="guest-dropdown" *ngIf="showGuestDropdown && filteredGuestUsers.length > 0">
+                  <div 
+                    *ngFor="let user of filteredGuestUsers.slice(0, 8)"
+                    class="guest-dropdown-item"
+                    (mousedown)="selectGuest(user)">
+                    <div class="guest-info">
+                      <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                      <span class="badge badge-secondary ml-2">ID: {{ user.user_id }}</span>
+                    </div>
+                    <small class="text-muted">{{ user.email }}</small>
+                  </div>
+                  
+                  <!-- Too many results -->
+                  <div *ngIf="filteredGuestUsers.length > 8" class="guest-dropdown-item text-muted text-center">
+                    <small>Showing 8 of {{ filteredGuestUsers.length }} results</small>
+                  </div>
+                </div>
+                
+                <!-- No results -->
+                <div class="guest-dropdown" *ngIf="showGuestDropdown && filteredGuestUsers.length === 0">
+                  <div class="guest-dropdown-item text-muted text-center">
+                    <small>No guest users found</small>
+                  </div>
+                </div>
+              </div>
+              <small class="form-text text-muted">A notification will be sent to this user</small>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 2: Sections -->
+  <div *ngIf="currentStep === 2">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Step 2: Define Sections</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Add sections that need to be completed during the onboarding process. Drag to reorder.</p>
+        
+        <!-- Section Templates -->
+        <div class="mb-4">
+          <h6>Quick Add Templates:</h6>
+          <div class="template-buttons">
+            <button 
+              *ngFor="let template of sectionTemplates"
+              class="btn btn-sm btn-outline-secondary mr-2 mb-2"
+              (click)="addTemplateSection(template)"
+              [disabled]="isSectionTypeAlreadyAdded(template.section_type)">
+              <i class="fa fa-plus"></i> {{ template.section_title }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Sections List -->
+        <div class="sections-list">
+          <div *ngFor="let section of sections; let i = index" class="section-item card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-11">
+                  <div class="form-group">
+                    <label>Section Type <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control form-control-sm" 
+                      [(ngModel)]="section.section_type"
+                      placeholder="e.g., company_details">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Section Title <span class="text-danger">*</span></label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [(ngModel)]="section.section_title"
+                      placeholder="e.g., Company Details">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea 
+                      class="form-control" 
+                      rows="2"
+                      [(ngModel)]="section.section_description"
+                      placeholder="Brief description of what information is needed"></textarea>
+                  </div>
+
+                  <div class="form-check">
+                    <input 
+                      type="checkbox" 
+                      class="form-check-input" 
+                      [(ngModel)]="section.is_required"
+                      [id]="'required-' + i">
+                    <label class="form-check-label" [for]="'required-' + i">
+                      Required Section
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-md-1 text-right">
+                  <div class="section-actions">
+                    <button 
+                      class="btn btn-sm btn-outline-secondary mb-1" 
+                      (click)="moveSection(i, 'up')"
+                      [disabled]="i === 0"
+                      title="Move Up">
+                      <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-secondary mb-1" 
+                      (click)="moveSection(i, 'down')"
+                      [disabled]="i === sections.length - 1"
+                      title="Move Down">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-danger" 
+                      (click)="removeSection(i)"
+                      title="Remove">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-order">
+                <small class="text-muted">Order: {{ section.display_order }}</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="sections.length === 0" class="text-center py-5">
+            <i class="fa fa-list fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No sections added yet</h5>
+            <p class="text-muted">Add sections using the templates above or create a custom section</p>
+          </div>
+        </div>
+
+        <button class="btn btn-outline-primary" (click)="addSection()">
+          <i class="fa fa-plus"></i> Add Custom Section
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Review -->
+  <div *ngIf="currentStep === 3" class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Step 3: Review & Submit</h5>
+    </div>
+    <div class="card-body">
+      <h6>Company Information</h6>
+      <dl class="row">
+        <dt class="col-sm-3">Company Name:</dt>
+        <dd class="col-sm-9">{{ companyName }}</dd>
+
+        <dt class="col-sm-3">Contact Email:</dt>
+        <dd class="col-sm-9">{{ contactEmail || 'Not provided' }}</dd>
+
+        <dt class="col-sm-3">Contact Name:</dt>
+        <dd class="col-sm-9">{{ contactName || 'Not provided' }}</dd>
+
+        <dt class="col-sm-3">Contact Phone:</dt>
+        <dd class="col-sm-9">{{ contactPhone || 'Not provided' }}</dd>
+
+        <dt class="col-sm-3">Assigned Admin:</dt>
+        <dd class="col-sm-9">
+          <span *ngIf="assignedAdminId">{{ selectedAdminName }} <small class="text-muted">(ID: {{ assignedAdminId }})</small></span>
+          <span *ngIf="!assignedAdminId" class="text-muted">Not assigned</span>
+        </dd>
+      </dl>
+
+      <hr>
+
+      <h6>Sections ({{ sections.length }})</h6>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let section of sections">
+              <td>{{ section.display_order }}</td>
+              <td>{{ section.section_title }}</td>
+              <td><code>{{ section.section_type }}</code></td>
+              <td>
+                <span *ngIf="section.is_required" class="badge badge-warning">Required</span>
+                <span *ngIf="!section.is_required" class="badge badge-secondary">Optional</span>
+              </td>
+              <td>{{ section.section_description || 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-info mt-4">
+        <i class="fa fa-info-circle"></i> Once created, the request will be in <strong>draft</strong> status. 
+        You can assign sections to users and they will receive notifications to complete their assigned sections.
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <button 
+          class="btn btn-outline-secondary" 
+          (click)="previousStep()"
+          [disabled]="currentStep === 1">
+          <i class="fa fa-arrow-left"></i> Previous
+        </button>
+
+        <div>
+          <button 
+            *ngIf="currentStep < totalSteps"
+            class="btn btn-primary" 
+            (click)="nextStep()"
+            [disabled]="!canProceed()">
+            Next <i class="fa fa-arrow-right"></i>
+          </button>
+
+          <button 
+            *ngIf="currentStep === totalSteps"
+            class="btn btn-success" 
+            (click)="submitRequest()"
+            [disabled]="isSubmitting || !canProceed()">
+            <span *ngIf="!isSubmitting">
+              <i class="fa fa-check"></i> Create Request
+            </span>
+            <span *ngIf="isSubmitting">
+              <i class="fa fa-spinner fa-spin"></i> Creating...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

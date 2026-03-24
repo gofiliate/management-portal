@@ -1,0 +1,287 @@
+.steps-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 0 20px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 60px;
+    right: 60px;
+    height: 2px;
+    background-color: #dee2e6;
+    z-index: 0;
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+  }
+
+  .step-label {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  &.active {
+    .step-number {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    }
+
+    .step-label {
+      color: #007bff;
+    }
+  }
+
+  &.completed {
+    .step-number {
+      background-color: #28a745;
+      color: white;
+      border-color: #28a745;
+
+      &::after {
+        content: '\f00c';
+        font-family: 'FontAwesome';
+      }
+    }
+
+    .step-label {
+      color: #28a745;
+    }
+  }
+
+  &:hover:not(.active) {
+    .step-number {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.template-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sections-list {
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.section-item {
+  border-left: 4px solid #007bff;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .section-order {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+  }
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  
+  i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .steps-progress {
+    padding: 0 10px;
+
+    &::before {
+      left: 30px;
+      right: 30px;
+    }
+  }
+
+  .step {
+    .step-label {
+      font-size: 0.75rem;
+    }
+
+    .step-number {
+      width: 35px;
+      height: 35px;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Admin Search Dropdown
+.admin-search-wrapper {
+  position: relative;
+}
+
+.admin-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+}
+
+.admin-dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f1f3f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:active {
+    background-color: #e9ecef;
+  }
+
+  .admin-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+
+    strong {
+      color: #212529;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+    }
+  }
+
+  small {
+    display: block;
+    color: #6c757d;
+  }
+}
+
+.input-group-append {
+  .btn {
+    border-left: none;
+  }
+}
+
+// Guest Search Dropdown (same styles as admin dropdown)
+.guest-search-wrapper {
+  position: relative;
+}
+
+.guest-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+}
+
+.guest-dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f1f3f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:active {
+    background-color: #e9ecef;
+  }
+
+  .guest-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+
+    strong {
+      color: #212529;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+    }
+  }
+
+  small {
+    display: block;
+    color: #6c757d;
+  }
+}

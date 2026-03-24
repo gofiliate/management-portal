@@ -1,0 +1,118 @@
+<app-page-header
+  title="Onboarding Requests"
+  [breadcrumbs]="breadcrumbs">
+  <button class="btn btn-primary" (click)="createNewRequest()">
+    <i class="fa fa-plus"></i> New Request
+  </button>
+</app-page-header>
+
+<div class="container-fluid">
+  <!-- Status Filter Tabs -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <ul class="nav nav-pills">
+        <li class="nav-item" *ngFor="let option of statusOptions">
+          <a 
+            class="nav-link" 
+            [class.active]="selectedStatus === option.value"
+            (click)="onStatusChange(option.value)"
+            style="cursor: pointer;">
+            {{ option.label }}
+            <span class="badge badge-light ml-2">{{ option.count }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Requests List -->
+  <div *ngIf="!isLoading && filteredRequests.length > 0" class="row">
+    <div class="col-12" *ngFor="let request of filteredRequests">
+      <div class="card mb-3 request-card" (click)="viewRequest(request.request_id)" style="cursor: pointer;">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <!-- Request Info -->
+            <div class="col-md-4">
+              <h5 class="mb-1">{{ request.company_name_preliminary }}</h5>
+              <p class="text-muted mb-1">
+                <small>Reference: {{ request.request_reference }}</small>
+              </p>
+              <span [class]="'badge ' + getStatusBadgeClass(request.status)">
+                {{ getStatusLabel(request.status) }}
+              </span>
+            </div>
+
+            <!-- Progress -->
+            <div class="col-md-3">
+              <div class="mb-1">
+                <small class="text-muted">Completion</small>
+              </div>
+              <div class="progress" style="height: 20px;">
+                <div 
+                  class="progress-bar" 
+                  [class]="getProgressBarClass(request.completion_percentage)"
+                  role="progressbar" 
+                  [style.width.%]="request.completion_percentage"
+                  [attr.aria-valuenow]="request.completion_percentage"
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                  {{ request.completion_percentage }}%
+                </div>
+              </div>
+            </div>
+
+            <!-- Metadata -->
+            <div class="col-md-3">
+              <div class="mb-1">
+                <small class="text-muted">Created</small><br>
+                <small>{{ request.created_at | date:'short' }}</small>
+              </div>
+              <div *ngIf="request.reviewed_at">
+                <small class="text-muted">Reviewed</small><br>
+                <small>{{ request.reviewed_at | date:'short' }}</small>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="col-md-2 text-right">
+              <button class="btn btn-sm btn-outline-primary" (click)="viewRequest(request.request_id); $event.stopPropagation()">
+                <i class="fa fa-eye"></i> View
+              </button>
+            </div>
+          </div>
+
+          <!-- Client Link Info -->
+          <div *ngIf="request.client_id" class="mt-2">
+            <span class="badge badge-success">
+              <i class="fa fa-link"></i> Linked to Client ID: {{ request.client_id }}
+            </span>
+          </div>
+
+          <!-- Rejection Reason -->
+          <div *ngIf="request.status === 'rejected' && request.rejection_reason" class="mt-2">
+            <div class="alert alert-danger mb-0">
+              <small><strong>Rejection Reason:</strong> {{ request.rejection_reason }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredRequests.length === 0" class="text-center py-5">
+    <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+    <h4 class="text-muted">No onboarding requests found</h4>
+    <p class="text-muted">Create a new onboarding request to get started</p>
+    <button class="btn btn-primary" (click)="createNewRequest()">
+      <i class="fa fa-plus"></i> Create New Request
+    </button>
+  </div>
+</div>

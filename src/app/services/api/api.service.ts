@@ -169,6 +169,33 @@ export class ApiService {
     }
   }
 
+  deleteWithBody(slug: string, data: any, use_user: boolean | null): Observable<any> {
+    const token = this.getBearerToken();
+    const user_id = this.getUserId();
+
+    if (token) {
+      const headers = new HttpHeaders({
+        'Authorization': `${token}`,
+        'Content-Type': 'application/json'
+      });
+
+      // Construct the endpoint
+      var endpoint = this.buildEndpoint(slug);
+      if (use_user) {
+        endpoint += `/${user_id}`;  // Append user_id if it's provided
+      }
+
+      // Convert data to JSON
+      const body = JSON.stringify(data);
+
+      return this.http.delete<any>(endpoint, { headers, body });
+    } else {
+      // Handle the case where the token is not available
+      console.error('Bearer token is missing');
+      throw new Error('User is not authenticated');
+    }
+  }
+
   getDateRange(option: number): { start_date: string; end_date: string } {
     const today = new Date();
     let start_date: Date;

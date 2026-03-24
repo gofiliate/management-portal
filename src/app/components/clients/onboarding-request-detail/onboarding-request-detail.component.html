@@ -1,0 +1,507 @@
+<app-page-header
+  [title]="request?.company_name_preliminary || 'Onboarding Request'"
+  [breadcrumbs]="breadcrumbs">
+  <button class="btn btn-outline-secondary mr-2" (click)="goBack()">
+    <i class="fa fa-arrow-left"></i> Back to List
+  </button>
+  <button 
+    *ngIf="canApprove()" 
+    class="btn btn-success mr-2" 
+    (click)="openApproveModal()">
+    <i class="fa fa-check"></i> Approve
+  </button>
+  <button 
+    *ngIf="canReject()" 
+    class="btn btn-danger mr-2" 
+    (click)="openRejectModal()">
+    <i class="fa fa-times"></i> Reject
+  </button>
+  <button 
+    *ngIf="canLinkClient()" 
+    class="btn btn-primary" 
+    (click)="openLinkClientModal()">
+    <i class="fa fa-link"></i> Link Client
+  </button>
+</app-page-header>
+
+<div class="container-fluid" *ngIf="!isLoading && request">
+  
+  <!-- Status and Progress Overview -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <h6 class="text-muted mb-2">Status</h6>
+          <span [class]="'badge badge-lg ' + getStatusBadgeClass(request.status)">
+            {{ request.status | uppercase }}
+          </span>
+        </div>
+        <div class="col-md-3">
+          <h6 class="text-muted mb-2">Reference</h6>
+          <strong>{{ request.request_reference }}</strong>
+        </div>
+        <div class="col-md-3">
+          <h6 class="text-muted mb-2">Created</h6>
+          <span>{{ request.created_at | date:'medium' }}</span>
+        </div>
+        <div class="col-md-3">
+          <h6 class="text-muted mb-2">Completion</h6>
+          <div class="progress" style="height: 25px;">
+            <div 
+              class="progress-bar" 
+              [class]="getProgressBarClass(request.completion_percentage)"
+              role="progressbar" 
+              [style.width.%]="request.completion_percentage"
+              [attr.aria-valuenow]="request.completion_percentage"
+              aria-valuemin="0" 
+              aria-valuemax="100">
+              <strong>{{ request.completion_percentage }}%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Link Info -->
+      <div *ngIf="request.client_id" class="mt-3">
+        <span class="badge badge-success badge-lg">
+          <i class="fa fa-link"></i> Linked to Client ID: {{ request.client_id }}
+        </span>
+      </div>
+
+      <!-- Rejection Info -->
+      <div *ngIf="request.status === 'rejected' && request.rejection_reason" class="mt-3">
+        <div class="alert alert-danger">
+          <strong>Rejection Reason:</strong> {{ request.rejection_reason }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a 
+        class="nav-link" 
+        [class.active]="activeTab === 'overview'"
+        (click)="setActiveTab('overview')"
+        style="cursor: pointer;">
+        Overview
+      </a>
+    </li>
+    <li class="nav-item">
+      <a 
+        class="nav-link" 
+        [class.active]="activeTab === 'sections'"
+        (click)="setActiveTab('sections')"
+        style="cursor: pointer;">
+        Sections ({{ request.sections?.length || 0 }})
+      </a>
+    </li>
+    <li class="nav-item">
+      <a 
+        class="nav-link" 
+        [class.active]="activeTab === 'activity'"
+        (click)="setActiveTab('activity')"
+        style="cursor: pointer;">
+        Activity ({{ activities.length }})
+      </a>
+    </li>
+  </ul>
+
+  <!-- Overview Tab -->
+  <div *ngIf="activeTab === 'overview'">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Company Information</h5>
+          </div>
+          <div class="card-body">
+            <dl class="row mb-0">
+              <dt class="col-sm-5">Company Name:</dt>
+              <dd class="col-sm-7">{{ request.company_name_preliminary }}</dd>
+
+              <dt class="col-sm-5">Contact Email:</dt>
+              <dd class="col-sm-7">{{ request.contact_email }}</dd>
+
+              <dt class="col-sm-5">Contact Name:</dt>
+              <dd class="col-sm-7">{{ request.contact_name || 'N/A' }}</dd>
+
+              <dt class="col-sm-5">Contact Phone:</dt>
+              <dd class="col-sm-7">{{ request.contact_phone || 'N/A' }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Request Metadata</h5>
+          </div>
+          <div class="card-body">
+            <dl class="row mb-0">
+              <dt class="col-sm-5">Created By:</dt>
+              <dd class="col-sm-7">User ID: {{ request.created_by }}</dd>
+
+              <dt class="col-sm-5">Reviewed By:</dt>
+              <dd class="col-sm-7">{{ request.reviewed_by ? 'User ID: ' + request.reviewed_by : 'Pending' }}</dd>
+
+              <dt class="col-sm-5">Reviewed At:</dt>
+              <dd class="col-sm-7">{{ request.reviewed_at ? (request.reviewed_at | date:'medium') : 'Pending' }}</dd>
+
+              <dt class="col-sm-5">Last Updated:</dt>
+              <dd class="col-sm-7">{{ request.updated_at | date:'medium' }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Notes -->
+    <div *ngIf="request.review_notes" class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Review Notes</h5>
+      </div>
+      <div class="card-body">
+        <p class="mb-0">{{ request.review_notes }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sections Tab -->
+  <div *ngIf="activeTab === 'sections'">
+    <div class="card" *ngFor="let section of request.sections">
+      <div class="card-header">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h5 class="mb-0">
+              {{ section.section_title }}
+              <span [class]="'badge ml-2 ' + getSectionStatusBadgeClass(section.status)">
+                {{ section.status }}
+              </span>
+            </h5>
+          </div>
+          <div class="col-md-6 text-right">
+            <button 
+              class="btn btn-sm btn-outline-primary mr-2" 
+              (click)="openAssignUserModal(section.section_id)">
+              <i class="fa fa-user-plus"></i> Assign User
+            </button>
+            <button 
+              class="btn btn-sm btn-primary" 
+              (click)="viewSection(section.section_id)">
+              <i class="fa fa-eye"></i> View Details
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="text-muted">{{ section.section_description }}</p>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <small class="text-muted">Order:</small><br>
+            <strong>{{ section.display_order }}</strong>
+          </div>
+          <div class="col-md-4">
+            <small class="text-muted">Assigned To:</small><br>
+            <span *ngIf="section.completed_by">User ID: {{ section.completed_by }}</span>
+            <span *ngIf="!section.completed_by" class="text-muted">Unassigned</span>
+          </div>
+          <div class="col-md-4">
+            <small class="text-muted">Completed:</small><br>
+            <span *ngIf="section.completed_at">{{ section.completed_at | date:'short' }}</span>
+            <span *ngIf="!section.completed_at" class="text-muted">Not completed</span>
+          </div>
+        </div>
+
+        <!-- Section Data Preview -->
+        <div *ngIf="section.section_data" class="mt-3">
+          <details>
+            <summary class="text-primary" style="cursor: pointer;">View Section Data</summary>
+            <pre class="mt-2 p-3 bg-light">{{ section.section_data }}</pre>
+          </details>
+        </div>
+
+        <!-- Assignments for this section -->
+        <div *ngIf="getAssignmentsForSection(section.section_id).length > 0" class="mt-3">
+          <h6>Assignments:</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Assigned</th>
+                  <th>Last Viewed</th>
+                  <th>Assigned By</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let assignment of getAssignmentsForSection(section.section_id)">
+                  <td>{{ assignment.user_id }}</td>
+                  <td>{{ assignment.created_at | date:'short' }}</td>
+                  <td>{{ assignment.last_viewed_at ? (assignment.last_viewed_at | date:'short') : 'Not viewed' }}</td>
+                  <td>User ID: {{ assignment.assigned_by }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!request.sections || request.sections.length === 0" class="text-center py-5">
+      <i class="fa fa-list fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No sections defined</h5>
+    </div>
+  </div>
+
+  <!-- Activity Tab -->
+  <div *ngIf="activeTab === 'activity'">
+    <div class="card">
+      <div class="card-body">
+        <div class="activity-timeline">
+          <div class="activity-item" *ngFor="let activity of activities">
+            <div class="activity-marker"></div>
+            <div class="activity-content">
+              <div class="activity-header">
+                <strong>{{ activity.activity_type }}</strong>
+                <small class="text-muted float-right">{{ activity.created_at | date:'medium' }}</small>
+              </div>
+              <div class="activity-body">
+                <p class="mb-1">{{ activity.activity_description }}</p>
+                <p class="mb-1">
+                  <small>User ID: {{ activity.performed_by }}</small>
+                </p>
+                <div *ngIf="activity.metadata" class="mt-2">
+                  <details>
+                    <summary class="text-primary" style="cursor: pointer; font-size: 0.875rem;">View Metadata</summary>
+                    <pre class="mt-2 p-2 bg-light" style="font-size: 0.75rem;">{{ activity.metadata }}</pre>
+                  </details>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="activities.length === 0" class="text-center py-5">
+            <i class="fa fa-history fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No activity recorded</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="container-fluid">
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" [class.show]="showApproveModal" [style.display]="showApproveModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Approve Onboarding Request</h5>
+        <button type="button" class="close" (click)="closeModals()">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to approve this onboarding request?</p>
+        <div class="form-group">
+          <label>Approval Notes (Optional)</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="approvalNotes"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
+        <button type="button" class="btn btn-success" (click)="confirmApprove()">
+          <i class="fa fa-check"></i> Approve
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showApproveModal" *ngIf="showApproveModal"></div>
+
+<!-- Reject Modal -->
+<div class="modal fade" [class.show]="showRejectModal" [style.display]="showRejectModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reject Onboarding Request</h5>
+        <button type="button" class="close" (click)="closeModals()">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Please provide a reason for rejecting this request:</p>
+        <div class="form-group">
+          <label>Rejection Reason <span class="text-danger">*</span></label>
+          <textarea class="form-control" rows="3" [(ngModel)]="rejectionReason" required></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          [disabled]="!rejectionReason.trim()"
+          (click)="confirmReject()">
+          <i class="fa fa-times"></i> Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showRejectModal" *ngIf="showRejectModal"></div>
+
+<!-- Link Client Modal -->
+<div class="modal fade" [class.show]="showLinkClientModal" [style.display]="showLinkClientModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Link Client to Request</h5>
+        <button type="button" class="close" (click)="closeModals()">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Search for a client to link to this onboarding request:</p>
+        
+        <!-- Search Input -->
+        <div class="form-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="clientSearchTerm"
+            (ngModelChange)="filterClients()"
+            placeholder="Search by client name, company name, or ID...">
+        </div>
+
+        <!-- Selected Client -->
+        <div *ngIf="clientIdToLink" class="alert alert-info">
+          <strong>Selected:</strong> Client ID {{ clientIdToLink }}
+        </div>
+
+        <!-- Client List -->
+        <div class="search-results">
+          <div 
+            *ngFor="let client of filteredClients.slice(0, 10)"
+            class="search-result-item"
+            [class.selected]="clientIdToLink === client.client_id"
+            (click)="selectClient(client.client_id)">
+            <div class="result-header">
+              <strong>{{ client.company_name || client.name || 'Unnamed Client' }}</strong>
+              <span class="badge badge-secondary">ID: {{ client.client_id }}</span>
+            </div>
+            <div class="result-details">
+              <small class="text-muted">{{ client.email || 'No email' }}</small>
+            </div>
+          </div>
+
+          <!-- No Results -->
+          <div *ngIf="filteredClients.length === 0" class="text-center py-3 text-muted">
+            <i class="fa fa-search"></i> No clients found
+          </div>
+
+          <!-- Too Many Results -->
+          <div *ngIf="filteredClients.length > 10" class="text-center py-2 text-muted">
+            <small>Showing first 10 of {{ filteredClients.length }} results. Refine your search.</small>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          [disabled]="!clientIdToLink"
+          (click)="confirmLinkClient()">
+          <i class="fa fa-link"></i> Link Client
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showLinkClientModal" *ngIf="showLinkClientModal"></div>
+
+<!-- Assign User Modal -->
+<div class="modal fade" [class.show]="showAssignUserModal" [style.display]="showAssignUserModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign User to Section</h5>
+        <button type="button" class="close" (click)="closeModals()">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Search for a user to assign to this section:</p>
+        
+        <!-- Search Input -->
+        <div class="form-group">
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="userSearchTerm"
+            (ngModelChange)="filterUsers()"
+            placeholder="Search by name, email, or user ID...">
+        </div>
+
+        <!-- Selected User -->
+        <div *ngIf="userIdForAssignment" class="alert alert-info">
+          <strong>Selected:</strong> User ID {{ userIdForAssignment }}
+        </div>
+
+        <!-- User List -->
+        <div class="search-results">
+          <div 
+            *ngFor="let user of filteredUsers.slice(0, 10)"
+            class="search-result-item"
+            [class.selected]="userIdForAssignment === user.user_id"
+            (click)="selectUser(user.user_id)">
+            <div class="result-header">
+              <strong>{{ user.name || 'Unnamed User' }}</strong>
+              <span class="badge badge-secondary">ID: {{ user.user_id }}</span>
+            </div>
+            <div class="result-details">
+              <small class="text-muted">{{ user.email || 'No email' }}</small>
+            </div>
+          </div>
+
+          <!-- No Results -->
+          <div *ngIf="filteredUsers.length === 0" class="text-center py-3 text-muted">
+            <i class="fa fa-search"></i> No users found
+          </div>
+
+          <!-- Too Many Results -->
+          <div *ngIf="filteredUsers.length > 10" class="text-center py-2 text-muted">
+            <small>Showing first 10 of {{ filteredUsers.length }} results. Refine your search.</small>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          [disabled]="!userIdForAssignment"
+          (click)="confirmAssignUser()">
+          <i class="fa fa-user-plus"></i> Assign User
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAssignUserModal" *ngIf="showAssignUserModal"></div>

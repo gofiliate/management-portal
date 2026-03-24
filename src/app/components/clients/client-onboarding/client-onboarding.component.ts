@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../shared/page-header/page-header.component';
+import { ActionGuardService } from '../../../services/action-guard.service';
 
 @Component({
   selector: 'app-client-onboarding',
@@ -26,15 +27,18 @@ export class ClientOnboardingComponent {
       color: 'primary'
     },
     {
-      title: 'In Progress Clients',
-      description: 'View and manage clients currently in onboarding',
-      icon: 'fa fa-users',
-      route: '/clients/onboarding/in-progress',
+      title: 'View All Requests',
+      description: 'View and manage all onboarding requests',
+      icon: 'fa fa-list',
+      route: '/clients/onboarding/requests',
       color: 'success'
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public actionGuard: ActionGuardService
+  ) {}
 
   navigateTo(route: string): void {
     this.router.navigate([route]);

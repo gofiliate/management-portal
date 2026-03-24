@@ -176,10 +176,21 @@ export class UserEditComponent implements OnInit {
       this.gofiliateService.saveUser(saveData).subscribe({
         next: (response: any) => {
           if (!response.error) {
-            // Save dashboard assignment if changed
+            // Handle dashboard assignment changes
             const dashboardId = formValue.dashboard_id;
-            if (dashboardId && dashboardId !== this.originalDashboardId) {
-              this.saveUserDashboard(this.userId, dashboardId);
+            
+            if (dashboardId !== this.originalDashboardId) {
+              // Dashboard changed
+              if (dashboardId) {
+                // Assign new dashboard
+                this.saveUserDashboard(this.userId, dashboardId);
+              } else if (this.originalDashboardId) {
+                // Remove dashboard assignment
+                this.deleteUserDashboard(this.userId, this.originalDashboardId);
+              } else {
+                // No change (both null)
+                this.toastr.success('User updated successfully');
+              }
             } else {
               this.toastr.success('User updated successfully');
             }
@@ -222,6 +233,22 @@ export class UserEditComponent implements OnInit {
       },
       error: () => {
         this.toastr.error('Failed to assign dashboard');
+      }
+    });
+  }
+
+  deleteUserDashboard(userId: number, dashboardId: number): void {
+    this.gofiliateService.deleteUserDashboard({
+      user_id: userId,
+      dashboard_id: dashboardId,
+      location_id: 1
+    }).subscribe({
+      next: () => {
+        this.toastr.success('Dashboard assignment removed successfully');
+        this.originalDashboardId = null;
+      },
+      error: () => {
+        this.toastr.error('Failed to remove dashboard assignment');
       }
     });
   }

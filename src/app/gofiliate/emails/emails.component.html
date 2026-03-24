@@ -28,14 +28,14 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">All Email Templates ({{ emails.length }})</h5>
+          <h5 class="mb-0">All Email Templates ({{ filteredEmails.length }})</h5>
           <button class="btn btn-sm btn-primary" (click)="loadEmails()">
             <i class="fa fa-refresh me-2"></i> Refresh
           </button>
         </div>
         <div class="card-body">
           <!-- Empty State -->
-          <div class="text-center py-5" *ngIf="emails.length === 0">
+          <div class="text-center py-5" *ngIf="filteredEmails.length === 0">
             <i class="fa fa-envelope fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">No email templates found</h5>
             <p class="text-muted mb-3">Create your first email template to get started</p>
@@ -45,7 +45,7 @@
           </div>
 
           <!-- Email Templates Table -->
-          <div class="table-responsive" *ngIf="emails.length > 0">
+          <div class="table-responsive" *ngIf="filteredEmails.length > 0">
             <table class="table table-hover">
               <thead>
                 <tr>
@@ -60,7 +60,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let email of emails">
+                <tr *ngFor="let email of paginatedEmails">
                   <td><strong>{{ email.email_id }}</strong></td>
                   <td>
                     <strong>{{ email.email_name }}</strong>
@@ -95,6 +95,30 @@
                 </tr>
               </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+              <div class="text-muted">
+                Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, filteredEmails.length) }} of {{ filteredEmails.length }} entries
+              </div>
+              <nav aria-label="Email templates pagination">
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="previousPage()" href="javascript:void(0)">
+                      <i class="fa fa-chevron-left"></i>
+                    </a>
+                  </li>
+                  <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
+                    <a class="page-link" (click)="goToPage(page)" href="javascript:void(0)">{{ page }}</a>
+                  </li>
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" (click)="nextPage()" href="javascript:void(0)">
+                      <i class="fa fa-chevron-right"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </div>

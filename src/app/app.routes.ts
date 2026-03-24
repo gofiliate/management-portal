@@ -10,6 +10,10 @@ import { SecuritySettingsComponent } from './components/account/security-setting
 import { ClientDetailsComponent } from './components/clients/client-details/client-details.component';
 import { ClientInstancesComponent } from './components/clients/client-instances/client-instances.component';
 import { ClientOnboardingComponent } from './components/clients/client-onboarding/client-onboarding.component';
+import { OnboardingRequestsListComponent } from './components/clients/onboarding-requests-list/onboarding-requests-list.component';
+import { OnboardingRequestDetailComponent } from './components/clients/onboarding-request-detail/onboarding-request-detail.component';
+import { CreateOnboardingRequestComponent } from './components/clients/create-onboarding-request/create-onboarding-request.component';
+import { SectionCompletionFormComponent } from './components/clients/section-completion-form/section-completion-form.component';
 import { ClientDashboardComponent } from './components/clients/client-dashboard/client-dashboard.component';
 import { ManageInstanceComponent } from './components/clients/manage-instance/manage-instance.component';
 import { ManageInstanceOldComponent } from './components/clients/manage-instance-old/manage-instance-old.component';
@@ -56,6 +60,10 @@ export const routes: Routes = [
      { path: 'dashboard/:id', canActivate: [AuthGuard], component: ClientDashboardComponent, data: { title: 'Client Dashboard', breadcrumb: 'Dashboard', breadcrumbUrl: '/clients' } },
      { path: 'instances/:id', canActivate: [AuthGuard], component: ClientInstancesComponent, data: { title: 'Client Instances', breadcrumb: 'Instances' } },
      { path: 'onboarding', canActivate: [AuthGuard], component: ClientOnboardingComponent, data: { title: 'Client Onboarding', breadcrumb: 'Onboarding' } },
+     { path: 'onboarding/new', canActivate: [AuthGuard], component: CreateOnboardingRequestComponent, data: { title: 'New Request', breadcrumb: 'New', breadcrumbUrl: '/clients/onboarding' } },
+     { path: 'onboarding/requests', canActivate: [AuthGuard], component: OnboardingRequestsListComponent, data: { title: 'Onboarding Requests', breadcrumb: 'Requests', breadcrumbUrl: '/clients/onboarding' } },
+     { path: 'onboarding/requests/:id', canActivate: [AuthGuard], component: OnboardingRequestDetailComponent, data: { title: 'Request Details', breadcrumb: 'Details', breadcrumbUrl: '/clients/onboarding/requests' } },
+     { path: 'onboarding/requests/:requestId/sections/:sectionId', canActivate: [AuthGuard], component: SectionCompletionFormComponent, data: { title: 'Complete Section', breadcrumb: 'Complete' } },
      { path: 'manage-instance/:id', canActivate: [AuthGuard], component: ManageInstanceComponent, data: { title: 'Manage Instance', breadcrumb: 'Manage Instance' } },
      { path: 'manage-instance-old/:id', canActivate: [AuthGuard], component: ManageInstanceOldComponent, data: { title: 'Manage Instance (Legacy)', breadcrumb: 'Manage Instance' } },
     { path: 'manage-emails/:id', canActivate: [AuthGuard], component: ManageEmailsComponent, data: { title: 'Manage Emails', breadcrumb: 'Emails' } },
