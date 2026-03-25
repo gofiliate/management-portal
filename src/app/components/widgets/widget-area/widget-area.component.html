@@ -23,13 +23,21 @@
     </div>
 
     <!-- Widget Rows -->
-    <div *ngFor="let row of dashboardLayout.rows" class="row mb-3">
+    <div 
+      *ngFor="let row of dashboardLayout.rows; let rowIndex = index" 
+      class="row mb-3"
+      [hidden]="!isRowVisible(rowIndex)"
+    >
       <div 
-        *ngFor="let widget of row.widgets" 
+        *ngFor="let widget of row.widgets; let widgetIndex = index" 
         [ngClass]="getColClass(widget.col_width)"
         class="mb-3"
       >
-        <app-dynamic-widget [widgetData]="widget"></app-dynamic-widget>
+        <app-dynamic-widget 
+          [widgetData]="widget"
+          (hasData)="onWidgetDataStatus(rowIndex, widgetIndex, $event)"
+          (hideRow)="onWidgetHideRow(rowIndex, widgetIndex, $event)"
+        ></app-dynamic-widget>
       </div>
     </div>
 

@@ -378,7 +378,7 @@
               <small class="form-text text-muted">Bootstrap column width (max 12)</small>
             </div>
 
-            <div class="col-md-12 mb-3">
+            <div class="col-md-12 mb-3" *ngIf="!isInfoPanelWidget()">
               <label for="referenceId" class="form-label">
                 {{ isLoginWidget() ? 'Select Instance *' : 'Instance / Reference ID' }}
               </label>
@@ -412,6 +412,252 @@
                   For metric widgets: Event ID or other reference
                 </span>
               </small>
+            </div>
+          </div>
+
+          <!-- Info Panel Configuration -->
+          <div *ngIf="isInfoPanelWidget()">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Widget Configuration</h6>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary" 
+                (click)="toggleEditorMode()">
+                <i class="fa" [class.fa-code]="editorMode === 'form'" [class.fa-list]="editorMode === 'json'"></i>
+                {{ editorMode === 'form' ? 'Switch to JSON' : 'Switch to Form' }}
+              </button>
+            </div>
+
+            <!-- Form Editor for Info Panel -->
+            <div *ngIf="editorMode === 'form'">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="headerText" class="form-label">Header Text *</label>
+                  <input 
+                    type="text" 
+                    id="headerText" 
+                    class="form-control" 
+                    [(ngModel)]="infoPanelConfig.header_text"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="Enter header text">
+                </div>
+
+                <div class="col-md-12 mb-3">
+                  <label for="contentText" class="form-label">Content Text *</label>
+                  <textarea 
+                    id="contentText" 
+                    class="form-control" 
+                    [(ngModel)]="infoPanelConfig.content_text"
+                    [ngModelOptions]="{standalone: true}"
+                    rows="4"
+                    placeholder="Enter content (HTML supported)"></textarea>
+                  <small class="form-text text-muted">Supports HTML formatting</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="bgColor" class="form-label">Background Color</label>
+                  <div class="d-flex gap-2">
+                    <input 
+                      type="color" 
+                      id="bgColor" 
+                      class="form-control form-control-color" 
+                      [(ngModel)]="infoPanelConfig.background_color"
+                      [ngModelOptions]="{standalone: true}">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [(ngModel)]="infoPanelConfig.background_color"
+                      [ngModelOptions]="{standalone: true}"
+                      placeholder="#f8f9fa">
+                  </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="textColor" class="form-label">Text Color</label>
+                  <div class="d-flex gap-2">
+                    <input 
+                      type="color" 
+                      id="textColor" 
+                      class="form-control form-control-color" 
+                      [(ngModel)]="infoPanelConfig.text_color"
+                      [ngModelOptions]="{standalone: true}">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [(ngModel)]="infoPanelConfig.text_color"
+                      [ngModelOptions]="{standalone: true}"
+                      placeholder="#212529">
+                  </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label for="borderColor" class="form-label">Border Color</label>
+                  <div class="d-flex gap-2">
+                    <input 
+                      type="color" 
+                      id="borderColor" 
+                      class="form-control form-control-color" 
+                      [(ngModel)]="infoPanelConfig.border_color"
+                      [ngModelOptions]="{standalone: true}">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [(ngModel)]="infoPanelConfig.border_color"
+                      [ngModelOptions]="{standalone: true}"
+                      placeholder="#dee2e6">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- JSON Editor -->
+            <div *ngIf="editorMode === 'json'">
+              <div class="mb-3">
+                <label for="jsonConfig" class="form-label">Widget Configuration (JSON)</label>
+                <textarea 
+                  id="jsonConfig" 
+                  class="form-control font-monospace" 
+                  [(ngModel)]="jsonConfigText"
+                  [ngModelOptions]="{standalone: true}"
+                  rows="10"
+                  placeholder='{\n  "header_text": "...",\n  "content_text": "..."\n}'></textarea>
+                <small class="form-text text-muted">Edit the widget configuration as JSON</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric Link Configuration -->
+          <div *ngIf="isMetricLinkWidget()">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Metric Link Configuration</h6>
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-secondary" 
+                (click)="toggleEditorMode()">
+                <i class="fa" [class.fa-code]="editorMode === 'form'" [class.fa-list]="editorMode === 'json'"></i>
+                {{ editorMode === 'form' ? 'Switch to JSON' : 'Switch to Form' }}
+              </button>
+            </div>
+
+            <!-- Form Editor for Metric Link -->
+            <div *ngIf="editorMode === 'form'">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="apiEndpoint" class="form-label">API Endpoint *</label>
+                  <input 
+                    type="text" 
+                    id="apiEndpoint" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.api_endpoint"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="gofiliate/endpoint?status=value">
+                  <small class="form-text text-muted">API path without leading slash (e.g., gofiliate/users?status=active)</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="countField" class="form-label">Count Field Name</label>
+                  <input 
+                    type="text" 
+                    id="countField" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.count_field"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="count">
+                  <small class="form-text text-muted">For object responses: field name containing the count. For array responses: automatically uses array length.</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="linkUrl" class="form-label">Link URL *</label>
+                  <input 
+                    type="text" 
+                    id="linkUrl" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.link_url"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="/clients/list">
+                  <small class="form-text text-muted">Route to navigate to on click</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="labelSingular" class="form-label">Label (Singular) *</label>
+                  <input 
+                    type="text" 
+                    id="labelSingular" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.label_singular"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="Active User">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="labelPlural" class="form-label">Label (Plural) *</label>
+                  <input 
+                    type="text" 
+                    id="labelPlural" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.label_plural"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="Active Users">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="metricIcon" class="form-label">Icon Class *</label>
+                  <input 
+                    type="text" 
+                    id="metricIcon" 
+                    class="form-control" 
+                    [(ngModel)]="metricLinkConfig.icon"
+                    [ngModelOptions]="{standalone: true}"
+                    placeholder="fa-user-plus">
+                  <small class="form-text text-muted">Font Awesome icon class (e.g., fa-chart-line, fa-users)</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="metricColor" class="form-label">Color Theme *</label>
+                  <select 
+                    id="metricColor" 
+                    class="form-select" 
+                    [(ngModel)]="metricLinkConfig.color"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="primary">Primary (Blue)</option>
+                    <option value="success">Success (Green)</option>
+                    <option value="info">Info (Cyan)</option>
+                    <option value="warning">Warning (Yellow)</option>
+                    <option value="danger">Danger (Red)</option>
+                    <option value="secondary">Secondary (Gray)</option>
+                  </select>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                  <div class="form-check">
+                    <input 
+                      type="checkbox" 
+                      id="hideWhenZero" 
+                      class="form-check-input" 
+                      [(ngModel)]="metricLinkConfig.hide_when_zero"
+                      [ngModelOptions]="{standalone: true}">
+                    <label for="hideWhenZero" class="form-check-label">
+                      Hide entire row when count is zero
+                    </label>
+                    <small class="form-text text-muted d-block">When enabled, if this widget's count is 0, the entire row will be hidden (only if all widgets in the row have no data)</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- JSON Editor -->
+            <div *ngIf="editorMode === 'json'">
+              <div class="mb-3">
+                <label for="jsonConfigMetric" class="form-label">Widget Configuration (JSON)</label>
+                <textarea 
+                  id="jsonConfigMetric" 
+                  class="form-control font-monospace" 
+                  [(ngModel)]="jsonConfigText"
+                  [ngModelOptions]="{standalone: true}"
+                  rows="10"
+                  placeholder='{\n  "api_endpoint": "gofiliate/endpoint",\n  "count_field": "count",\n  "link_url": "/path/to/list",\n  "label_singular": "Item",\n  "label_plural": "Items",\n  "icon": "fa-chart-line",\n  "color": "primary",\n  "hide_when_zero": true\n}'></textarea>
+                <small class="form-text text-muted">Edit the widget configuration as JSON</small>
+              </div>
             </div>
           </div>
 

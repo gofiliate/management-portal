@@ -1,0 +1,219 @@
+<app-page-header [breadcrumbs]="breadcrumbs"></app-page-header>
+
+<div class="container-fluid p-4">
+  <!-- Dashboard Selector -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Select Dashboard</label>
+          <select 
+            class="form-select" 
+            [(ngModel)]="selectedDashboardId" 
+            (ngModelChange)="onDashboardSelect()"
+            [disabled]="isLoadingDashboards"
+          >
+            <option [ngValue]="null">-- Choose a dashboard --</option>
+            <option *ngFor="let dashboard of dashboards" [ngValue]="dashboard.dashboard_id">
+              {{ dashboard.description }} ({{ dashboard.dashboard_type }})
+            </option>
+          </select>
+        </div>
+        <div class="col-md-6 text-end">
+          <button 
+            class="btn btn-primary" 
+            (click)="openAddModal()" 
+            [disabled]="!selectedDashboardId"
+          >
+            <i class="fa fa-plus me-2"></i>Add Widget
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoadingWidgets" class="text-center p-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading widgets...</span>
+    </div>
+  </div>
+
+  <!-- Dashboard Grid View -->
+  <div *ngIf="selectedDashboardId && !isLoadingWidgets" class="dashboard-grid">
+    <div *ngIf="dashboardWidgets.length === 0" class="alert alert-info">
+      <i class="fa fa-info-circle me-2"></i>
+      No widgets configured for this dashboard yet. Click "Add Widget" to get started.
+    </div>
+
+    <!-- Rows -->
+    <div *ngFor="let rowId of getSortedRowIds()" class="row mb-3">
+      <div 
+        *ngFor="let widget of getWidgetsByRow().get(rowId)" 
+        [ngClass]="'col-' + widget.col_width"
+        class="mb-3"
+      >
+        <div class="widget-card card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <i [class]="'fa ' + widget.icon + ' me-2'"></i>
+              <strong>{{ widget.header }}</strong>
+            </div>
+            <div>
+              <button 
+                class="btn btn-sm btn-outline-primary me-2" 
+                (click)="openEditModal(widget)"
+                title="Edit"
+              >
+                <i class="fa fa-edit"></i>
+              </button>
+              <button 
+                class="btn btn-sm btn-outline-danger" 
+                (click)="deleteWidget(widget)"
+                title="Remove"
+              >
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="mb-1"><strong>Type:</strong> {{ widget.component_name }}</p>
+            <p class="mb-1"><strong>Position:</strong> Row {{ widget.row_id }}, Position {{ widget.position_id }}</p>
+            <p class="mb-1"><strong>Width:</strong> {{ widget.col_width }} columns</p>
+            <p class="mb-0"><strong>Config:</strong> {{ widget.widget_config ? 'Yes' : 'None' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editMode === 'add' ? 'Add Widget' : 'Edit Widget' }}</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Basic Settings -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Widget</label>
+            <select class="form-select" [(ngModel)]="editingWidget.widget_id" [disabled]="editMode === 'edit'">
+              <option [ngValue]="null">-- Select widget --</option>
+              <option *ngFor="let widget of availableWidgets" [ngValue]="widget.widget_id">
+                {{ widget.header }} ({{ widget.slug }})
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Row</label>
+            <input type="number" class="form-control" [(ngModel)]="editingWidget.row_id" min="1">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Position</label>
+            <input type="number" class="form-control" [(ngModel)]="editingWidget.position_id" min="1">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Width (cols)</label>
+            <select class="form-select" [(ngModel)]="editingWidget.col_width">
+              <option [ngValue]="1">1</option>
+              <option [ngValue]="2">2</option>
+              <option [ngValue]="3">3</option>
+              <option [ngValue]="4">4</option>
+              <option [ngValue]="6">6</option>
+              <option [ngValue]="8">8</option>
+              <option [ngValue]="9">9</option>
+              <option [ngValue]="12">12</option>
+            </select>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Widget Configuration -->
+        <div *ngIf="editingWidget.widget_id">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Widget Configuration</h6>
+            <button 
+              *ngIf="isInfoPanelWidget()" 
+              class="btn btn-sm btn-outline-secondary" 
+              (click)="toggleEditorMode()"
+            >
+              <i class="fa fa-exchange-alt me-2"></i>
+              Switch to {{ useJsonEditor ? 'Form' : 'JSON' }} Editor
+            </button>
+          </div>
+
+          <!-- Info Panel Form Editor -->
+          <div *ngIf="isInfoPanelWidget() && !useJsonEditor">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Header Text</label>
+                <input type="text" class="form-control" [(ngModel)]="infoPanelConfig.header_text" placeholder="Welcome Guide">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Background Color</label>
+                <div class="input-group">
+                  <input type="color" class="form-control form-control-color" [(ngModel)]="infoPanelConfig.background_color">
+                  <input type="text" class="form-control" [(ngModel)]="infoPanelConfig.background_color" placeholder="#f8f9fa">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Content Text</label>
+              <textarea 
+                class="form-control" 
+                [(ngModel)]="infoPanelConfig.content_text" 
+                rows="4"
+                placeholder="Enter your message here..."
+              ></textarea>
+              <small class="form-text text-muted">Supports HTML tags for basic formatting</small>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Text Color</label>
+                <div class="input-group">
+                  <input type="color" class="form-control form-control-color" [(ngModel)]="infoPanelConfig.text_color">
+                  <input type="text" class="form-control" [(ngModel)]="infoPanelConfig.text_color" placeholder="#212529">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Border Color</label>
+                <div class="input-group">
+                  <input type="color" class="form-control form-control-color" [(ngModel)]="infoPanelConfig.border_color">
+                  <input type="text" class="form-control" [(ngModel)]="infoPanelConfig.border_color" placeholder="#dee2e6">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- JSON Editor (for all widgets or when toggled) -->
+          <div *ngIf="useJsonEditor || !isInfoPanelWidget()">
+            <label class="form-label">Configuration JSON</label>
+            <textarea 
+              class="form-control font-monospace" 
+              [(ngModel)]="jsonEditorText" 
+              rows="10"
+              placeholder='{"key": "value"}'
+            ></textarea>
+            <small class="form-text text-muted">Enter valid JSON configuration</small>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveWidget()">
+          <i class="fa fa-save me-2"></i>Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade" [class.show]="showEditModal" *ngIf="showEditModal"></div>

@@ -1,0 +1,36 @@
+.metric-link-widget {
+  .metric-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    &:focus {
+      outline: 2px solid #0d6efd;
+      outline-offset: 2px;
+    }
+
+    .card-body {
+      min-height: 120px;
+    }
+  }
+
+  // Ensure text is readable on colored backgrounds
+  &.bg-primary,
+  &.bg-success,
+  &.bg-danger,
+  &.bg-dark {
+    .card-body {
+      color: white;
+    }
+  }
+
+  // Loading and error states
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+}

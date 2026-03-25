@@ -1,0 +1,45 @@
+.dashboard-grid {
+  min-height: 400px;
+}
+
+.widget-card {
+  border: 2px solid #dee2e6;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .card-body {
+    font-size: 0.9rem;
+
+    p {
+      margin-bottom: 0.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.modal {
+  &.show {
+    display: block !important;
+  }
+}
+
+.form-control-color {
+  width: 60px;
+  padding: 0.25rem;
+}
+
+.font-monospace {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+}
