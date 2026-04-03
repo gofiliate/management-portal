@@ -37,12 +37,10 @@ export class OnboardingRequestDetailComponent implements OnInit {
   rejectionReason = '';
   clientIdToLink: number | null = null;
   selectedSectionForAssignment: number | null = null;
-  userIdForAssignment: number | null = null;
+  assigneeEmail = '';
+  assignmentNote = '';
   
-  // User search
-  users: any[] = [];
-  filteredUsers: any[] = [];
-  userSearchTerm = '';
+  // Client search for linking
   clients: any[] = [];
   filteredClients: any[] = [];
   clientSearchTerm = '';
@@ -59,22 +57,7 @@ export class OnboardingRequestDetailComponent implements OnInit {
       this.loadRequest(parseInt(requestId));
       this.loadActivities(parseInt(requestId));
     }
-    this.loadUsers();
     this.loadClients();
-  }
-
-  loadUsers(): void {
-    this.gofiliateService.getUsers().subscribe({
-      next: (response) => {
-        if (response && response.users) {
-          this.users = response.users;
-          this.filteredUsers = [...this.users];
-        }
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-      }
-    });
   }
 
   loadClients(): void {
@@ -91,19 +74,6 @@ export class OnboardingRequestDetailComponent implements OnInit {
     });
   }
 
-  filterUsers(): void {
-    if (!this.userSearchTerm.trim()) {
-      this.filteredUsers = [...this.users];
-    } else {
-      const term = this.userSearchTerm.toLowerCase();
-      this.filteredUsers = this.users.filter(u => 
-        u.name?.toLowerCase().includes(term) ||
-        u.email?.toLowerCase().includes(term) ||
-        u.user_id?.toString().includes(term)
-      );
-    }
-  }
-
   filterClients(): void {
     if (!this.clientSearchTerm.trim()) {
       this.filteredClients = [...this.clients];
@@ -115,10 +85,6 @@ export class OnboardingRequestDetailComponent implements OnInit {
         c.client_id?.toString().includes(term)
       );
     }
-  }
-
-  selectUser(userId: number): void {
-    this.userIdForAssignment = userId;
   }
 
   selectClient(clientId: number): void {
@@ -198,6 +164,12 @@ export class OnboardingRequestDetailComponent implements OnInit {
   getAssignmentsForSection(sectionId: number): OnboardingRequestAssignment[] {
     if (!this.request?.assignments) return [];
     return this.request.assignments.filter(a => a.section_id === sectionId);
+  }
+
+  // Get section by ID
+  getSectionById(sectionId: number): OnboardingRequestSection | undefined {
+    if (!this.request?.sections) return undefined;
+    return this.request.sections.find(s => s.section_id === sectionId);
   }
 
   // Check if request can be approved
@@ -286,18 +258,19 @@ export class OnboardingRequestDetailComponent implements OnInit {
   // Assign User
   openAssignUserModal(sectionId: number): void {
     this.selectedSectionForAssignment = sectionId;
-    this.userIdForAssignment = null;
-    this.userSearchTerm = '';
-    this.filteredUsers = [...this.users];
+    this.assigneeEmail = '';
+    this.assignmentNote = '';
     this.showAssignUserModal = true;
   }
 
   confirmAssignUser(): void {
-    if (!this.request || !this.selectedSectionForAssignment || !this.userIdForAssignment) return;
+    if (!this.request || !this.selectedSectionForAssignment || !this.assigneeEmail.trim()) return;
     
-    this.gofiliateService.assignUserToSection(this.request.request_id, {
+    this.gofiliateService.assignUserToSection({
+      request_id: this.request.request_id,
       section_id: this.selectedSectionForAssignment,
-      user_id: this.userIdForAssignment
+      assignee_email: this.assigneeEmail.trim(),
+      note: this.assignmentNote.trim() || undefined
     }).subscribe({
       next: () => {
         this.showAssignUserModal = false;

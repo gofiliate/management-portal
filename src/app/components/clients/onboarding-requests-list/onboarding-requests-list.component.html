@@ -1,12 +1,11 @@
-<app-page-header
-  title="Onboarding Requests"
-  [breadcrumbs]="breadcrumbs">
-  <button class="btn btn-primary" (click)="createNewRequest()">
-    <i class="fa fa-plus"></i> New Request
-  </button>
-</app-page-header>
-
 <div class="container-fluid">
+  <!-- Header with New Request Button -->
+  <div class="d-flex justify-content-end mb-4">
+    <button class="btn btn-primary" (click)="createNewRequest()">
+      <i class="fa fa-plus"></i> New Request
+    </button>
+  </div>
+
   <!-- Status Filter Tabs -->
   <div class="card mb-4">
     <div class="card-body">

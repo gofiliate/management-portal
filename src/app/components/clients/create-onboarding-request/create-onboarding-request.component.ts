@@ -80,7 +80,7 @@ export class CreateOnboardingRequestComponent implements OnInit {
       section_type: 'custom',
       section_title: 'Compliance & Legal Documents',
       section_description: 'Upload required licenses, certifications, and legal agreements',
-      is_required: true,
+      is_required: false,
       display_order: 4
     },
     {
@@ -94,7 +94,7 @@ export class CreateOnboardingRequestComponent implements OnInit {
       section_type: 'custom',
       section_title: 'Payment Terms',
       section_description: 'Commission structure, payment schedule, and financial arrangements',
-      is_required: true,
+      is_required: false,
       display_order: 6
     }
   ];

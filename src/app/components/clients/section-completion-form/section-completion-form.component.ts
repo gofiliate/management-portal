@@ -31,6 +31,17 @@ export class SectionCompletionFormComponent implements OnInit {
 
   // Field definitions based on section type
   fieldDefinitions: { [key: string]: SectionField[] } = {
+    company_info: [
+      { key: 'legal_company_name', label: 'Legal Company Name', type: 'text', required: true },
+      { key: 'registration_number', label: 'Registration Number', type: 'text', required: true },
+      { key: 'tax_id', label: 'Tax ID', type: 'text', required: true },
+      { key: 'incorporation_date', label: 'Incorporation Date', type: 'date', required: true },
+      { key: 'business_type', label: 'Business Type', type: 'select', required: true, options: ['Corporation', 'LLC', 'Partnership', 'Sole Proprietorship'] },
+      { key: 'address', label: 'Registered Address', type: 'textarea', required: true },
+      { key: 'city', label: 'City', type: 'text', required: true },
+      { key: 'country', label: 'Country', type: 'text', required: true },
+      { key: 'postal_code', label: 'Postal Code', type: 'text', required: true }
+    ],
     company_details: [
       { key: 'legal_company_name', label: 'Legal Company Name', type: 'text', required: true },
       { key: 'registration_number', label: 'Registration Number', type: 'text', required: true },
@@ -83,6 +94,38 @@ export class SectionCompletionFormComponent implements OnInit {
       { key: 'minimum_payout', label: 'Minimum Payout Amount', type: 'number', required: true },
       { key: 'currency', label: 'Currency', type: 'text', required: true },
       { key: 'special_terms', label: 'Special Terms', type: 'textarea', required: false }
+    ],
+    billing_info: [
+      { key: 'billing_company_name', label: 'Billing Company Name', type: 'text', required: true },
+      { key: 'billing_address', label: 'Billing Address', type: 'textarea', required: true },
+      { key: 'billing_city', label: 'City', type: 'text', required: true },
+      { key: 'billing_state', label: 'State/Province', type: 'text', required: false },
+      { key: 'billing_postal_code', label: 'Postal Code', type: 'text', required: true },
+      { key: 'billing_country', label: 'Country', type: 'text', required: true },
+      { key: 'billing_email', label: 'Billing Email', type: 'email', required: true },
+      { key: 'billing_phone', label: 'Billing Phone', type: 'tel', required: true },
+      { key: 'tax_id', label: 'Tax ID / VAT Number', type: 'text', required: false },
+      { key: 'billing_notes', label: 'Additional Billing Notes', type: 'textarea', required: false }
+    ],
+    technical_contacts: [
+      { key: 'primary_tech_name', label: 'Primary Technical Contact Name', type: 'text', required: true },
+      { key: 'primary_tech_email', label: 'Primary Technical Contact Email', type: 'email', required: true },
+      { key: 'primary_tech_phone', label: 'Primary Technical Contact Phone', type: 'tel', required: true },
+      { key: 'primary_tech_role', label: 'Primary Contact Role', type: 'text', required: false },
+      { key: 'secondary_tech_name', label: 'Secondary Technical Contact Name', type: 'text', required: false },
+      { key: 'secondary_tech_email', label: 'Secondary Technical Contact Email', type: 'email', required: false },
+      { key: 'secondary_tech_phone', label: 'Secondary Technical Contact Phone', type: 'tel', required: false },
+      { key: 'secondary_tech_role', label: 'Secondary Contact Role', type: 'text', required: false },
+      { key: 'emergency_contact', label: 'Emergency Contact Number', type: 'tel', required: false },
+      { key: 'preferred_contact_method', label: 'Preferred Contact Method', type: 'select', required: true, options: ['Email', 'Phone', 'Slack', 'Teams'] },
+      { key: 'timezone', label: 'Timezone', type: 'text', required: false },
+      { key: 'availability_notes', label: 'Availability Notes', type: 'textarea', required: false }
+    ],
+    custom: [
+      { key: 'title', label: 'Title', type: 'text', required: false },
+      { key: 'description', label: 'Description', type: 'textarea', required: false },
+      { key: 'value', label: 'Value', type: 'text', required: false },
+      { key: 'notes', label: 'Notes', type: 'textarea', required: false }
     ]
   };
 
@@ -93,36 +136,37 @@ export class SectionCompletionFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.requestId = parseInt(this.route.snapshot.paramMap.get('requestId') || '0');
     this.sectionId = parseInt(this.route.snapshot.paramMap.get('sectionId') || '0');
 
-    if (this.requestId && this.sectionId) {
+    if (this.sectionId) {
       this.loadSection();
     }
   }
 
   loadSection(): void {
-    if (!this.requestId || !this.sectionId) return;
+    if (!this.sectionId) return;
 
     this.isLoading = true;
-    this.gofiliateService.getOnboardingRequest(this.requestId).subscribe({
-      next: (response) => {
-        if (response && response.sections) {
-          this.section = response.sections.find((s: OnboardingRequestSection) => s.section_id === this.sectionId) || null;
-          if (this.section) {
-            this.breadcrumbs[2].label = this.section.section_title;
-            // Load existing data if any
-            if (this.section.section_data) {
-              this.formData = typeof this.section.section_data === 'string' 
-                ? JSON.parse(this.section.section_data) 
-                : this.section.section_data;
-            }
+    // First, load the section to get its request_id
+    this.gofiliateService.getOnboardingSection(this.sectionId).subscribe({
+      next: (section) => {
+        if (section && section.request_id) {
+          this.requestId = section.request_id;
+          this.section = section;
+          this.breadcrumbs[2].label = section.section_title;
+          
+          // Load existing data if any
+          if (section.section_data) {
+            this.formData = typeof section.section_data === 'string' 
+              ? JSON.parse(section.section_data) 
+              : section.section_data;
           }
         }
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading section:', error);
+        this.section = null;
         this.isLoading = false;
       }
     });

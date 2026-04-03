@@ -477,51 +477,55 @@ export class GofiliateService {
 
   // Onboarding Requests API
   createOnboardingRequest(data: any): Observable<any> {
-    return this.apiService.post('gofiliate/onboarding-requests', data, false);
+    return this.apiService.post('onboarding/requests', data, false);
   }
 
   getOnboardingRequests(status?: string): Observable<any> {
     const params = status ? `?status=${status}` : '';
-    return this.apiService.get(`gofiliate/onboarding-requests${params}`, false);
+    return this.apiService.get(`onboarding/requests${params}`, false);
   }
 
   getOnboardingRequest(requestId: number): Observable<any> {
-    return this.apiService.get(`gofiliate/onboarding-requests/${requestId}`, false);
+    return this.apiService.get(`onboarding/requests/${requestId}`, false);
+  }
+
+  getOnboardingSection(sectionId: number): Observable<any> {
+    return this.apiService.get(`onboarding/sections/${sectionId}`, false);
   }
 
   getOnboardingRequestByReference(reference: string): Observable<any> {
-    return this.apiService.get(`gofiliate/onboarding-requests/reference/${reference}`, false);
+    return this.apiService.get(`onboarding/requests/reference/${reference}`, false);
   }
 
   updateOnboardingRequest(requestId: number, data: any): Observable<any> {
-    return this.apiService.put(`gofiliate/onboarding-requests/${requestId}`, data, false);
+    return this.apiService.put(`onboarding/requests/${requestId}`, data, false);
   }
 
   approveOnboardingRequest(requestId: number, data: any): Observable<any> {
-    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/approve`, data, false);
+    return this.apiService.post(`onboarding/requests/${requestId}/approve`, data, false);
   }
 
   rejectOnboardingRequest(requestId: number, data: any): Observable<any> {
-    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/reject`, data, false);
+    return this.apiService.post(`onboarding/requests/${requestId}/reject`, data, false);
   }
 
   linkClientToRequest(requestId: number, clientId: number): Observable<any> {
-    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/link-client`, { client_id: clientId }, false);
+    return this.apiService.post(`onboarding/requests/${requestId}/link-client`, { client_id: clientId }, false);
   }
 
   getRequestActivity(requestId: number): Observable<any> {
-    return this.apiService.get(`gofiliate/onboarding-requests/${requestId}/activity`, false);
+    return this.apiService.get(`onboarding/requests/${requestId}/activity`, false);
   }
 
   updateSection(requestId: number, sectionId: number, data: any): Observable<any> {
-    return this.apiService.put(`gofiliate/onboarding-requests/${requestId}/sections/${sectionId}`, data, false);
+    return this.apiService.put(`onboarding/requests/${requestId}/sections/${sectionId}`, data, false);
   }
 
-  assignUserToSection(requestId: number, data: any): Observable<any> {
-    return this.apiService.post(`gofiliate/onboarding-requests/${requestId}/assignments`, data, false);
+  assignUserToSection(data: any): Observable<any> {
+    return this.apiService.post('onboarding/assignments', data, false);
   }
 
   getUserAssignments(): Observable<any> {
-    return this.apiService.get('gofiliate/onboarding-assignments', false);
+    return this.apiService.get('onboarding/assignments', false);
   }
 }

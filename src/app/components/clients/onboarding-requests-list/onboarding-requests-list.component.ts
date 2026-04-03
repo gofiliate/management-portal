@@ -13,11 +13,7 @@ import { OnboardingRequest } from '../../../models/onboarding.model';
   styleUrl: './onboarding-requests-list.component.scss'
 })
 export class OnboardingRequestsListComponent implements OnInit {
-  breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Clients', link: '/clients' },
-    { label: 'Onboarding', link: '/clients/onboarding' },
-    { label: 'Requests' }
-  ];
+  breadcrumbs: BreadcrumbItem[] = [];
 
   requests: OnboardingRequest[] = [];
   filteredRequests: OnboardingRequest[] = [];

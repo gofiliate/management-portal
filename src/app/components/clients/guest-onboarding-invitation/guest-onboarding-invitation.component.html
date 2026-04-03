@@ -1,0 +1,119 @@
+<div class="guest-invitation-container">
+  <div class="invitation-card">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Validating invitation...</p>
+    </div>
+
+    <!-- Invalid Token State -->
+    <div *ngIf="!isLoading && !isValidToken" class="text-center">
+      <div class="alert alert-danger">
+        <h4>Invalid Invitation</h4>
+        <p>This invitation link is invalid, has expired, or has already been used.</p>
+      </div>
+      <a routerLink="/sign-in" class="btn btn-primary">Go to Sign In</a>
+    </div>
+
+    <!-- Valid Token - Show Onboarding Context -->
+    <div *ngIf="!isLoading && isValidToken">
+      <div class="text-center">
+        <div class="welcome-icon mb-4">
+          <i class="fa fa-clipboard-list fa-4x text-primary"></i>
+        </div>
+        
+        <h2>Welcome to Your Client Onboarding!</h2>
+        <p class="text-muted mb-4">You've been invited to complete a client onboarding request.</p>
+        
+        <div *ngIf="invitation" class="invitation-details">
+          <!-- Onboarding Request Invitation -->
+          <div *ngIf="invitation.invitation_type === 'onboarding_request' && invitation.onboarding_request" class="detail-box">
+            <div class="detail-label">Company</div>
+            <div class="detail-value">
+              <strong>{{ invitation.onboarding_request.company_name_preliminary }}</strong>
+            </div>
+            <div class="detail-email">Reference: {{ invitation.onboarding_request.request_reference }}</div>
+          </div>
+
+          <!-- Section Assignment Invitation -->
+          <div *ngIf="invitation.invitation_type === 'onboarding_section' && invitation.onboarding_request" class="detail-box">
+            <div class="detail-label">Section Assignment</div>
+            <div class="detail-value">
+              <strong>{{ invitation.onboarding_request.company_name_preliminary }}</strong>
+            </div>
+            <div class="detail-email">You've been assigned to complete a specific section</div>
+          </div>
+
+          <!-- Regular User Invitation -->
+          <div *ngIf="invitation.invitation_type === 'user' && invitation.invitation" class="detail-box">
+            <div class="detail-label">Invited As</div>
+            <div class="detail-value">
+              <strong>{{ invitation.invitation.given_name }}</strong>
+            </div>
+            <div class="detail-email">{{ invitation.invitation.email }}</div>
+          </div>
+
+          <div class="info-message">
+            <i class="fa fa-info-circle me-2"></i>
+            <div>
+              <strong>Next Steps:</strong>
+              <ol class="text-start mb-0 mt-2">
+                <li>Click "Continue to Sign In" below</li>
+                <li>Sign in with your credentials</li>
+                <li *ngIf="invitation.invitation_type === 'user'">Set up your password (first-time users)</li>
+                <li *ngIf="invitation.invitation_type === 'onboarding_request'">Complete your assigned onboarding sections</li>
+                <li *ngIf="invitation.invitation_type === 'onboarding_section'">Complete your assigned section</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="features-list">
+            <h6 class="mb-3">What to Expect</h6>
+            <div class="feature-item">
+              <i class="fa fa-check-circle text-success"></i>
+              <span>Complete required onboarding sections</span>
+            </div>
+            <div class="feature-item">
+              <i class="fa fa-check-circle text-success"></i>
+              <span>Upload necessary documents and information</span>
+            </div>
+            <div class="feature-item">
+              <i class="fa fa-check-circle text-success"></i>
+              <span>Track your progress in real-time</span>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          type="button" 
+          class="btn btn-primary btn-lg mt-4"
+          (click)="goToSignIn()"
+        >
+          <i class="fa fa-sign-in me-2"></i>
+          Continue to Sign In
+        </button>
+
+        <p class="mt-3 text-muted small">
+          <!-- Show assignee email for section assignments -->
+          <span *ngIf="invitation?.invitation_type === 'onboarding_section' && invitation?.assignee_email">
+            Sign in with: <strong>{{ invitation.assignee_email }}</strong>
+          </span>
+          <!-- Show contact email for full request invitations -->
+          <span *ngIf="invitation?.invitation_type === 'onboarding_request' && invitation?.onboarding_request?.contact_email">
+            Sign in with: <strong>{{ invitation.onboarding_request.contact_email }}</strong>
+          </span>
+          <!-- Show user email for user invitations -->
+          <span *ngIf="invitation?.invitation_type === 'user' && invitation?.invitation?.email">
+            Sign in with: <strong>{{ invitation.invitation.email }}</strong>
+          </span>
+          <!-- Fallback message -->
+          <span *ngIf="!invitation?.onboarding_request?.contact_email && !invitation?.assignee_email && invitation?.invitation_type !== 'user'">
+            Already have an account? Just sign in with your email address.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -49,7 +49,28 @@ export class TotpVerifyComponent implements OnInit {
     this.authService.verifyTOTPLogin(this.username, this.code).subscribe({
       next: (session) => {
         this.authService.saveSession(session);
-        this.router.navigate(['/dashboard']);
+        
+        // Check for pending onboarding redirect
+        const pendingRedirect = sessionStorage.getItem('pending_onboarding_redirect');
+        if (pendingRedirect) {
+          try {
+            const redirect = JSON.parse(pendingRedirect);
+            sessionStorage.removeItem('pending_onboarding_redirect');
+            
+            if (redirect.type === 'request') {
+              this.router.navigate(['/onboarding/request', redirect.requestId]);
+            } else if (redirect.type === 'section') {
+              this.router.navigate(['/onboarding/section', redirect.sectionId]);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+          } catch (e) {
+            console.error('Error parsing pending redirect:', e);
+            this.router.navigate(['/dashboard']);
+          }
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (error) => {
         this.isLoading = false;
@@ -71,7 +92,28 @@ export class TotpVerifyComponent implements OnInit {
     this.authService.useBackupCode(this.username, this.backupCode).subscribe({
       next: (session) => {
         this.authService.saveSession(session);
-        this.router.navigate(['/dashboard']);
+        
+        // Check for pending onboarding redirect
+        const pendingRedirect = sessionStorage.getItem('pending_onboarding_redirect');
+        if (pendingRedirect) {
+          try {
+            const redirect = JSON.parse(pendingRedirect);
+            sessionStorage.removeItem('pending_onboarding_redirect');
+            
+            if (redirect.type === 'request') {
+              this.router.navigate(['/onboarding/request', redirect.requestId]);
+            } else if (redirect.type === 'section') {
+              this.router.navigate(['/onboarding/section', redirect.sectionId]);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+          } catch (e) {
+            console.error('Error parsing pending redirect:', e);
+            this.router.navigate(['/dashboard']);
+          }
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (error) => {
         this.isLoading = false;

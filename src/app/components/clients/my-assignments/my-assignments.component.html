@@ -1,0 +1,132 @@
+<app-page-header 
+  [title]="'My Assignments'" 
+  [breadcrumbs]="breadcrumbs">
+</app-page-header>
+
+<div class="container-fluid">
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading assignments...</span>
+    </div>
+    <p class="text-muted mt-3">Loading your assignments...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && groupedAssignments.length === 0" class="text-center py-5">
+    <i class="fa fa-clipboard-list fa-3x text-muted mb-3"></i>
+    <h4 class="text-muted">No Assignments</h4>
+    <p class="text-muted">You don't have any onboarding sections assigned to you yet.</p>
+  </div>
+
+  <!-- Assignments Grouped by Request -->
+  <div *ngIf="!isLoading && groupedAssignments.length > 0">
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          <i class="fa fa-info-circle me-2"></i>
+          You have <strong>{{ assignments.length }}</strong> section{{ assignments.length !== 1 ? 's' : '' }} assigned across <strong>{{ groupedAssignments.length }}</strong> onboarding request{{ groupedAssignments.length !== 1 ? 's' : '' }}.
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Cards -->
+    <div *ngFor="let group of groupedAssignments" class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h5 class="mb-1">
+              <i class="fa fa-building me-2 text-primary"></i>
+              {{ group.request.company_name_preliminary }}
+            </h5>
+            <small class="text-muted">
+              Reference: {{ group.request.request_reference }} • 
+              Created {{ group.request.created_at | date:'short' }}
+            </small>
+          </div>
+          <div class="col-md-4 text-right">
+            <span class="badge" [ngClass]="getRequestStatusBadge(group.request.status)">
+              {{ getRequestStatusText(group.request.status) }}
+            </span>
+            <button 
+              class="btn btn-sm btn-outline-primary ms-2" 
+              (click)="viewRequest(group.request.request_id)">
+              <i class="fa fa-eye"></i> View Request
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <h6 class="mb-3">
+          <i class="fa fa-tasks me-2"></i>
+          Your Assigned Sections ({{ group.assignments.length }})
+        </h6>
+        
+        <!-- Section Cards -->
+        <div class="row">
+          <div *ngFor="let assignment of group.assignments" class="col-md-6 mb-3">
+            <div class="card section-card" [class.border-success]="assignment.section.status === 'completed'">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="mb-0">
+                    <span class="badge bg-light text-dark me-2">#{{ assignment.section.display_order }}</span>
+                    {{ assignment.section.section_title }}
+                  </h6>
+                  <span class="badge" [ngClass]="getSectionStatusBadge(assignment.section.status)">
+                    {{ getSectionStatusText(assignment.section.status) }}
+                  </span>
+                </div>
+                
+                <p class="text-muted small mb-2" *ngIf="assignment.section.section_description">
+                  {{ assignment.section.section_description }}
+                </p>
+                
+                <div class="section-meta">
+                  <small class="text-muted">
+                    <i class="fa fa-calendar me-1"></i>
+                    Assigned {{ assignment.assignment.created_at | date:'short' }}
+                  </small>
+                  <br>
+                  <small class="text-muted" *ngIf="assignment.assignment.last_viewed_at">
+                    <i class="fa fa-eye me-1"></i>
+                    Last viewed {{ assignment.assignment.last_viewed_at | date:'short' }}
+                  </small>
+                  <small class="text-muted" *ngIf="!assignment.assignment.last_viewed_at">
+                    <i class="fa fa-exclamation-circle me-1 text-warning"></i>
+                    Not viewed yet
+                  </small>
+                </div>
+                
+                <div *ngIf="assignment.assignment.assignment_note" class="alert alert-light mt-2 mb-0">
+                  <small>
+                    <i class="fa fa-comment me-1"></i>
+                    <strong>Note:</strong> {{ assignment.assignment.assignment_note }}
+                  </small>
+                </div>
+                
+                <div class="mt-3">
+                  <button 
+                    *ngIf="assignment.section.status !== 'completed'"
+                    class="btn btn-primary btn-sm w-100" 
+                    (click)="completeSection(group.request.request_id, assignment.section.section_id)">
+                    <i class="fa fa-edit me-1"></i>
+                    {{ assignment.section.status === 'in_progress' ? 'Continue Section' : 'Start Section' }}
+                  </button>
+                  
+                  <button 
+                    *ngIf="assignment.section.status === 'completed'"
+                    class="btn btn-success btn-sm w-100" 
+                    disabled>
+                    <i class="fa fa-check me-1"></i>
+                    Completed {{ assignment.section.completed_at | date:'short' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

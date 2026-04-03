@@ -447,48 +447,39 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Search for a user to assign to this section:</p>
+        <p class="mb-3">Invite someone to complete this section. They will receive an email with a direct link.</p>
         
-        <!-- Search Input -->
+        <!-- Section Info -->
+        <div *ngIf="request && selectedSectionForAssignment" class="alert alert-info mb-3">
+          <strong>Section:</strong> {{ getSectionById(selectedSectionForAssignment)?.section_title }}<br>
+          <strong>Company:</strong> {{ request.company_name_preliminary }}<br>
+          <strong>Reference:</strong> {{ request.request_reference }}
+        </div>
+
+        <!-- Email Input -->
         <div class="form-group">
+          <label for="assigneeEmail">Email Address <span class="text-danger">*</span></label>
           <input 
-            type="text" 
+            type="email" 
+            id="assigneeEmail"
             class="form-control" 
-            [(ngModel)]="userSearchTerm"
-            (ngModelChange)="filterUsers()"
-            placeholder="Search by name, email, or user ID...">
+            [(ngModel)]="assigneeEmail"
+            placeholder="Enter email address..."
+            required>
+          <small class="form-text text-muted">
+            If this is a new user, they'll receive an invitation to create an account.
+          </small>
         </div>
 
-        <!-- Selected User -->
-        <div *ngIf="userIdForAssignment" class="alert alert-info">
-          <strong>Selected:</strong> User ID {{ userIdForAssignment }}
-        </div>
-
-        <!-- User List -->
-        <div class="search-results">
-          <div 
-            *ngFor="let user of filteredUsers.slice(0, 10)"
-            class="search-result-item"
-            [class.selected]="userIdForAssignment === user.user_id"
-            (click)="selectUser(user.user_id)">
-            <div class="result-header">
-              <strong>{{ user.name || 'Unnamed User' }}</strong>
-              <span class="badge badge-secondary">ID: {{ user.user_id }}</span>
-            </div>
-            <div class="result-details">
-              <small class="text-muted">{{ user.email || 'No email' }}</small>
-            </div>
-          </div>
-
-          <!-- No Results -->
-          <div *ngIf="filteredUsers.length === 0" class="text-center py-3 text-muted">
-            <i class="fa fa-search"></i> No users found
-          </div>
-
-          <!-- Too Many Results -->
-          <div *ngIf="filteredUsers.length > 10" class="text-center py-2 text-muted">
-            <small>Showing first 10 of {{ filteredUsers.length }} results. Refine your search.</small>
-          </div>
+        <!-- Optional Note -->
+        <div class="form-group">
+          <label for="assignmentNote">Note or Instructions (Optional)</label>
+          <textarea 
+            id="assignmentNote"
+            class="form-control" 
+            [(ngModel)]="assignmentNote"
+            rows="3"
+            placeholder="Add any special instructions or context for this assignment..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -496,9 +487,9 @@
         <button 
           type="button" 
           class="btn btn-primary" 
-          [disabled]="!userIdForAssignment"
+          [disabled]="!assigneeEmail.trim()"
           (click)="confirmAssignUser()">
-          <i class="fa fa-user-plus"></i> Assign User
+          <i class="fa fa-paper-plane"></i> Send Invitation
         </button>
       </div>
     </div>

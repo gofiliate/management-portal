@@ -38,6 +38,7 @@ export interface OnboardingRequestSection {
   display_order: number;
   created_at: string;
   updated_at: string;
+  assignments?: OnboardingRequestAssignment[];
 }
 
 export interface OnboardingRequestAssignment {
@@ -108,7 +109,7 @@ export interface RejectOnboardingRequest {
 
 export interface AssignUserToSectionRequest {
   section_id: number;
-  user_id: number;
+  assignee_email: string;
   note?: string;
 }
 

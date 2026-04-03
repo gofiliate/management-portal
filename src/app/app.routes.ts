@@ -14,6 +14,9 @@ import { OnboardingRequestsListComponent } from './components/clients/onboarding
 import { OnboardingRequestDetailComponent } from './components/clients/onboarding-request-detail/onboarding-request-detail.component';
 import { CreateOnboardingRequestComponent } from './components/clients/create-onboarding-request/create-onboarding-request.component';
 import { SectionCompletionFormComponent } from './components/clients/section-completion-form/section-completion-form.component';
+import { GuestOnboardingInvitationComponent } from './components/clients/guest-onboarding-invitation/guest-onboarding-invitation.component';
+import { GuestOnboardingDashboardComponent } from './components/clients/guest-onboarding-dashboard/guest-onboarding-dashboard.component';
+import { MyAssignmentsComponent } from './components/clients/my-assignments/my-assignments.component';
 import { ClientDashboardComponent } from './components/clients/client-dashboard/client-dashboard.component';
 import { ManageInstanceComponent } from './components/clients/manage-instance/manage-instance.component';
 import { ManageInstanceOldComponent } from './components/clients/manage-instance-old/manage-instance-old.component';
@@ -104,6 +107,16 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'onboarding',
+    component: LoggedInComponent,
+    data: { title: 'Onboarding', main: 'Home', breadcrumb: 'Onboarding', mainUrl: '/dashboard' },
+    children: [
+      { path: 'my-assignments', canActivate: [AuthGuard], component: MyAssignmentsComponent, data: { title: 'My Assignments', breadcrumb: 'My Assignments' } },
+      { path: 'request/:requestId', canActivate: [AuthGuard], component: GuestOnboardingDashboardComponent, data: { title: 'Onboarding Request', breadcrumb: 'Request' } },
+      { path: 'section/:sectionId', canActivate: [AuthGuard], component: SectionCompletionFormComponent, data: { title: 'Complete Section', breadcrumb: 'Complete' } }
+    ]
+  },
+  {
     path: '',
    
     component: LoggedOutComponent,
@@ -112,7 +125,8 @@ export const routes: Routes = [
       { path: 'sign-in', component: SignInComponent },
       { path: 'verify-totp', component: TotpVerifyComponent },
       { path: 'totp-setup', component: TotpSetupComponent },
-      { path: '2fa/invite/:token', component: InvitationAcceptComponent }
+      { path: '2fa/invite/:token', component: InvitationAcceptComponent },
+      { path: 'onboarding/guest/:token', component: GuestOnboardingInvitationComponent }
     ]
   }
 ];

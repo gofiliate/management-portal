@@ -1,0 +1,48 @@
+.section-card {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15);
+  }
+
+  &.border-success {
+    border-width: 2px;
+  }
+}
+
+.section-meta {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.alert-info {
+  background-color: #e7f3ff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.ms-2 {
+  margin-left: 0.5rem;
+}
+
+.me-1 {
+  margin-right: 0.25rem;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
+}

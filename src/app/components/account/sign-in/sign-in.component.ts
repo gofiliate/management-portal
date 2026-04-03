@@ -94,9 +94,36 @@ export class SignInComponent {
         // Normal login success - save session
         this.auth.saveSession(session);
         this.toast.success('Successfully Logged In', 'Login Success');
-        setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 10);
+        
+        // Check for pending onboarding redirect
+        const pendingRedirect = sessionStorage.getItem('pending_onboarding_redirect');
+        if (pendingRedirect) {
+          try {
+            const redirect = JSON.parse(pendingRedirect);
+            sessionStorage.removeItem('pending_onboarding_redirect');
+            
+            setTimeout(() => {
+              if (redirect.type === 'request') {
+                this.router.navigate(['/onboarding/request', redirect.requestId]);
+              } else if (redirect.type === 'section') {
+                // Redirect to My Assignments dashboard instead of specific section
+                // This allows user to see all their assignments
+                this.router.navigate(['/onboarding/my-assignments']);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
+            }, 10);
+          } catch (e) {
+            console.error('Error parsing pending redirect:', e);
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 10);
+          }
+        } else {
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 10);
+        }
       },
       error: (err) => {
         if (err.status === 404) {
@@ -159,9 +186,36 @@ export class SignInComponent {
         // Normal login success - save session
         this.auth.saveSession(session);
         this.toast.success('Successfully Logged In with Google', 'Login Success');
-        setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 10);
+        
+        // Check for pending onboarding redirect
+        const pendingRedirect = sessionStorage.getItem('pending_onboarding_redirect');
+        if (pendingRedirect) {
+          try {
+            const redirect = JSON.parse(pendingRedirect);
+            sessionStorage.removeItem('pending_onboarding_redirect');
+            
+            setTimeout(() => {
+              if (redirect.type === 'request') {
+                this.router.navigate(['/onboarding/request', redirect.requestId]);
+              } else if (redirect.type === 'section') {
+                // Redirect to My Assignments dashboard instead of specific section
+                // This allows user to see all their assignments
+                this.router.navigate(['/onboarding/my-assignments']);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
+            }, 10);
+          } catch (e) {
+            console.error('Error parsing pending redirect:', e);
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 10);
+          }
+        } else {
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 10);
+        }
       },
       error: (err) => {
         console.error('Google login error:', err);
