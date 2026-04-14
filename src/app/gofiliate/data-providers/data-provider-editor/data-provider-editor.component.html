@@ -1,0 +1,397 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3>{{ isNewProvider ? 'Add New' : 'Edit' }} Data Provider</h3>
+          <p class="text-muted mb-0">{{ isNewProvider ? 'Create a new data provider configuration' : 'Update data provider details' }}</p>
+        </div>
+        <button class="btn btn-secondary" (click)="cancel()" [disabled]="saving">
+          <i class="fa fa-arrow-left me-2"></i>Back to List
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="row">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading provider details...</p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div *ngIf="!loading" class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Provider Details</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="providerForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Provider Name -->
+              <div class="col-4 mb-3">
+                <label for="provider_name" class="form-label">
+                  Provider Name <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="provider_name" 
+                  class="form-control" 
+                  formControlName="provider_name"
+                  maxlength="64"
+                  placeholder="e.g., iGamingPlatform">
+                <small class="text-muted">Maximum 64 characters</small>
+                <div *ngIf="providerForm.get('provider_name')?.invalid && providerForm.get('provider_name')?.touched" 
+                     class="text-danger mt-1">
+                  <small *ngIf="providerForm.get('provider_name')?.errors?.['required']">
+                    Provider name is required
+                  </small>
+                  <small *ngIf="providerForm.get('provider_name')?.errors?.['maxlength']">
+                    Provider name must not exceed 64 characters
+                  </small>
+                </div>
+              </div>
+
+              <!-- Provider URL -->
+              <div class="col-4 mb-3">
+                <label for="provider_url" class="form-label">
+                  Provider URL <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="url" 
+                  id="provider_url" 
+                  class="form-control" 
+                  formControlName="provider_url"
+                  maxlength="255"
+                  placeholder="https://www.example.com">
+                <small class="text-muted">Maximum 255 characters</small>
+                <div *ngIf="providerForm.get('provider_url')?.invalid && providerForm.get('provider_url')?.touched" 
+                     class="text-danger mt-1">
+                  <small *ngIf="providerForm.get('provider_url')?.errors?.['required']">
+                    Provider URL is required
+                  </small>
+                  <small *ngIf="providerForm.get('provider_url')?.errors?.['maxlength']">
+                    Provider URL must not exceed 255 characters
+                  </small>
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div class="col-4 mb-4">
+                <label for="status" class="form-label">
+                  Status <span class="text-danger">*</span>
+                </label>
+                <select id="status" class="form-select" formControlName="status">
+                  <option [ngValue]="1">Active</option>
+                  <option [ngValue]="0">Inactive</option>
+                </select>
+                <small class="text-muted">Set provider status</small>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary" [disabled]="saving || providerForm.invalid">
+                <i class="fa fa-save me-2"></i>
+                {{ saving ? 'Saving...' : (isNewProvider ? 'Create Provider' : 'Update Provider') }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="saving">
+                <i class="fa fa-times me-2"></i>Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Help Card -->
+      <div class="card mt-4" *ngIf="isNewProvider">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="fa fa-info-circle me-2 text-info"></i>Provider Guidelines
+          </h6>
+          <ul class="mb-0 small text-muted">
+            <li>Provider name should be descriptive and unique</li>
+            <li>Provider URL should be a valid website address</li>
+            <li>Inactive providers will not be available for selection</li>
+            <li>Created date is automatically set on creation</li>
+            <li>Save the provider first, then you can add table configurations</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tables Management Section -->
+      <div *ngIf="!isNewProvider && !loading" class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Table Configurations</h5>
+          <button class="btn btn-sm btn-primary" (click)="openTableForm()" [disabled]="loadingTables">
+            <i class="fa fa-plus me-2"></i>Add Table
+          </button>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loadingTables" class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted small">Loading tables...</p>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loadingTables && tables.length === 0" class="text-center py-4">
+            <i class="fa fa-table fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No table configurations found</p>
+            <button class="btn btn-sm btn-primary" (click)="openTableForm()">
+              <i class="fa fa-plus me-2"></i>Add First Table
+            </button>
+          </div>
+
+          <!-- Tables List -->
+          <div *ngIf="!loadingTables && tables.length > 0" class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Table Name</th>
+                  <th>Prefix</th>
+                  <th>Date Field</th>
+                  <th>Player Field</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let table of tables">
+                  <td><strong>{{ table.table_description }}</strong></td>
+                  <td><code>{{ table.table_name }}</code></td>
+                  <td><span class="badge bg-secondary">{{ table.table_prefix }}</span></td>
+                  <td>{{ table.table_date_field }}</td>
+                  <td>{{ table.table_player_field }}</td>
+                  <td>
+                    <span class="badge" [class.bg-success]="table.status === 1" [class.bg-secondary]="table.status !== 1">
+                      {{ table.status === 1 ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-2" (click)="openTableForm(table)">
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteTable(table)">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Form Modal -->
+  <div *ngIf="showTableForm" class="modal-backdrop" (click)="closeTableForm()"></div>
+  <div *ngIf="showTableForm" class="modal-dialog-wrapper">
+    <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingTable ? 'Edit' : 'Add' }} Table Configuration</h5>
+          <button type="button" class="btn-close" (click)="closeTableForm()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="tableForm" (ngSubmit)="onSubmitTable()">
+            <div class="row">
+              <!-- Table Description -->
+              <div class="col-md-6 mb-3">
+                <label for="table_description" class="form-label">
+                  Description <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_description" class="form-control" 
+                       formControlName="table_description" maxlength="255" 
+                       placeholder="e.g., Daily Report Table">
+                <small class="text-muted">Maximum 255 characters</small>
+                <div *ngIf="tableForm.get('table_description')?.invalid && tableForm.get('table_description')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Description is required</small>
+                </div>
+              </div>
+
+              <!-- Table Player Alias -->
+              <div class="col-md-6 mb-3">
+                <label for="table_player_alias" class="form-label">Player Alias</label>
+                <input type="text" id="table_player_alias" class="form-control" 
+                       formControlName="table_player_alias" maxlength="32">
+                <small class="text-muted">Optional, maximum 32 characters</small>
+              </div>
+
+              <!-- Table Prefix -->
+              <div class="col-md-3 mb-3">
+                <label for="table_prefix" class="form-label">
+                  Prefix <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_prefix" class="form-control" 
+                       formControlName="table_prefix" maxlength="4" placeholder="e.g., DR">
+                <small class="text-muted">Maximum 4 characters</small>
+                <div *ngIf="tableForm.get('table_prefix')?.invalid && tableForm.get('table_prefix')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Prefix is required</small>
+                </div>
+              </div>
+
+              <!-- Table Name -->
+              <div class="col-md-9 mb-3">
+                <label for="table_name" class="form-label">
+                  Table Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_name" class="form-control" 
+                       formControlName="table_name" maxlength="128" placeholder="e.g., daily_reports">
+                <small class="text-muted">Maximum 128 characters</small>
+                <div *ngIf="tableForm.get('table_name')?.invalid && tableForm.get('table_name')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Table name is required</small>
+                </div>
+              </div>
+
+              <!-- Table Player Field -->
+              <div class="col-md-6 mb-3">
+                <label for="table_player_field" class="form-label">
+                  Player Field <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_player_field" class="form-control" 
+                       formControlName="table_player_field" maxlength="32" placeholder="e.g., player_id">
+                <small class="text-muted">Maximum 32 characters</small>
+                <div *ngIf="tableForm.get('table_player_field')?.invalid && tableForm.get('table_player_field')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Player field is required</small>
+                </div>
+              </div>
+
+              <!-- Table Date Field -->
+              <div class="col-md-4 mb-3">
+                <label for="table_date_field" class="form-label">
+                  Date Field <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_date_field" class="form-control" 
+                       formControlName="table_date_field" maxlength="32" placeholder="e.g., report_date">
+                <small class="text-muted">Maximum 32 characters</small>
+                <div *ngIf="tableForm.get('table_date_field')?.invalid && tableForm.get('table_date_field')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Date field is required</small>
+                </div>
+              </div>
+
+              <!-- Date Format -->
+              <div class="col-md-2 mb-3">
+                <label for="date_format" class="form-label">
+                  Date Format <span class="text-danger">*</span>
+                </label>
+                <select id="date_format" class="form-select" formControlName="date_format">
+                  <option value="date">Date</option>
+                  <option value="datetime">DateTime</option>
+                </select>
+              </div>
+
+              <!-- Table Join to Main -->
+              <div class="col-md-6 mb-3">
+                <label for="table_join_to_main" class="form-label">
+                  Join to Main <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_join_to_main" class="form-control" 
+                       formControlName="table_join_to_main" maxlength="128">
+                <small class="text-muted">Maximum 128 characters</small>
+                <div *ngIf="tableForm.get('table_join_to_main')?.invalid && tableForm.get('table_join_to_main')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Join to main is required</small>
+                </div>
+              </div>
+
+              <!-- Table Grouping -->
+              <div class="col-md-6 mb-3">
+                <label for="table_grouping" class="form-label">
+                  Grouping <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="table_grouping" class="form-control" 
+                       formControlName="table_grouping" maxlength="64">
+                <small class="text-muted">Maximum 64 characters</small>
+                <div *ngIf="tableForm.get('table_grouping')?.invalid && tableForm.get('table_grouping')?.touched" 
+                     class="text-danger mt-1">
+                  <small>Grouping is required</small>
+                </div>
+              </div>
+
+              <!-- Multi Currency -->
+              <div class="col-md-3 mb-3">
+                <label for="multi_currency" class="form-label">
+                  Multi Currency <span class="text-danger">*</span>
+                </label>
+                <select id="multi_currency" class="form-select" formControlName="multi_currency">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+
+              <!-- Multi Currency Field -->
+              <div class="col-md-3 mb-3" *ngIf="tableForm.get('multi_currency')?.value === 'yes'">
+                <label for="multi_currency_field" class="form-label">Currency Field</label>
+                <input type="text" id="multi_currency_field" class="form-control" 
+                       formControlName="multi_currency_field" maxlength="32">
+                <small class="text-muted">Maximum 32 characters</small>
+              </div>
+
+              <!-- Auto Register Table -->
+              <div class="col-md-3 mb-3">
+                <label for="auto_register_table" class="form-label">
+                  Auto Register <span class="text-danger">*</span>
+                </label>
+                <select id="auto_register_table" class="form-select" formControlName="auto_register_table">
+                  <option [ngValue]="1">Yes</option>
+                  <option [ngValue]="0">No</option>
+                </select>
+              </div>
+
+              <!-- Status -->
+              <div class="col-md-3 mb-3">
+                <label for="status" class="form-label">
+                  Status <span class="text-danger">*</span>
+                </label>
+                <select id="status" class="form-select" formControlName="status">
+                  <option [ngValue]="1">Active</option>
+                  <option [ngValue]="0">Inactive</option>
+                </select>
+              </div>
+
+              <!-- Table SQL -->
+              <div class="col-12 mb-3">
+                <label for="table_sql" class="form-label">
+                  SQL Query <span class="text-danger">*</span>
+                </label>
+                <textarea id="table_sql" class="form-control" 
+                          formControlName="table_sql" rows="6" 
+                          placeholder="SELECT * FROM ..."></textarea>
+                <small class="text-muted">SQL query for this table</small>
+                <div *ngIf="tableForm.get('table_sql')?.invalid && tableForm.get('table_sql')?.touched" 
+                     class="text-danger mt-1">
+                  <small>SQL query is required</small>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeTableForm()" [disabled]="savingTable">
+            <i class="fa fa-times me-2"></i>Cancel
+          </button>
+          <button type="button" class="btn btn-primary" (click)="onSubmitTable()" 
+                  [disabled]="savingTable || tableForm.invalid">
+            <i class="fa fa-save me-2"></i>
+            {{ savingTable ? 'Saving...' : (editingTable ? 'Update' : 'Create') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+// Data Provider Editor component styles
+
+.card {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+  
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control,
+.form-select {
+  &:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+.text-danger {
+  font-size: 0.875rem;
+}
+
+// Modal Styles
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  animation: fadeIn 0.15s ease-in;
+}
+
+.modal-dialog-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: fadeIn 0.3s ease-in;
+  overflow-y: auto;
+  padding: 2rem;
+
+  .modal-dialog {
+    max-width: 1140px;
+    width: 100%;
+    margin: auto;
+  }
+
+  .modal-content {
+    border-radius: 8px;
+    animation: slideDown 0.3s ease-out;
+    background: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-body {
+    background-color: white;
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

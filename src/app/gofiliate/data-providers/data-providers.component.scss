@@ -1,0 +1,187 @@
+// Data Providers component styles
+
+// Stats Cards
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Provider Cards Container
+.provider-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+// Add New Provider Card
+.add-provider-card {
+  background: rgba(13, 110, 253, 0.05);
+  border: 2px dashed rgba(13, 110, 253, 0.3);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  i {
+    font-size: 3rem;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+  }
+
+  h5 {
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 0.875rem;
+  }
+
+  &:hover {
+    background: rgba(13, 110, 253, 0.1);
+    border-color: rgba(13, 110, 253, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+// Provider Card
+.provider-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+// Provider Header
+.provider-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+
+  .provider-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+
+    i {
+      font-size: 2rem;
+      color: white;
+    }
+  }
+
+  .provider-info {
+    flex: 1;
+    min-width: 0;
+
+    .provider-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: #212529;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+}
+
+// Provider Details
+.provider-details {
+  flex: 1;
+
+  .detail-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-label {
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .detail-value {
+      color: #212529;
+      word-break: break-all;
+      
+      &.text-primary {
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .provider-col {
+    max-width: 100%;
+  }
+
+  .stat-card {
+    .stat-value {
+      font-size: 1.5rem;
+    }
+  }
+}

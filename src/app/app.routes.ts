@@ -41,6 +41,8 @@ import { PoolAccessComponent } from './gofiliate/users/pool-access/pool-access.c
 import { SettingsComponent } from './gofiliate/settings/settings.component';
 import { EmailsComponent } from './gofiliate/emails/emails.component';
 import { EmailEditComponent } from './gofiliate/emails/email-edit/email-edit.component';
+import { DataProvidersComponent } from './gofiliate/data-providers/data-providers.component';
+import { DataProviderEditorComponent } from './gofiliate/data-providers/data-provider-editor/data-provider-editor.component';
 export const routes: Routes = [
   {
     path: 'dashboard',
@@ -95,7 +97,9 @@ export const routes: Routes = [
       { path: 'users/:user_id', canActivate: [AuthGuard], component: UserEditComponent, data: { title: 'Edit User', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/users' } },
       { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent, data: { title: 'Settings', breadcrumb: 'Settings' } },
       { path: 'emails', canActivate: [AuthGuard], component: EmailsComponent, data: { title: 'Emails', breadcrumb: 'Emails' } },
-      { path: 'emails/:email_id', canActivate: [AuthGuard], component: EmailEditComponent, data: { title: 'Edit Email', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/emails' } }
+      { path: 'emails/:email_id', canActivate: [AuthGuard], component: EmailEditComponent, data: { title: 'Edit Email', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/emails' } },
+      { path: 'data-providers', canActivate: [AuthGuard], component: DataProvidersComponent, data: { title: 'Data Providers', breadcrumb: 'Data Providers' } },
+      { path: 'data-providers/:id', canActivate: [AuthGuard], component: DataProviderEditorComponent, data: { title: 'Edit Provider', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/data-providers' } }
     ]
   },
   {

@@ -44,7 +44,9 @@ export class MetricLinkWidgetComponent implements OnInit {
     } else {
       this.loading = false;
       this.error = true;
-      this.hideRow.emit(false); // Don't hide row on config error
+      // If config parsing fails, still respect hide_when_zero if it was in the raw config
+      const hideWhenZero = this.shouldHideWhenZeroFromRawConfig();
+      this.hideRow.emit(hideWhenZero);
       this.hasData.emit(false);
     }
   }
@@ -114,7 +116,9 @@ export class MetricLinkWidgetComponent implements OnInit {
         console.error('Error loading metric count:', err);
         this.error = true;
         this.loading = false;
-        this.hideRow.emit(false); // Don't hide row on error
+        // If there's an error loading data, respect hide_when_zero setting (treat error as zero count)
+        const shouldHideWhenZero = this.config!.hide_when_zero !== false;
+        this.hideRow.emit(shouldHideWhenZero);
         this.hasData.emit(false);
       }
     });
@@ -143,6 +147,17 @@ export class MetricLinkWidgetComponent implements OnInit {
   onClick(): void {
     if (this.config?.link_url && !this.loading && !this.error) {
       this.router.navigate([this.config.link_url]);
+    }
+  }
+
+  private shouldHideWhenZeroFromRawConfig(): boolean {
+    try {
+      const rawConfig = typeof this.widgetData?.widget_config === 'string'
+        ? JSON.parse(this.widgetData.widget_config)
+        : this.widgetData?.widget_config;
+      return rawConfig?.hide_when_zero !== false; // defaults to true
+    } catch {
+      return true; // default to true if we can't parse
     }
   }
 }

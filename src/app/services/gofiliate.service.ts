@@ -273,6 +273,33 @@ export interface SaveDashboardWidgetRequest {
   widget_config?: string | null;
 }
 
+export interface DataProvider {
+  provider_id: number;
+  provider_name: string;
+  provider_url: string;
+  created: string;
+  status: number;
+}
+
+export interface DataProviderTable {
+  table_id: number;
+  provider_id: number;
+  table_description: string;
+  table_player_alias?: string;
+  table_prefix: string;
+  table_name: string;
+  table_player_field: string;
+  table_date_field: string;
+  date_format: 'date' | 'datetime';
+  table_join_to_main: string;
+  table_grouping: string;
+  multi_currency: 'yes' | 'no';
+  multi_currency_field?: string;
+  table_sql: string;
+  auto_register_table: number;
+  status: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -473,6 +500,36 @@ export class GofiliateService {
 
   deleteDashboardWidget(dashboardId: number, rowId: number, positionId: number): Observable<any> {
     return this.apiService.delete(`gofiliate/dashboards/widgets/${dashboardId}/${rowId}/${positionId}`, false);
+  }
+
+  // Data Providers API
+  getDataProviders(): Observable<{ result: boolean; providers: DataProvider[]; count: number }> {
+    return this.apiService.get('data-providers', false);
+  }
+
+  createDataProvider(data: { provider_name: string; provider_url: string; status: number }): Observable<{ result: boolean; message?: string; provider?: DataProvider }> {
+    return this.apiService.post('data-providers', data, false);
+  }
+
+  updateDataProvider(id: number, data: { provider_name: string; provider_url: string; status: number }): Observable<{ result: boolean; message?: string; provider?: DataProvider }> {
+    return this.apiService.put(`data-providers/${id}`, data, false);
+  }
+
+  // Data Provider Tables API
+  getDataProviderTables(providerId: number): Observable<{ result: boolean; tables: DataProviderTable[]; count: number }> {
+    return this.apiService.get(`data-providers/${providerId}/tables`, false);
+  }
+
+  createDataProviderTable(providerId: number, data: Partial<DataProviderTable>): Observable<{ result: boolean; message?: string; table?: DataProviderTable }> {
+    return this.apiService.post(`data-providers/${providerId}/tables`, data, false);
+  }
+
+  updateDataProviderTable(providerId: number, tableId: number, data: Partial<DataProviderTable>): Observable<{ result: boolean; message?: string }> {
+    return this.apiService.put(`data-providers/${providerId}/tables/${tableId}`, data, false);
+  }
+
+  deleteDataProviderTable(providerId: number, tableId: number): Observable<{ result: boolean; message?: string }> {
+    return this.apiService.delete(`data-providers/${providerId}/tables/${tableId}`, false);
   }
 
   // Onboarding Requests API
