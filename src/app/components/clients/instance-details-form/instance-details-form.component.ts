@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DataProvider } from '../../../services/gofiliate.service';
 
 export interface InstanceDetails {
   instance_id: number;
@@ -21,6 +22,8 @@ export interface InstanceDetails {
   status: number;
   client_logo?: string;
   is_public: number;
+  data_provider_id?: number;
+  data_provider_key?: string;
 }
 
 @Component({
@@ -37,6 +40,7 @@ export class InstanceDetailsFormComponent {
   @Input() jwtKeyDisplay: string = '';
   @Input() editAPIKey: boolean = false;
   @Input() editJWTKey: boolean = false;
+  @Input() providers: DataProvider[] = [];
   
   @Output() save = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();

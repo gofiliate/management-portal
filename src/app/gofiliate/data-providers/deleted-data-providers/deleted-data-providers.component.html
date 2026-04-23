@@ -1,0 +1,104 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3>Deleted Data Providers</h3>
+          <p class="text-muted mb-0">View and restore previously deleted data providers</p>
+        </div>
+        <button class="btn btn-secondary" (click)="backToList()">
+          <i class="fa fa-arrow-left me-2"></i>Back to Active Providers
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading deleted providers...</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && deletedProviders.length === 0" class="row">
+    <div class="col-12 text-center py-5">
+      <i class="fa fa-check-circle fa-3x text-success mb-3"></i>
+      <p class="text-muted mb-3">No deleted providers found</p>
+      <button class="btn btn-primary" (click)="backToList()">
+        <i class="fa fa-arrow-left me-2"></i>Return to Active Providers
+      </button>
+    </div>
+  </div>
+
+  <!-- Deleted Provider Cards Grid -->
+  <div *ngIf="!loading && deletedProviders.length > 0" class="row">
+    <!-- Deleted Provider Cards -->
+    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let provider of deletedProviders">
+      <div class="provider-col">
+        <div class="provider-card deleted">
+          <!-- Provider Header -->
+          <div class="provider-header">
+            <div class="provider-logo deleted">
+              <i class="fa fa-building"></i>
+            </div>
+            <div class="provider-info flex-grow-1">
+              <h5 class="provider-name">{{ provider.provider_name }}</h5>
+              <span class="badge bg-danger">
+                <i class="fa fa-trash me-1"></i>Deleted
+              </span>
+            </div>
+            <div class="provider-actions">
+              <button class="btn btn-sm btn-outline-success" 
+                      (click)="restoreProvider(provider)" 
+                      title="Restore Provider">
+                <i class="fa fa-undo"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Provider Details -->
+          <div class="provider-details">
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="fa fa-link me-2"></i>URL:
+              </span>
+              <span class="detail-value text-muted">{{ provider.provider_url }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="fa fa-calendar me-2"></i>Created:
+              </span>
+              <span class="detail-value">{{ formatDate(provider.created) }}</span>
+            </div>
+            <div class="detail-row" *ngIf="provider.deleted_at">
+              <span class="detail-label">
+                <i class="fa fa-trash me-2"></i>Deleted:
+              </span>
+              <span class="detail-value text-danger">{{ formatDate(provider.deleted_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restore Confirmation Modal -->
+  <app-confirmation-modal
+    [show]="showRestoreModal"
+    [headerText]="'Restore Data Provider'"
+    [buttonText]="'Restore'"
+    [buttonIcon]="'fa fa-undo'"
+    (confirm)="confirmRestore()"
+    (cancel)="cancelRestore()"
+  >
+    <p *ngIf="providerToRestore" class="mb-2">
+      Are you sure you want to restore <strong>"{{ providerToRestore.provider_name }}"</strong>?
+    </p>
+    <p class="mb-0 text-muted">This will make the provider active again and visible in the main providers list.</p>
+  </app-confirmation-modal>
+</div>

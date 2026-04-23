@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { GofiliateService, DataProvider, DataProviderTable } from '../../../services/gofiliate.service';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationModalComponent } from '../../../components/shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-data-provider-editor',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmationModalComponent],
   templateUrl: './data-provider-editor.component.html',
   styleUrl: './data-provider-editor.component.scss'
 })
@@ -19,6 +20,9 @@ export class DataProviderEditorComponent implements OnInit {
   loading = true;
   saving = false;
   isNewProvider = false;
+
+  // Delete functionality
+  showDeleteModal = false;
 
   // Tables management
   tables: DataProviderTable[] = [];
@@ -145,6 +149,38 @@ export class DataProviderEditorComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/gofiliate/data-providers']);
+  }
+
+  // Delete provider methods
+  deleteProvider(): void {
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.providerId) return;
+
+    this.gofiliateService.deleteDataProvider(this.providerId).subscribe({
+      next: (response) => {
+        if (response.result) {
+          this.toast.success('Data provider deleted successfully', 'Success');
+          this.showDeleteModal = false;
+          this.router.navigate(['/gofiliate/data-providers']);
+        } else {
+          this.toast.error(response.message || 'Failed to delete provider', 'Error');
+          this.showDeleteModal = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting provider:', error);
+        const errorMessage = error.error?.message || 'Failed to delete provider';
+        this.toast.error(errorMessage, 'Error');
+        this.showDeleteModal = false;
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
   }
 
   // Table Form Methods

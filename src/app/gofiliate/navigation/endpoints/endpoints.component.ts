@@ -6,11 +6,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { GofiliateService, NavigationEndpoint, NavigationSection, SaveEndpointRequest } from '../../../services/gofiliate.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ConfirmationModalComponent } from '../../../components/shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-endpoints',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, HttpClientModule, DragDropModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, HttpClientModule, DragDropModule, ConfirmationModalComponent],
   templateUrl: './endpoints.component.html',
   styleUrl: './endpoints.component.scss'
 })
@@ -23,6 +24,8 @@ export class EndpointsComponent implements OnInit {
   editMode = false;
   endpointForm: FormGroup;
   filterSectionId: number | null = null;
+  showDeactivateModal = false;
+  endpointToDeactivate: NavigationEndpoint | null = null;
 
   constructor(
     private gofiliateService: GofiliateService,
@@ -228,12 +231,17 @@ export class EndpointsComponent implements OnInit {
   }
 
   deactivateEndpoint(endpoint: NavigationEndpoint): void {
-    if (!confirm(`Are you sure you want to deactivate "${endpoint.endpoint_name}"?`)) {
-      return;
-    }
+    this.endpointToDeactivate = endpoint;
+    this.showDeactivateModal = true;
+  }
+
+  confirmDeactivate(): void {
+    if (!this.endpointToDeactivate) return;
 
     this.loading = true;
-    this.gofiliateService.deactivateEndpoint(endpoint.endpoint_id).subscribe({
+    this.showDeactivateModal = false;
+    
+    this.gofiliateService.deactivateEndpoint(this.endpointToDeactivate.endpoint_id).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.result) {
@@ -242,13 +250,20 @@ export class EndpointsComponent implements OnInit {
         } else {
           this.toast.error(response.message || 'Failed to deactivate endpoint');
         }
+        this.endpointToDeactivate = null;
       },
       error: (error) => {
         this.loading = false;
         console.error('Error deactivating endpoint:', error);
         this.toast.error('Failed to deactivate endpoint');
+        this.endpointToDeactivate = null;
       }
     });
+  }
+
+  cancelDeactivate(): void {
+    this.showDeactivateModal = false;
+    this.endpointToDeactivate = null;
   }
 
   onDrop(event: CdkDragDrop<NavigationEndpoint[]>): void {

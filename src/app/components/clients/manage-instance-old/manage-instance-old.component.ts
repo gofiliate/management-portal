@@ -6,6 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../../services/api/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { GofiliateService } from '../../../services/gofiliate.service';
 import { AccountSyncService } from '../../../services/sync/account-sync.service';
 import { AffiliateSyncService } from '../../../services/sync/affiliate-sync.service';
 import { BrandSyncService } from '../../../services/sync/brand-sync.service';
@@ -140,6 +141,7 @@ export class ManageInstanceOldComponent implements OnInit {
     private auth: AuthService,
     private toast: ToastrService,
     private http: HttpClient,
+    private gofiliateService: GofiliateService,
     private accountSync: AccountSyncService,
     private affiliateSync: AffiliateSyncService,
     private brandSync: BrandSyncService,
@@ -528,12 +530,50 @@ export class ManageInstanceOldComponent implements OnInit {
     console.log('TOTP verification for user:', this.loginUsername, 'Code:', code);
     this.toast.info('Creating login request...', 'Processing');
     
-    // TODO: Regular users need to use their configured account manager from permissions
-    // For now, only GOD users with selectedManagerUserId will work
-    const userId = this.selectedManagerUserId;
-    
+    // Check if GOD with selected manager
+    if (this.isGod && this.selectedManagerUserId) {
+      this.createLoginRequest(this.selectedManagerUserId);
+    } else {
+      // Regular user - check their pool access to get their assigned manager
+      const currentUserId = this.auth.getUserId();
+      if (!currentUserId) {
+        this.toast.error('User ID not available', 'Error');
+        return;
+      }
+      
+      // Fetch pool access to get the manager for this instance
+      this.gofiliateService.getPoolAccess(currentUserId).subscribe({
+        next: (response: any) => {
+          if (response && response.manager_access && Array.isArray(response.manager_access)) {
+            // Find the manager for this specific instance
+            const managerAccess = response.manager_access.find(
+              (ma: any) => ma.instance_id === this.instance.instance_id
+            );
+            
+            if (managerAccess && managerAccess.manager_id) {
+              console.log(`Using assigned manager_id ${managerAccess.manager_id} from pool access`);
+              this.createLoginRequest(managerAccess.manager_id);
+            } else {
+              console.log('No manager assigned in pool access, using user\'s own ID');
+              this.createLoginRequest(currentUserId);
+            }
+          } else {
+            console.log('No pool access data, using user\'s own ID');
+            this.createLoginRequest(currentUserId);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching pool access:', err);
+          console.log('Falling back to user\'s own ID');
+          this.createLoginRequest(currentUserId);
+        }
+      });
+    }
+  }
+
+  private createLoginRequest(userId: number): void {
     if (!userId) {
-      this.toast.error('Manager user ID not available - configured manager feature required', 'Error');
+      this.toast.error('User ID not available', 'Error');
       return;
     }
 

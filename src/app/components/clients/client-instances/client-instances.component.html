@@ -243,6 +243,34 @@
                 >
               </div>
               
+              <div class="mb-3">
+                <label for="dataProvider" class="form-label">Data Provider (Optional)</label>
+                <select 
+                  class="form-select" 
+                  id="dataProvider"
+                  [(ngModel)]="newInstance.data_provider_id"
+                  name="dataProvider"
+                >
+                  <option [ngValue]="undefined">-- No Data Provider --</option>
+                  <option *ngFor="let provider of providers" [ngValue]="provider.provider_id">
+                    {{ provider.provider_name }}
+                  </option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <label for="dataProviderKey" class="form-label">Data Provider Key (Optional)</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="dataProviderKey"
+                  [(ngModel)]="newInstance.data_provider_key"
+                  name="dataProviderKey"
+                  placeholder="Enter data provider key"
+                  maxlength="255"
+                >
+              </div>
+              
               <div class="mb-3" *ngIf="isGod">
                 <label for="apiKey" class="form-label">API Key <span class="text-danger">*</span></label>
                 <input 

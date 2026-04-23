@@ -235,3 +235,16 @@
      [class.show]="showForm" 
      *ngIf="showForm">
 </div>
+
+<!-- Confirmation Modal -->
+<app-confirmation-modal
+  [show]="showDeactivateModal"
+  [headerText]="'Deactivate Endpoint'"
+  [buttonText]="'Deactivate'"
+  [buttonIcon]="'fa fa-trash'"
+  (confirm)="confirmDeactivate()"
+  (cancel)="cancelDeactivate()">
+  <p *ngIf="endpointToDeactivate" class="mb-0">
+    Are you sure you want to deactivate <strong>"{{ endpointToDeactivate.endpoint_name }}"</strong>?
+  </p>
+</app-confirmation-modal>

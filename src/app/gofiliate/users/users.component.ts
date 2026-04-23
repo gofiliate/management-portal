@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GofiliateService, User, Role, UserInvitation } from '../../services/gofiliate.service';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationModalComponent } from '../../components/shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmationModalComponent],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
@@ -20,6 +21,10 @@ export class UsersComponent implements OnInit {
   loadingInvitations = false;
   showInviteModal = false;
   inviteForm!: FormGroup;
+  
+  // Delete modal
+  showDeleteModal = false;
+  userToDelete: User | null = null;
   
   // Pagination for users
   userPage = 1;
@@ -229,5 +234,38 @@ export class UsersComponent implements OnInit {
     if (accepted === 1) return 'Accepted';
     if (new Date(expiresAt) < new Date()) return 'Expired';
     return 'Pending';
+  }
+
+  deleteUser(user: User): void {
+    this.userToDelete = user;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) return;
+
+    this.gofiliateService.deleteUser(this.userToDelete.user_id).subscribe({
+      next: (response) => {
+        this.toast.success('User deleted successfully', 'Success');
+        this.showDeleteModal = false;
+        this.userToDelete = null;
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('Error deleting user:', error);
+        this.toast.error(error.error?.message || 'Failed to delete user', 'Error');
+        this.showDeleteModal = false;
+        this.userToDelete = null;
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.userToDelete = null;
+  }
+
+  navigateToDeleted(): void {
+    this.router.navigate(['/gofiliate/users/deleted']);
   }
 }

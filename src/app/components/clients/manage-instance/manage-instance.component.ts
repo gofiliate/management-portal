@@ -6,6 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../../services/api/api.service';
 import { AuthService } from '../../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { GofiliateService, DataProvider } from '../../../services/gofiliate.service';
 import { AccountSyncService } from '../../../services/sync/account-sync.service';
 import { AffiliateSyncService } from '../../../services/sync/affiliate-sync.service';
 import { BrandSyncService } from '../../../services/sync/brand-sync.service';
@@ -40,6 +41,8 @@ interface InstanceDetails {
   status: number;
   client_logo?: string;
   is_public: number;
+  data_provider_id?: number;
+  data_provider_key?: string;
 }
 
 interface StoredToken {
@@ -105,6 +108,7 @@ export class ManageInstanceComponent implements OnInit {
   public textLinks: any[] = [];
   public geoGroups: any[] = [];
   public roles: Role[] = [];
+  public providers: DataProvider[] = [];
   public syncing = false;
   public lastSyncWasForced = false;
   public lastAffiliatesSyncWasForced = false;
@@ -149,11 +153,13 @@ export class ManageInstanceComponent implements OnInit {
     private affiliateSync: AffiliateSyncService,
     private brandSync: BrandSyncService,
     private landingPageSync: LandingPageSyncService,
-    private interfaceSync: InterfaceSyncService
+    private interfaceSync: InterfaceSyncService,
+    private gofiliateService: GofiliateService
   ) {}
 
   ngOnInit(): void {
     this.isGod = this.auth.isGod();
+    this.loadProviders();
     this.route.params.subscribe(params => {
       this.instanceId = +params['id'];
       this.loadInstanceDetails();
@@ -190,6 +196,17 @@ export class ManageInstanceComponent implements OnInit {
         this.toast.error('Cannot get instance details from the API. Please try again later', 'API Error');
         this.loading = false;
         console.error('Error loading instance details:', error);
+      }
+    });
+  }
+
+  loadProviders(): void {
+    this.gofiliateService.getDataProviders().subscribe({
+      next: (response) => {
+        this.providers = response.providers.filter(p => !p.deleted_at);
+      },
+      error: (error) => {
+        console.error('Error loading data providers:', error);
       }
     });
   }
@@ -239,7 +256,9 @@ export class ManageInstanceComponent implements OnInit {
       heartbeat_port: this.instance.heartbeat_port || null,
       is_single_brand: this.instance.is_single_brand,
       is_live: this.instance.is_live,
-      is_public: this.isGod ? this.instance.is_public : 0
+      is_public: this.isGod ? this.instance.is_public : 0,
+      data_provider_id: this.instance.data_provider_id || null,
+      data_provider_key: this.instance.data_provider_key || null
     };
 
     // Only GODs can send api_key and jwt_key
@@ -560,14 +579,50 @@ export class ManageInstanceComponent implements OnInit {
       // Public instances default to admin_id 1
       userId = 1;
       console.log('Public instance - using default admin_id: 1');
+      this.createLoginRequest(userId);
     } else if (this.isGod && this.selectedManagerUserId) {
       // GOD user selected a manager
       userId = this.selectedManagerUserId;
+      this.createLoginRequest(userId);
     } else {
-      // Regular user or GOD without selection - use their own ID
-      userId = this.auth.getUserId();
+      // Regular user - check their pool access to get their assigned manager
+      const currentUserId = this.auth.getUserId();
+      if (!currentUserId) {
+        this.toast.error('User ID not available', 'Error');
+        return;
+      }
+      
+      // Fetch pool access to get the manager for this instance
+      this.gofiliateService.getPoolAccess(currentUserId).subscribe({
+        next: (response: any) => {
+          if (response && response.manager_access && Array.isArray(response.manager_access)) {
+            // Find the manager for this specific instance
+            const managerAccess = response.manager_access.find(
+              (ma: any) => ma.instance_id === this.instance.instance_id
+            );
+            
+            if (managerAccess && managerAccess.manager_id) {
+              console.log(`Using assigned manager_id ${managerAccess.manager_id} from pool access`);
+              this.createLoginRequest(managerAccess.manager_id);
+            } else {
+              console.log('No manager assigned in pool access, using user\'s own ID');
+              this.createLoginRequest(currentUserId);
+            }
+          } else {
+            console.log('No pool access data, using user\'s own ID');
+            this.createLoginRequest(currentUserId);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching pool access:', err);
+          console.log('Falling back to user\'s own ID');
+          this.createLoginRequest(currentUserId);
+        }
+      });
     }
-    
+  }
+
+  private createLoginRequest(userId: number): void {
     if (!userId) {
       this.toast.error('User ID not available', 'Error');
       return;

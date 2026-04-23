@@ -6,7 +6,9 @@ import { DynamicDashboardLoaderComponent } from './components/dashboards/dynamic
 import { SignInComponent } from './components/account/sign-in/sign-in.component';
 import { TotpVerifyComponent } from './components/account/totp-verify/totp-verify.component';
 import { TotpSetupComponent } from './components/account/totp-setup/totp-setup.component';
-import { SecuritySettingsComponent } from './components/account/security-settings/security-settings.component';import {InvitationAcceptComponent} from './components/account/invitation-accept/invitation-accept.component';import { ClientOverviewComponent } from './components/clients/client-overview/client-overview.component';
+import { SecuritySettingsComponent } from './components/account/security-settings/security-settings.component';
+import { ProfileComponent } from './components/account/profile/profile.component';
+import {InvitationAcceptComponent} from './components/account/invitation-accept/invitation-accept.component';import { ClientOverviewComponent } from './components/clients/client-overview/client-overview.component';
 import { ClientDetailsComponent } from './components/clients/client-details/client-details.component';
 import { ClientInstancesComponent } from './components/clients/client-instances/client-instances.component';
 import { ClientOnboardingComponent } from './components/clients/client-onboarding/client-onboarding.component';
@@ -38,11 +40,16 @@ import { WidgetsComponent } from './gofiliate/dashboards-widgets/widgets/widgets
 import { UsersComponent } from './gofiliate/users/users.component';
 import { UserEditComponent } from './gofiliate/users/user-edit/user-edit.component';
 import { PoolAccessComponent } from './gofiliate/users/pool-access/pool-access.component';
+import { DeletedUsersComponent } from './gofiliate/users/deleted-users/deleted-users.component';
 import { SettingsComponent } from './gofiliate/settings/settings.component';
 import { EmailsComponent } from './gofiliate/emails/emails.component';
 import { EmailEditComponent } from './gofiliate/emails/email-edit/email-edit.component';
 import { DataProvidersComponent } from './gofiliate/data-providers/data-providers.component';
 import { DataProviderEditorComponent } from './gofiliate/data-providers/data-provider-editor/data-provider-editor.component';
+import { DeletedDataProvidersComponent } from './gofiliate/data-providers/deleted-data-providers/deleted-data-providers.component';
+import { AnalyticsOverviewComponent } from './components/analytics/analytics-overview/analytics-overview.component';
+import { ComparisonReportComponent } from './components/analytics/comparison-report/comparison-report.component';
+
 export const routes: Routes = [
   {
     path: 'dashboard',
@@ -79,6 +86,15 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'analytics',
+    component: LoggedInComponent,
+    data: { title: 'Analytics', main: 'Home', breadcrumb: 'Analytics', mainUrl: '/dashboard' },
+    children: [
+      { path: 'overview', canActivate: [AuthGuard], component: AnalyticsOverviewComponent, data: { title: 'Analytics Overview', breadcrumb: 'Overview' } },
+      { path: 'comparison-report', canActivate: [AuthGuard], component: ComparisonReportComponent, data: { title: 'Comparison Report', breadcrumb: 'Comparison Report' } }
+    ]
+  },
+  {
     path: 'gofiliate',
     component: LoggedInComponent,
     data: { title: 'Gofiliate', main: 'Home', breadcrumb: 'Gofiliate', mainUrl: '/dashboard' },
@@ -93,12 +109,14 @@ export const routes: Routes = [
       { path: 'dashboards-widgets/templates', canActivate: [AuthGuard], component: TemplatesComponent, data: { title: 'Dashboard Templates', breadcrumb: 'Templates', breadcrumbUrl: '/gofiliate/dashboards-widgets' } },
       { path: 'dashboards-widgets/widgets', canActivate: [AuthGuard], component: WidgetsComponent, data: { title: 'Dashboard Widgets', breadcrumb: 'Widgets', breadcrumbUrl: '/gofiliate/dashboards-widgets' } },
       { path: 'users', canActivate: [AuthGuard], component: UsersComponent, data: { title: 'Users', breadcrumb: 'Users' } },
+      { path: 'users/deleted', canActivate: [AuthGuard], component: DeletedUsersComponent, data: { title: 'Deleted Users', breadcrumb: 'Deleted', breadcrumbUrl: '/gofiliate/users' } },
       { path: 'users/pool-access/:user_id', canActivate: [AuthGuard], component: PoolAccessComponent, data: { title: 'Pool Access', breadcrumb: 'Pool Access', breadcrumbUrl: '/gofiliate/users' } },
       { path: 'users/:user_id', canActivate: [AuthGuard], component: UserEditComponent, data: { title: 'Edit User', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/users' } },
       { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent, data: { title: 'Settings', breadcrumb: 'Settings' } },
       { path: 'emails', canActivate: [AuthGuard], component: EmailsComponent, data: { title: 'Emails', breadcrumb: 'Emails' } },
       { path: 'emails/:email_id', canActivate: [AuthGuard], component: EmailEditComponent, data: { title: 'Edit Email', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/emails' } },
       { path: 'data-providers', canActivate: [AuthGuard], component: DataProvidersComponent, data: { title: 'Data Providers', breadcrumb: 'Data Providers' } },
+      { path: 'data-providers/deleted', canActivate: [AuthGuard], component: DeletedDataProvidersComponent, data: { title: 'Deleted Providers', breadcrumb: 'Deleted', breadcrumbUrl: '/gofiliate/data-providers' } },
       { path: 'data-providers/:id', canActivate: [AuthGuard], component: DataProviderEditorComponent, data: { title: 'Edit Provider', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/data-providers' } }
     ]
   },
@@ -107,6 +125,16 @@ export const routes: Routes = [
     component: LoggedInComponent,
     data: { title: 'Account', main: 'Home', breadcrumb: 'Account', mainUrl: '/dashboard' },
     children: [
+      { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent, data: { title: 'My Profile', breadcrumb: 'Profile' } },
+      { path: 'security', canActivate: [AuthGuard], component: SecuritySettingsComponent, data: { title: 'Security Settings', breadcrumb: 'Security' } }
+    ]
+  },
+  {
+    path: 'accounts',
+    component: LoggedInComponent,
+    data: { title: 'Account', main: 'Home', breadcrumb: 'Account', mainUrl: '/dashboard' },
+    children: [
+      { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent, data: { title: 'My Profile', breadcrumb: 'Profile' } },
       { path: 'security', canActivate: [AuthGuard], component: SecuritySettingsComponent, data: { title: 'Security Settings', breadcrumb: 'Security' } }
     ]
   },

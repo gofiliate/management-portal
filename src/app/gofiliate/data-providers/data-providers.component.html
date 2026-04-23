@@ -7,28 +7,11 @@
           <h3>Data Providers</h3>
           <p class="text-muted mb-0">View and manage data provider configurations</p>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Row -->
-  <div class="row mb-4" *ngIf="!loading && providers.length > 0">
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-value">{{ totalProviders }}</div>
-        <div class="stat-label">Total Providers</div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-value text-success">{{ activeProviders }}</div>
-        <div class="stat-label">Active Providers</div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6 mb-3">
-      <div class="stat-card">
-        <div class="stat-value text-secondary">{{ totalProviders - activeProviders }}</div>
-        <div class="stat-label">Inactive Providers</div>
+        <div>
+          <button class="btn btn-outline-secondary me-2" (click)="navigateToDeleted()">
+            <i class="fa fa-trash me-2"></i>View Deleted
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -76,12 +59,19 @@
             <div class="provider-logo">
               <i class="fa fa-building"></i>
             </div>
-            <div class="provider-info">
+            <div class="provider-info flex-grow-1">
               <h5 class="provider-name">{{ provider.provider_name }}</h5>
               <span class="badge" [class.bg-success]="provider.status === 1" 
                     [class.bg-secondary]="provider.status !== 1">
                 {{ provider.status === 1 ? 'Active' : 'Inactive' }}
               </span>
+            </div>
+            <div class="provider-actions">
+              <button class="btn btn-sm btn-outline-danger" 
+                      (click)="deleteProvider(provider); $event.stopPropagation()" 
+                      title="Delete Provider">
+                <i class="fa fa-trash"></i>
+              </button>
             </div>
           </div>
 
@@ -108,4 +98,19 @@
       </div>
     </div>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <app-confirmation-modal
+    [show]="showDeleteModal"
+    [headerText]="'Delete Data Provider'"
+    [buttonText]="'Delete'"
+    [buttonIcon]="'fa fa-trash'"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  >
+    <p *ngIf="providerToDelete" class="mb-2">
+      Are you sure you want to delete <strong>"{{ providerToDelete.provider_name }}"</strong>?
+    </p>
+    <p class="mb-0 text-muted"><strong>Note:</strong> Providers with active tables cannot be deleted.</p>
+  </app-confirmation-modal>
 </div>

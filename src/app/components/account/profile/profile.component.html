@@ -1,0 +1,124 @@
+<div class="profile-container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="page-header mb-4">
+        <h3>My Profile</h3>
+        <p class="text-muted mb-0">Your account information</p>
+      </div>
+
+      <!-- ID Card -->
+      <div class="id-card" *ngIf="user">
+        <div class="id-card-header">
+          <div class="id-card-logo">
+            <i class="fa fa-user-circle"></i>
+          </div>
+          <div class="id-card-title">
+            <div class="profile-subtitle">Profile</div>
+          </div>
+        </div>
+
+        <div class="id-card-body">
+          <div class="profile-photo-section">
+            <div class="profile-photo">
+              <img *ngIf="user.profile_picture" [src]="user.profile_picture" [alt]="getFullName()" />
+              <div *ngIf="!user.profile_picture" class="profile-initials">
+                {{ getInitials() }}
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-info">
+            <div class="info-row">
+              <label><i class="fa fa-user me-2"></i>Full Name</label>
+              <div class="info-value">{{ getFullName() }}</div>
+            </div>
+
+            <div class="info-row">
+              <label><i class="fa fa-envelope me-2"></i>Email</label>
+              <div class="info-value">{{ user.username }}</div>
+            </div>
+
+            <div class="info-row">
+              <label><i class="fa fa-shield me-2"></i>Access Level</label>
+              <div class="info-value">
+                {{ user.access_label }}
+                <span class="badge bg-success ms-2" *ngIf="user.is_god">
+                  <i class="fa fa-crown me-1"></i>God Mode
+                </span>
+              </div>
+            </div>
+
+            <div class="info-row" *ngIf="user.totp_enabled !== undefined">
+              <label><i class="fa fa-lock me-2"></i>Two-Factor Authentication</label>
+              <div class="info-value">
+                <span class="badge" [class.bg-success]="user.totp_enabled" [class.bg-secondary]="!user.totp_enabled">
+                  <i class="fa" [class.fa-check]="user.totp_enabled" [class.fa-times]="!user.totp_enabled"></i>
+                  {{ user.totp_enabled ? 'Enabled' : 'Disabled' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Access Permissions Section -->
+            <div class="info-row">
+              <label><i class="fa fa-key me-2"></i>Access Permissions</label>
+              
+              <!-- God User - Full Access -->
+              <div class="info-value" *ngIf="user.is_god">
+                <span class="badge bg-warning text-dark">
+                  <i class="fa fa-crown me-1"></i>Full Platform Access
+                </span>
+                <div class="text-muted mt-2" style="font-size: 0.875rem;">
+                  You have unrestricted access to all clients and instances
+                </div>
+              </div>
+
+              <!-- Regular User - Display Access -->
+              <div class="info-value" *ngIf="!user.is_god">
+                <!-- Loading State -->
+                <div *ngIf="loading" class="text-muted">
+                  <i class="fa fa-spinner fa-spin me-2"></i>Loading access permissions...
+                </div>
+
+                <!-- Access Lists -->
+                <div *ngIf="!loading">
+                  <!-- Client Access -->
+                  <div *ngIf="clientAccess.length > 0" class="access-section">
+                    <strong class="access-label">Clients:</strong>
+                    <div class="access-items">
+                      <div *ngFor="let client of clientAccess" class="access-item">
+                        <i class="fa fa-building me-2"></i>{{ client.client_name }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Instance Access -->
+                  <div *ngIf="instanceAccess.length > 0" class="access-section mt-3">
+                    <strong class="access-label">Instances:</strong>
+                    <div class="access-items">
+                      <div *ngFor="let instance of instanceAccess" class="access-item">
+                        <i class="fa fa-server me-2"></i>{{ instance.instance_name }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div *ngIf="clientAccess.length === 0 && instanceAccess.length === 0" class="text-muted">
+                    <i class="fa fa-info-circle me-2"></i>No access permissions assigned
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="id-card-footer">
+          <div class="text-end">
+            <a routerLink="/account/security" class="btn btn-sm btn-outline-primary">
+              <i class="fa fa-cog me-1"></i> Security Settings
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

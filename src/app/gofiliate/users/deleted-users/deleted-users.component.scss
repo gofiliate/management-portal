@@ -1,0 +1,52 @@
+// Deleted Users Component Styles
+
+.page-title {
+  h3 {
+    color: #333;
+    font-weight: 600;
+  }
+
+  p.text-muted {
+    font-size: 0.875rem;
+  }
+}
+
+.table {
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.badge {
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.page-item.disabled .page-link {
+  cursor: not-allowed;
+}
+
+.page-link {
+  cursor: pointer;
+  user-select: none;
+}

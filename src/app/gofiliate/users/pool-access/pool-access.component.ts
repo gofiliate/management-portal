@@ -95,34 +95,39 @@ export class PoolAccessComponent implements OnInit {
           return;
         }
 
-        // Mark selected clients from pool access response
-        if (response.client_access && Array.isArray(response.client_access)) {
-          response.client_access.forEach((clientAccess: any) => {
-            this.selectedClientIds.add(clientAccess.client_id);
-            const client = this.clients.find(c => c.client_id === clientAccess.client_id);
-            if (client) client.selected = true;
-            // Load instances for this client
-            this.loadInstancesForClient(clientAccess.client_id);
-          });
-        }
-
-        // Mark selected instances from pool access response
+        // FIRST: Populate all Sets synchronously before making any async calls
+        // This prevents race conditions where async calls complete before Sets are populated
+        
+        // Populate selectedInstanceIds from pool access response
         if (response.instance_access && Array.isArray(response.instance_access)) {
           response.instance_access.forEach((instanceAccess: any) => {
             this.selectedInstanceIds.add(instanceAccess.instance_id);
           });
         }
 
-        // Mark selected managers from pool access response
+        // Populate selectedManagers from pool access response
         if (response.manager_access && Array.isArray(response.manager_access)) {
           response.manager_access.forEach((managerAccess: any) => {
             this.selectedManagers.add(`${managerAccess.instance_id}-${managerAccess.manager_id}`);
           });
         }
+
+        // SECOND: Now process clients and trigger async loads
+        // Mark selected clients and load their instances
+        if (response.client_access && Array.isArray(response.client_access)) {
+          response.client_access.forEach((clientAccess: any) => {
+            this.selectedClientIds.add(clientAccess.client_id);
+            const client = this.clients.find(c => c.client_id === clientAccess.client_id);
+            if (client) {
+              client.selected = true;
+            }
+            // Load instances for this client (they will now see the populated selectedInstanceIds Set)
+            this.loadInstancesForClient(clientAccess.client_id);
+          });
+        }
       },
       error: (error) => {
-        // Silently fail - access tables might not have data yet
-        console.log('User pool access data not available yet:', error);
+        console.error('Error loading pool access:', error);
       }
     });
   }

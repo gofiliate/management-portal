@@ -7,6 +7,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ActionGuardService } from '../../../services/action-guard.service';
 import { ToastrService } from 'ngx-toastr';
 import { InstanceCardComponent, Instance } from '../instance-card/instance-card.component';
+import { GofiliateService, DataProvider } from '../../../services/gofiliate.service';
 
 interface InstanceData {
   instance_id: number;
@@ -37,6 +38,7 @@ export class ClientInstancesComponent implements OnInit {
   public clientId: number = 0;
   public showModal = false;
   public isGod = false;
+  public providers: DataProvider[] = [];
   public newInstance = {
     instance_name: '',
     client_logo: '',
@@ -51,7 +53,9 @@ export class ClientInstancesComponent implements OnInit {
     heartbeat_port: undefined as number | undefined,
     is_single_brand: 1,
     is_live: 0,
-    is_public: 0
+    is_public: 0,
+    data_provider_id: undefined as number | undefined,
+    data_provider_key: ''
   };
 
   constructor(
@@ -59,14 +63,27 @@ export class ClientInstancesComponent implements OnInit {
     private auth: AuthService,
     public actionGuard: ActionGuardService,
     private toast: ToastrService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private gofiliateService: GofiliateService
   ) {}
 
   ngOnInit(): void {
     this.isGod = this.auth.isGod();
+    this.loadProviders();
     this.route.params.subscribe(params => {
       this.clientId = +params['id'];
       this.getInstances();
+    });
+  }
+
+  loadProviders(): void {
+    this.gofiliateService.getDataProviders().subscribe({
+      next: (response) => {
+        this.providers = response.providers.filter(p => !p.deleted_at);
+      },
+      error: (error) => {
+        console.error('Error loading data providers:', error);
+      }
     });
   }
 
@@ -94,7 +111,9 @@ export class ClientInstancesComponent implements OnInit {
       heartbeat_port: undefined,
       is_single_brand: 1,
       is_live: 0,
-      is_public: 0
+      is_public: 0,
+      data_provider_id: undefined,
+      data_provider_key: ''
     };
   }
 
@@ -127,7 +146,9 @@ export class ClientInstancesComponent implements OnInit {
       heartbeat_port: this.newInstance.heartbeat_port,
       is_single_brand: this.newInstance.is_single_brand,
       is_live: this.newInstance.is_live,
-      is_public: this.isGod ? this.newInstance.is_public : 0
+      is_public: this.isGod ? this.newInstance.is_public : 0,
+      data_provider_id: this.newInstance.data_provider_id || null,
+      data_provider_key: this.newInstance.data_provider_key || null
     };
 
     // Only GODs can send api_key and jwt_key, non-GODs send KEY_NEEDED

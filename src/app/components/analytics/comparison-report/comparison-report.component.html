@@ -1,0 +1,40 @@
+<div class="container-fluid py-4">
+  <!-- Loading Spinner -->
+  @if (!tokensReady) {
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="text-muted">Granting access...</h5>
+            <p class="text-muted mb-0">Preparing comparison report data</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (tokensReady) {
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">Comparison Report</h3>
+            <p class="text-muted mb-0">Compare performance metrics across different time periods</p>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info">
+              <i class="fa fa-chart-bar me-2"></i>
+              Comparison Report Tool - Coming Soon
+            </div>
+            <p>This section will allow you to compare data across different date ranges, clients, or instances.</p>
+            <p class="text-muted">Access granted for {{availableInstances.length}} instance(s)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

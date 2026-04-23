@@ -37,6 +37,38 @@
       </div>
 
       <div class="row">
+        <!-- Data Provider -->
+        <div class="col-md-6 mb-3">
+          <label for="dataProvider" class="form-label">Data Provider (Optional)</label>
+          <select 
+            class="form-select" 
+            id="dataProvider" 
+            [(ngModel)]="instance.data_provider_id"
+            name="dataProvider"
+          >
+            <option [ngValue]="null">-- No Data Provider --</option>
+            <option *ngFor="let provider of providers" [ngValue]="provider.provider_id">
+              {{ provider.provider_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Data Provider Key -->
+        <div class="col-md-6 mb-3">
+          <label for="dataProviderKey" class="form-label">Data Provider Key (Optional)</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="dataProviderKey" 
+            [(ngModel)]="instance.data_provider_key"
+            name="dataProviderKey"
+            maxlength="255"
+            placeholder="Enter data provider key"
+          >
+        </div>
+      </div>
+
+      <div class="row">
         <!-- IP Address -->
         <div class="col-md-6 mb-3">
           <label for="ipAddress" class="form-label">IP Address</label>

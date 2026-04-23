@@ -73,6 +73,7 @@ export interface User {
   is_god: boolean;
   created: string;
   updated: string;
+  deleted_at?: string;
   status: number;
   role_id?: number;
   role_name?: string;
@@ -279,6 +280,8 @@ export interface DataProvider {
   provider_url: string;
   created: string;
   status: number;
+  deleted_at?: string;
+  updated?: string;
 }
 
 export interface DataProviderTable {
@@ -350,6 +353,18 @@ export class GofiliateService {
     return this.apiService.post('gofiliate/users', data, false);
   }
 
+  deleteUser(userId: number): Observable<any> {
+    return this.apiService.delete(`gofiliate/users/delete/${userId}`, false);
+  }
+
+  restoreUser(userId: number): Observable<any> {
+    return this.apiService.post(`gofiliate/users/restore/${userId}`, {}, false);
+  }
+
+  getDeletedUsers(): Observable<{ result: boolean; users: User[]; count: number }> {
+    return this.apiService.get('gofiliate/users?only_deleted=true', false);
+  }
+
   // Roles API
   getRoles(): Observable<{ result: boolean; roles: Role[]; count: number }> {
     return this.apiService.get('gofiliate/roles', false);
@@ -383,12 +398,12 @@ export class GofiliateService {
   }
 
   // Pool Access API (with full details)
-  getPoolAccess(userId: number): Observable<any> {
-    return this.apiService.get(`gofiliate/users/${userId}/pool-access`, false);
+  getPoolAccess(userId: number | string): Observable<any> {
+    return this.apiService.get(`gofiliate/users/pool-access/${userId}`, false);
   }
 
-  savePoolAccess(userId: number, data: { client_ids: number[]; instance_ids: number[]; manager_access: { instance_id: number; manager_id: number }[]; creator_id: number }): Observable<any> {
-    return this.apiService.post(`gofiliate/users/${userId}/pool-access`, data, false);
+  savePoolAccess(userId: number | string, data: { client_ids: number[]; instance_ids: number[]; manager_access: { instance_id: number; manager_id: number }[]; creator_id: number }): Observable<any> {
+    return this.apiService.post(`gofiliate/users/pool-access/${userId}`, data, false);
   }
 
   // User Dashboard Assignment API
@@ -513,6 +528,18 @@ export class GofiliateService {
 
   updateDataProvider(id: number, data: { provider_name: string; provider_url: string; status: number }): Observable<{ result: boolean; message?: string; provider?: DataProvider }> {
     return this.apiService.put(`data-providers/${id}`, data, false);
+  }
+
+  deleteDataProvider(id: number): Observable<{ result: boolean; message: string }> {
+    return this.apiService.delete(`data-providers/${id}`, false);
+  }
+
+  restoreDataProvider(id: number): Observable<{ result: boolean; message: string; provider?: DataProvider }> {
+    return this.apiService.post(`data-providers/restore/${id}`, {}, false);
+  }
+
+  getDeletedDataProviders(): Observable<{ result: boolean; providers: DataProvider[]; count: number }> {
+    return this.apiService.get('data-providers?include_deleted=true', false);
   }
 
   // Data Provider Tables API

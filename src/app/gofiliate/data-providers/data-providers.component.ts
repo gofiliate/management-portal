@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { GofiliateService, DataProvider } from '../../services/gofiliate.service';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationModalComponent } from '../../components/shared/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-data-providers',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmationModalComponent],
   templateUrl: './data-providers.component.html',
   styleUrl: './data-providers.component.scss'
 })
 export class DataProvidersComponent implements OnInit {
   providers: DataProvider[] = [];
   loading = false;
+  showDeleteModal = false;
+  providerToDelete: DataProvider | null = null;
 
   constructor(
     private router: Router,
@@ -66,6 +69,10 @@ export class DataProvidersComponent implements OnInit {
     this.router.navigate(['/gofiliate/data-providers', providerId]);
   }
 
+  navigateToDeleted(): void {
+    this.router.navigate(['/gofiliate/data-providers/deleted']);
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -73,5 +80,42 @@ export class DataProvidersComponent implements OnInit {
       month: 'short',
       day: 'numeric'
     });
+  }
+
+  deleteProvider(provider: DataProvider): void {
+    this.providerToDelete = provider;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (!this.providerToDelete) return;
+
+    this.gofiliateService.deleteDataProvider(this.providerToDelete.provider_id).subscribe({
+      next: (response) => {
+        if (response.result) {
+          this.toast.success('Data provider deleted successfully', 'Success');
+          this.showDeleteModal = false;
+          this.providerToDelete = null;
+          // Reload the providers list
+          this.loadProviders();
+        } else {
+          this.toast.error(response.message || 'Failed to delete provider', 'Error');
+          this.showDeleteModal = false;
+          this.providerToDelete = null;
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting provider:', error);
+        const errorMessage = error.error?.message || 'Failed to delete provider';
+        this.toast.error(errorMessage, 'Error');
+        this.showDeleteModal = false;
+        this.providerToDelete = null;
+      }
+    });
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.providerToDelete = null;
   }
 }
