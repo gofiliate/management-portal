@@ -26,6 +26,7 @@ import { ManageEmailsComponent } from './components/clients/manage-emails/manage
 import { ManageTermsConditionsComponent } from './components/clients/manage-terms-conditions/manage-terms-conditions.component';
 import { ManageBrandsComponent } from './components/clients/manage-brands/manage-brands.component';
 import { ManageAffiliatesComponent } from './components/clients/manage-affiliates/manage-affiliates.component';
+import { ManageSignupSchemaComponent } from './components/clients/manage-signup-schema/manage-signup-schema.component';
 import { AffiliateDashboardComponent } from './components/clients/affiliate-dashboard/affiliate-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { NavigationComponent } from './gofiliate/navigation/navigation.component';
@@ -47,6 +48,8 @@ import { EmailEditComponent } from './gofiliate/emails/email-edit/email-edit.com
 import { DataProvidersComponent } from './gofiliate/data-providers/data-providers.component';
 import { DataProviderEditorComponent } from './gofiliate/data-providers/data-provider-editor/data-provider-editor.component';
 import { DeletedDataProvidersComponent } from './gofiliate/data-providers/deleted-data-providers/deleted-data-providers.component';
+import { FormBuilderShellComponent } from './gofiliate/form-builder/form-builder-shell.component';
+import { StandardSignupEditorComponent } from './gofiliate/form-builder/standard-signup-editor/standard-signup-editor.component';
 import { AnalyticsOverviewComponent } from './components/analytics/analytics-overview/analytics-overview.component';
 import { ComparisonReportComponent } from './components/analytics/comparison-report/comparison-report.component';
 
@@ -80,7 +83,8 @@ export const routes: Routes = [
      { path: 'manage-instance-old/:id', canActivate: [AuthGuard], component: ManageInstanceOldComponent, data: { title: 'Manage Instance (Legacy)', breadcrumb: 'Manage Instance' } },
     { path: 'manage-emails/:id', canActivate: [AuthGuard], component: ManageEmailsComponent, data: { title: 'Manage Emails', breadcrumb: 'Emails' } },
     { path: 'manage-terms-conditions/:id', canActivate: [AuthGuard], component: ManageTermsConditionsComponent, data: { title: 'Terms & Conditions', breadcrumb: 'Terms' } },
-     { path: 'manage-brands/:id', canActivate: [AuthGuard], component: ManageBrandsComponent, data: { title: 'Manage Brands', breadcrumb: 'Brands' } },
+    { path: 'manage-signup-schema/:id', canActivate: [AuthGuard], component: ManageSignupSchemaComponent, data: { title: 'Signup Form Builder', breadcrumb: 'Signup Form' } },
+    { path: 'manage-brands/:id', canActivate: [AuthGuard], component: ManageBrandsComponent, data: { title: 'Manage Brands', breadcrumb: 'Brands' } },
      { path: 'manage-affiliates/:id', canActivate: [AuthGuard], component: ManageAffiliatesComponent, data: { title: 'Manage Affiliates', breadcrumb: 'Affiliates' } },
      { path: 'affiliate-dashboard/:uuid', canActivate: [AuthGuard], component: AffiliateDashboardComponent, data: { title: 'Affiliate Dashboard', breadcrumb: 'Affiliate' } }
     ]
@@ -99,6 +103,32 @@ export const routes: Routes = [
     component: LoggedInComponent,
     data: { title: 'Gofiliate', main: 'Home', breadcrumb: 'Gofiliate', mainUrl: '/dashboard' },
     children: [
+      { path: '', redirectTo: 'form-builder', pathMatch: 'full' },
+      { path: 'form-builder/signup/:id', redirectTo: 'form-builder/schemas/:id', pathMatch: 'full' },
+      {
+        path: 'form-builder/signup',
+        canActivate: [AuthGuard],
+        component: StandardSignupEditorComponent,
+        data: {
+          title: 'Signup Schema Editor',
+          breadcrumb: 'Signup Form',
+          breadcrumbUrl: '/gofiliate/form-builder',
+          defaultFormType: 'signup',
+          defaultSchemaType: 'external',
+          defaultSchemaKey: 'affiliate_signup'
+        }
+      },
+      {
+        path: 'form-builder/schemas/:id',
+        canActivate: [AuthGuard],
+        component: StandardSignupEditorComponent,
+        data: {
+          title: 'Schema Editor',
+          breadcrumb: 'Schema Editor',
+          breadcrumbUrl: '/gofiliate/form-builder'
+        }
+      },
+      { path: 'form-builder', canActivate: [AuthGuard], component: FormBuilderShellComponent, data: { title: 'Form Builder', breadcrumb: 'Form Builder' } },
       { path: 'navigation', canActivate: [AuthGuard], component: NavigationComponent, data: { title: 'Navigation Management', breadcrumb: 'Navigation' } },
       { path: 'navigation/roles', canActivate: [AuthGuard], component: RolesComponent, data: { title: 'Roles', breadcrumb: 'Roles', breadcrumbUrl: '/gofiliate/navigation' } },
       { path: 'navigation/roles/:id', canActivate: [AuthGuard], component: RoleEditComponent, data: { title: 'Edit Role', breadcrumb: 'Edit', breadcrumbUrl: '/gofiliate/navigation/roles' } },

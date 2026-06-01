@@ -1,0 +1,99 @@
+<div class="instance-selector">
+  <div class="mb-3">
+    <label class="form-label fw-bold">Instances to Compare</label>
+    
+    <!-- Dropdown Button -->
+    <div class="dropdown" [class.show]="showDropdown">
+      <button 
+        class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center"
+        [class.is-invalid]="validationError && !validationError.includes('Warning')"
+        type="button" 
+        (click)="toggleDropdown()">
+        <span>{{ getSelectionLabel() }}</span>
+        <i class="fa fa-chevron-down"></i>
+      </button>
+
+      <!-- Dropdown Menu -->
+      @if (showDropdown) {
+        <div class="dropdown-menu show w-100" style="max-height: 300px; overflow-y: auto;" (click)="$event.stopPropagation()">
+          <!-- Select All Option -->
+          <div class="dropdown-item" style="cursor: pointer;">
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="selectAll"
+                [(ngModel)]="selectAll"
+                (change)="toggleSelectAll()"
+                (click)="$event.stopPropagation()">
+              <label class="form-check-label fw-bold" for="selectAll" style="cursor: pointer;">
+                Select All
+              </label>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+
+          <!-- Instance List -->
+          @for (instance of availableInstances; track instance.id) {
+            <div class="dropdown-item" style="cursor: pointer;">
+              <div class="form-check">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [id]="'instance-' + instance.id"
+                  [checked]="isSelected(instance.id)"
+                  (change)="toggleInstance(instance.id)"
+                  (click)="$event.stopPropagation()">
+                <label class="form-check-label" [for]="'instance-' + instance.id" style="cursor: pointer;">
+                  <span class="badge bg-secondary me-2">{{ instance.id }}</span>
+                  {{ instance.name }}
+                </label>
+              </div>
+            </div>
+          }
+
+          @if (availableInstances.length === 0) {
+            <div class="dropdown-item text-muted">
+              <i class="fa fa-info-circle me-2"></i>
+              No instances available
+            </div>
+          }
+
+          <!-- Close Button -->
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item text-center">
+            <button 
+              type="button" 
+              class="btn btn-sm btn-primary"
+              (click)="showDropdown = false">
+              <i class="fa fa-check me-1"></i>
+              Done
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Validation Message -->
+    @if (validationError) {
+      <div 
+        class="small mt-2"
+        [class.text-danger]="!validationError.includes('Warning')"
+        [class.text-warning]="validationError.includes('Warning')">
+        <i class="fa" [class.fa-exclamation-circle]="!validationError.includes('Warning')" [class.fa-exclamation-triangle]="validationError.includes('Warning')"></i>
+        {{ validationError }}
+      </div>
+    }
+
+    <!-- Selected Instances Summary -->
+    @if (selectedInstances.length > 0 && selectedInstances.length <= 5) {
+      <div class="mt-2">
+        @for (instanceId of selectedInstances; track instanceId) {
+          <span class="badge bg-primary me-1">
+            {{ getInstanceName(instanceId) }}
+          </span>
+        }
+      </div>
+    }
+  </div>
+</div>

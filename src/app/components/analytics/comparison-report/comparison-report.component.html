@@ -19,19 +19,159 @@
   <!-- Main Content -->
   @if (tokensReady) {
     <div class="row">
-      <div class="col-12">
+      <!-- Filters Column -->
+      <div class="col-lg-4 col-xl-3 mb-4">
+        <div class="card sticky-top" style="top: 1rem;">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fa fa-filter me-2"></i>
+              Comparison Filters
+            </h5>
+          </div>
+          <div class="card-body">
+            
+            <!-- Instance Selector -->
+            <app-instance-selector
+              [availableInstances]="availableInstances"
+              (instancesChange)="onInstancesChange($event)">
+            </app-instance-selector>
+
+            <!-- Date Range Filter -->
+            <app-date-range-filter
+              (dateRangeChange)="onDateRangeChange($event)">
+            </app-date-range-filter>
+
+            <!-- Date Grouping -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Date Grouping</label>
+              <div class="btn-group w-100" role="group">
+                @for (option of dateGroupingOptions; track option.value) {
+                  <input 
+                    type="radio" 
+                    class="btn-check" 
+                    [id]="'grouping-' + option.value"
+                    [name]="'dateGrouping'"
+                    [value]="option.value"
+                    [(ngModel)]="dateGrouping"
+                    (change)="onDateGroupingChange()">
+                  <label class="btn btn-outline-primary" [for]="'grouping-' + option.value">
+                    {{ option.label }}
+                  </label>
+                }
+              </div>
+            </div>
+
+            <!-- Event Selector -->
+            @if (loadingEvents) {
+              <div class="text-center py-3">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading events...</span>
+                </div>
+                <p class="small text-muted mt-2 mb-0">Loading events...</p>
+              </div>
+            }
+
+            <app-event-selector
+              [eventsByInstance]="eventsByInstance"
+              [selectedInstances]="selectedInstances"
+              [style.display]="loadingEvents ? 'none' : 'block'"
+              (selectedEventsChange)="onEventsChange($event)">
+            </app-event-selector>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 mt-4">
+              <button 
+                class="btn btn-primary"
+                [disabled]="!canRunComparison || isLoadingReport"
+                (click)="runComparison()">
+                @if (isLoadingReport) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                }
+                @if (!isLoadingReport) {
+                  <i class="fa fa-play me-2"></i>
+                }
+                Run Comparison
+              </button>
+              <button 
+                class="btn btn-outline-secondary"
+                [disabled]="isLoadingReport"
+                (click)="resetFilters()">
+                <i class="fa fa-redo me-2"></i>
+                Reset Filters
+              </button>
+            </div>
+
+            <!-- Filter Summary -->
+            @if (canRunComparison) {
+              <div class="alert alert-success mt-3 mb-0 small">
+                <i class="fa fa-check-circle me-2"></i>
+                Ready to compare <strong>{{ selectedInstances.length }}</strong> instances
+                with <strong>{{ selectedEvents.length }}</strong> events
+              </div>
+            }
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Column -->
+      <div class="col-lg-8 col-xl-9">
         <div class="card">
           <div class="card-header">
             <h3 class="mb-0">Comparison Report</h3>
-            <p class="text-muted mb-0">Compare performance metrics across different time periods</p>
+            <p class="text-muted mb-0">Compare performance metrics across different instances and time periods</p>
           </div>
           <div class="card-body">
-            <div class="alert alert-info">
-              <i class="fa fa-chart-bar me-2"></i>
-              Comparison Report Tool - Coming Soon
-            </div>
-            <p>This section will allow you to compare data across different date ranges, clients, or instances.</p>
-            <p class="text-muted">Access granted for {{availableInstances.length}} instance(s)</p>
+            
+            @if (!reportResults && !isLoadingReport) {
+              <div class="alert alert-info">
+                <i class="fa fa-info-circle me-2"></i>
+                Configure your comparison filters and click "Run Comparison" to view results
+              </div>
+              
+              <div class="row text-center mt-4">
+                <div class="col-md-4">
+                  <div class="feature-box p-3">
+                    <i class="fa fa-server fa-3x text-primary mb-3"></i>
+                    <h6>Multi-Instance</h6>
+                    <p class="small text-muted">Compare data across multiple instances simultaneously</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="feature-box p-3">
+                    <i class="fa fa-calendar-alt fa-3x text-primary mb-3"></i>
+                    <h6>Flexible Dates</h6>
+                    <p class="small text-muted">Choose any date range and grouping level</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="feature-box p-3">
+                    <i class="fa fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h6>Event Tracking</h6>
+                    <p class="small text-muted">Select specific events to compare across instances</p>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (isLoadingReport) {
+              <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="text-muted">Generating comparison report...</h5>
+                <p class="text-muted mb-0">Fetching data from {{ selectedInstances.length }} instances</p>
+              </div>
+            }
+
+            @if (reportResults) {
+              <app-comparison-table
+                [reportResults]="reportResults"
+                [instanceNames]="instanceNamesMap"
+                [selectedEvents]="selectedEvents">
+              </app-comparison-table>
+            }
+
           </div>
         </div>
       </div>

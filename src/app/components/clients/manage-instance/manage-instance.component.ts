@@ -758,9 +758,13 @@ export class ManageInstanceComponent implements OnInit {
   }
 
   public managePlatformSection(section: string): void {
-    // Instance details doesn't require linked token
     if (section === 'instance-details') {
       this.currentSection = 'instance-details';
+      return;
+    }
+
+    if (section === 'signup-schema') {
+      this.router.navigate(['/clients/manage-signup-schema', this.instanceId]);
       return;
     }
 

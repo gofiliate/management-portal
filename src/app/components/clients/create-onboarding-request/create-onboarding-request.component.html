@@ -254,6 +254,20 @@
       </div>
       <div class="card-body">
         <p class="text-muted">Add sections that need to be completed during the onboarding process. Drag to reorder.</p>
+
+        <div *ngIf="isLoadingSchema" class="alert alert-info">
+          <i class="fa fa-spinner fa-spin mr-2"></i>Loading onboarding sections from the form builder schema...
+        </div>
+
+        <div *ngIf="!isLoadingSchema && activeOnboardingSchema" class="alert alert-success">
+          <i class="fa fa-check-circle mr-2"></i>
+          Using onboarding schema <strong>{{ activeOnboardingSchema.label || activeOnboardingSchema.schema_key }}</strong>
+          (version {{ activeOnboardingSchema.version }}) from the form builder.
+        </div>
+
+        <div *ngIf="schemaLoadError" class="alert alert-warning">
+          <i class="fa fa-exclamation-triangle mr-2"></i>{{ schemaLoadError }}
+        </div>
         
         <!-- Section Templates -->
         <div class="mb-4">

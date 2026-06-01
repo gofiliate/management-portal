@@ -5,6 +5,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../shared/page-header/page-header.component';
 import { GofiliateService } from '../../../services/gofiliate.service';
 import { OnboardingRequestSection } from '../../../models/onboarding.model';
+import { FormSchema, FormSchemaField } from '../../../models/form-schema.model';
+import { FormSchemaService } from '../../../services/form-schema.service';
 
 @Component({
   selector: 'app-section-completion-form',
@@ -25,12 +27,14 @@ export class SectionCompletionFormComponent implements OnInit {
   sectionId: number | null = null;
   isLoading = false;
   isSaving = false;
+  isLoadingSchema = false;
+  activeSchema: FormSchema | null = null;
 
   // Form data - dynamic based on section type
   formData: { [key: string]: any } = {};
 
   // Field definitions based on section type
-  fieldDefinitions: { [key: string]: SectionField[] } = {
+  legacyFieldDefinitions: { [key: string]: SectionField[] } = {
     company_info: [
       { key: 'legal_company_name', label: 'Legal Company Name', type: 'text', required: true },
       { key: 'registration_number', label: 'Registration Number', type: 'text', required: true },
@@ -132,7 +136,8 @@ export class SectionCompletionFormComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private gofiliateService: GofiliateService
+    private gofiliateService: GofiliateService,
+    private formSchemaService: FormSchemaService
   ) {}
 
   ngOnInit(): void {
@@ -154,6 +159,7 @@ export class SectionCompletionFormComponent implements OnInit {
           this.requestId = section.request_id;
           this.section = section;
           this.breadcrumbs[2].label = section.section_title;
+          this.loadSchemaForSection(section);
           
           // Load existing data if any
           if (section.section_data) {
@@ -174,7 +180,13 @@ export class SectionCompletionFormComponent implements OnInit {
 
   getFields(): SectionField[] {
     if (!this.section) return [];
-    return this.fieldDefinitions[this.section.section_type] || [];
+
+    const schemaFields = this.getSchemaBackedFields();
+    if (schemaFields.length > 0) {
+      return schemaFields;
+    }
+
+    return this.legacyFieldDefinitions[this.section.section_type] || [];
   }
 
   isFormValid(): boolean {
@@ -231,6 +243,66 @@ export class SectionCompletionFormComponent implements OnInit {
       this.router.navigate(['/clients/onboarding/requests', this.requestId]);
     } else {
       this.router.navigate(['/clients/onboarding']);
+    }
+  }
+
+  private loadSchemaForSection(section: OnboardingRequestSection): void {
+    if (!section.form_schema_id) {
+      this.activeSchema = null;
+      return;
+    }
+
+    this.isLoadingSchema = true;
+    this.formSchemaService.getSchema(section.form_schema_id).subscribe({
+      next: (schema) => {
+        this.activeSchema = schema;
+        this.isLoadingSchema = false;
+      },
+      error: () => {
+        this.activeSchema = null;
+        this.isLoadingSchema = false;
+      }
+    });
+  }
+
+  private getSchemaBackedFields(): SectionField[] {
+    if (!this.section || !this.activeSchema) {
+      return [];
+    }
+
+    const sectionKey = this.section.form_schema_section_key || this.section.section_type;
+    return (this.activeSchema.fields ?? [])
+      .filter((field) => field.is_active && !field.is_system && field.section_key === sectionKey)
+      .sort((left, right) => left.display_order - right.display_order)
+      .map((field) => this.mapSchemaField(field));
+  }
+
+  private mapSchemaField(field: FormSchemaField): SectionField {
+    const fieldType = this.mapSchemaFieldType(field.field_type);
+    return {
+      key: field.field_key,
+      label: field.label || field.field_key,
+      type: fieldType,
+      required: field.is_required,
+      options: fieldType === 'select'
+        ? (field.options ?? []).map((option) => option.option_label || option.option_value)
+        : undefined
+    };
+  }
+
+  private mapSchemaFieldType(fieldType: string): SectionField['type'] {
+    switch (fieldType) {
+      case 'email':
+      case 'tel':
+      case 'url':
+      case 'number':
+      case 'date':
+      case 'color':
+      case 'textarea':
+      case 'select':
+        return fieldType;
+      default:
+        return 'text';
     }
   }
 }

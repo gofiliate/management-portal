@@ -27,6 +27,8 @@ export interface OnboardingRequest {
 export interface OnboardingRequestSection {
   section_id: number;
   request_id: number;
+  form_schema_id?: number;
+  form_schema_section_key?: string;
   section_type: string;
   section_title: string;
   section_description?: string;
@@ -79,6 +81,8 @@ export interface CreateOnboardingRequestRequest {
 }
 
 export interface CreateOnboardingRequestSectionDTO {
+  form_schema_id?: number;
+  form_schema_section_key?: string;
   section_type: string;
   section_title: string;
   section_description?: string;

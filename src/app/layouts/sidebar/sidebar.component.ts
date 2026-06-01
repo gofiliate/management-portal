@@ -71,7 +71,7 @@ export class SidebarComponent implements OnInit {
           console.log('Navigation API Response:', response);
           
           // Transform API navigation to Menu structure
-          this.menu = this.transformNavigationToMenu(response.navigation);
+          this.menu = this.addFormBuilderMenuItem(this.transformNavigationToMenu(response.navigation));
           this.menuItems = this.menu;
           
           console.log('Final Menu Structure:', this.menu);
@@ -135,6 +135,40 @@ export class SidebarComponent implements OnInit {
     });
 
     return menu;
+  }
+
+  private addFormBuilderMenuItem(menu: Menu[]): Menu[] {
+    const formBuilderItem: Menu = {
+      path: '/gofiliate/form-builder',
+      title: 'Form Builder',
+      type: 'link',
+      level: 2
+    };
+
+    if (menu.some((section) => section.children?.some((child) => child.path === formBuilderItem.path))) {
+      return menu;
+    }
+
+    const gofiliateSection = menu.find((section) =>
+      section.title === 'Gofiliate' || section.children?.some((child) => child.path?.startsWith('/gofiliate/'))
+    );
+
+    if (gofiliateSection?.children) {
+      gofiliateSection.children = [formBuilderItem, ...gofiliateSection.children];
+      return menu;
+    }
+
+    return [
+      ...menu,
+      {
+        title: 'Gofiliate',
+        icon: 'settings',
+        type: 'sub',
+        active: false,
+        level: 1,
+        children: [formBuilderItem]
+      }
+    ];
   }
 
   setNavActive(items: Menu) {

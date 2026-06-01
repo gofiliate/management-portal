@@ -1,0 +1,109 @@
+<div class="event-selector">
+  <div class="mb-3">
+    <label class="form-label fw-bold">Events to Compare</label>
+
+    @if (eventGroups.length === 0) {
+      <div class="alert alert-info">
+        <i class="fa fa-info-circle me-2"></i>
+        Select instances first to see available events
+      </div>
+    }
+
+    <!-- Event Groups -->
+    @for (group of eventGroups; track group.title) {
+      <div class="event-group mb-3">
+        <!-- Group Header -->
+        <div class="event-group-header d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">
+            <i class="fa" [class.fa-check-circle]="group.type === 'common'" [class.fa-exclamation-triangle]="group.type === 'specific'"></i>
+            {{ group.title }}
+            <span class="badge bg-secondary ms-2">{{ group.events.length }}</span>
+          </h6>
+          
+          <!-- Select All for Group -->
+          <div class="form-check">
+            @if (group.type === 'common') {
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="selectAll-common"
+                [(ngModel)]="selectAllCommon"
+                (change)="toggleSelectAllCommon()">
+              <label class="form-check-label small" for="selectAll-common">
+                Select All
+              </label>
+            }
+            @if (group.type === 'specific') {
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="selectAll-specific"
+                [(ngModel)]="selectAllSpecific"
+                (change)="toggleSelectAllSpecific()">
+              <label class="form-check-label small" for="selectAll-specific">
+                Select All
+              </label>
+            }
+          </div>
+        </div>
+
+        <!-- Event List -->
+        <div class="event-list" [class.specific-events]="group.type === 'specific'">
+          @for (event of group.events; track event.event_id) {
+            <div class="form-check event-item" [class.specific-event]="group.type === 'specific'">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                [id]="'event-' + event.event_id"
+                [checked]="isSelected(event.event_id)"
+                (change)="toggleEvent(event.event_id)">
+              <label class="form-check-label d-flex justify-content-between align-items-center w-100" [for]="'event-' + event.event_id">
+                <span>
+                  <span class="badge bg-light text-dark me-2">{{ event.event_id }}</span>
+                  {{ event.description }}
+                </span>
+                @if (event.instance_id && group.type === 'specific') {
+                  <span class="badge ms-2" [class]="getInstanceBadgeClass(event)">
+                    {{ getInstanceBadgeLabel(event) }}
+                  </span>
+                }
+              </label>
+            </div>
+          }
+        </div>
+
+        <!-- Group Info -->
+        @if (group.type === 'common') {
+          <div class="small text-muted mt-1">
+            <i class="fa fa-info-circle me-1"></i>
+            These events are available on all selected instances
+          </div>
+        }
+        @if (group.type === 'specific') {
+          <div class="small text-warning mt-1">
+            <i class="fa fa-exclamation-triangle me-1"></i>
+            These events are not available on all instances. Data will show "N/A" for missing instances.
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Validation Message -->
+    @if (validationError) {
+      <div class="alert alert-danger small mb-0">
+        <i class="fa fa-exclamation-circle me-2"></i>
+        {{ validationError }}
+      </div>
+    }
+
+    <!-- Selected Events Summary -->
+    @if (selectedEvents.length > 0) {
+      <div class="mt-2">
+        <small class="text-muted">
+          <i class="fa fa-check-circle text-success me-1"></i>
+          {{ selectedEvents.length }} event(s) selected
+        </small>
+      </div>
+    }
+  </div>
+</div>

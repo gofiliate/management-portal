@@ -1,0 +1,214 @@
+.standard-signup-editor-container {
+  .schema-version-card {
+    border: 1px solid var(--bs-border-color);
+    transition: all 0.2s ease-in-out;
+
+    &:hover,
+    &.selected {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0.35rem 1rem rgba(13, 110, 253, 0.12);
+    }
+  }
+
+  .schema-meta {
+    font-size: 0.9rem;
+    color: var(--bs-secondary-color);
+  }
+
+  .add-field-card {
+    border: 1px dashed var(--bs-border-color);
+    min-height: 100%;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0.35rem 1rem rgba(13, 110, 253, 0.08);
+    }
+  }
+
+  .add-field-preset {
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  .draft-guidance {
+    background: var(--bs-light);
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .draft-guidance__icon {
+    align-items: center;
+    background: rgba(13, 110, 253, 0.12);
+    border-radius: 999px;
+    color: var(--bs-primary);
+    display: inline-flex;
+    flex: 0 0 3rem;
+    font-size: 1.25rem;
+    height: 3rem;
+    justify-content: center;
+    width: 3rem;
+  }
+
+  .draft-guidance__steps {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .icon-badge {
+    align-items: center;
+    background: rgba(13, 110, 253, 0.1);
+    border-radius: 0.75rem;
+    color: var(--bs-primary);
+    display: inline-flex;
+    font-size: 1.1rem;
+    height: 2.5rem;
+    justify-content: center;
+    width: 2.5rem;
+  }
+
+  .field-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .field-card-header {
+    background: var(--bs-light);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 1rem 1.25rem;
+  }
+
+  .field-card-body {
+    padding: 1.25rem;
+  }
+
+  .section-field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .section-field-card {
+    display: block;
+    width: 100%;
+  }
+
+  .section-field-card__summary {
+    width: 100%;
+  }
+
+  .section-field-card__summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .section-field-card__header,
+  .section-field-card__details {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .section-field-card__details {
+    align-items: center;
+  }
+
+  .section-field-card__title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .section-field-card__key {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .section-field-card__toolbar {
+    align-self: flex-start;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.35rem;
+    margin-left: auto;
+    white-space: nowrap;
+    width: auto;
+  }
+
+  .section-field-card__icon-button {
+    align-items: center;
+    display: inline-flex;
+    flex: 0 0 1.85rem;
+    font-size: 0.75rem;
+    height: 1.85rem;
+    justify-content: center;
+    max-width: 1.85rem;
+    min-width: 1.85rem;
+    padding: 0;
+    width: 1.85rem;
+  }
+
+  .section-field-card__meta {
+    align-self: center;
+    flex: 0 0 auto;
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .instances-panel {
+    display: grid;
+    gap: 0.75rem;
+    max-height: 24rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+
+  .instance-option {
+    align-items: center;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: auto 1fr auto;
+    padding: 0.875rem 1rem;
+    transition: all 0.2s ease-in-out;
+
+    &:hover,
+    &.instance-option--selected {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0.35rem 1rem rgba(13, 110, 253, 0.08);
+    }
+  }
+
+  .instance-option__content {
+    min-width: 0;
+  }
+
+  @media (max-width: 575.98px) {
+    .section-field-card__details {
+      align-items: stretch;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .section-field-card__meta {
+      margin-left: 0;
+      text-align: left;
+    }
+
+    .instance-option {
+      grid-template-columns: auto 1fr;
+    }
+
+    .instance-option .badge {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+}

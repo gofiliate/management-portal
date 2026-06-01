@@ -1,0 +1,19 @@
+<div class="container-fluid py-4">
+  <div *ngIf="!errorMessage" class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+      <p class="mb-0 text-muted">Opening the shared signup schema editor...</p>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="card shadow-sm border-0">
+    <div class="card-body">
+      <div class="alert alert-danger mb-3" role="alert">
+        <i class="fa fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+      </div>
+      <a class="btn btn-outline-secondary" [routerLink]="['/clients/manage-instance', instanceId]">
+        <i class="fa fa-arrow-left me-2"></i>Back to Instance
+      </a>
+    </div>
+  </div>
+</div>

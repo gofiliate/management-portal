@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../shared/page-header/page-header.component';
 import { GofiliateService } from '../../../services/gofiliate.service';
 import { CreateOnboardingRequestRequest, CreateOnboardingRequestSectionDTO } from '../../../models/onboarding.model';
+import { FormSchema, FormSchemaSection, FormSchemaSummary } from '../../../models/form-schema.model';
+import { FormSchemaService } from '../../../services/form-schema.service';
 
 @Component({
   selector: 'app-create-onboarding-request',
@@ -14,47 +16,7 @@ import { CreateOnboardingRequestRequest, CreateOnboardingRequestSectionDTO } fro
   styleUrl: './create-onboarding-request.component.scss'
 })
 export class CreateOnboardingRequestComponent implements OnInit {
-  breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Clients', link: '/clients' },
-    { label: 'Onboarding', link: '/clients/onboarding' },
-    { label: 'New Request' }
-  ];
-
-  currentStep = 1;
-  totalSteps = 3;
-  isSubmitting = false;
-
-  // Step 1: Company Information
-  companyName = '';
-  contactEmail = '';
-  contactName = '';
-  contactPhone = '';
-  assignedAdminId: number | null = null;
-  
-  // Guest user invitation/assignment
-  guestInviteMethod: 'new' | 'existing' = 'new';  // Radio button selection
-  guestEmail = '';                                // For new guest invitation
-  guestUserId: number | null = null;             // For existing guest assignment
-  
-  // Admin user search
-  adminUsers: any[] = [];
-  filteredAdminUsers: any[] = [];
-  adminSearchTerm = '';
-  showAdminDropdown = false;
-  selectedAdminName = '';
-  
-  // Guest user search (for existing guest selection)
-  guestUsers: any[] = [];
-  filteredGuestUsers: any[] = [];
-  guestSearchTerm = '';
-  showGuestDropdown = false;
-  selectedGuestName = '';
-
-  // Step 2: Sections
-  sections: CreateOnboardingRequestSectionDTO[] = [];
-  
-  // Predefined section templates
-  sectionTemplates = [
+  private readonly fallbackSectionTemplates: CreateOnboardingRequestSectionDTO[] = [
     {
       section_type: 'company_info',
       section_title: 'Company Details',
@@ -99,17 +61,57 @@ export class CreateOnboardingRequestComponent implements OnInit {
     }
   ];
 
+  breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Clients', link: '/clients' },
+    { label: 'Onboarding', link: '/clients/onboarding' },
+    { label: 'New Request' }
+  ];
+
+  currentStep = 1;
+  totalSteps = 3;
+  isSubmitting = false;
+
+  // Step 1: Company Information
+  companyName = '';
+  contactEmail = '';
+  contactName = '';
+  contactPhone = '';
+  assignedAdminId: number | null = null;
+  
+  // Guest user invitation/assignment
+  guestInviteMethod: 'new' | 'existing' = 'new';  // Radio button selection
+  guestEmail = '';                                // For new guest invitation
+  guestUserId: number | null = null;             // For existing guest assignment
+  
+  // Admin user search
+  adminUsers: any[] = [];
+  filteredAdminUsers: any[] = [];
+  adminSearchTerm = '';
+  showAdminDropdown = false;
+  selectedAdminName = '';
+  
+  // Guest user search (for existing guest selection)
+  guestUsers: any[] = [];
+  filteredGuestUsers: any[] = [];
+  guestSearchTerm = '';
+  showGuestDropdown = false;
+  selectedGuestName = '';
+
+  // Step 2: Sections
+  sections: CreateOnboardingRequestSectionDTO[] = [];
+  sectionTemplates: CreateOnboardingRequestSectionDTO[] = [];
+  activeOnboardingSchema: FormSchema | null = null;
+  isLoadingSchema = false;
+  schemaLoadError: string | null = null;
+
   constructor(
     private gofiliateService: GofiliateService,
-    private router: Router
+    private router: Router,
+    private formSchemaService: FormSchemaService
   ) {}
 
   ngOnInit(): void {
-    // Initialize with all required sections by default
-    this.sections = this.sectionTemplates
-      .filter(t => t.is_required)
-      .map(t => ({ ...t }));
-    
+    this.loadOnboardingSchema();
     // Load internal users for admin assignment
     this.loadAdminUsers();
     // Load guest users for existing guest assignment
@@ -280,7 +282,7 @@ export class CreateOnboardingRequestComponent implements OnInit {
   }
 
   // Section Management
-  addSection(template?: any): void {
+  addSection(template?: CreateOnboardingRequestSectionDTO): void {
     const newSection: CreateOnboardingRequestSectionDTO = template ? { ...template } : {
       section_type: '',
       section_title: '',
@@ -366,5 +368,99 @@ export class CreateOnboardingRequestComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/clients/onboarding']);
+  }
+
+  private loadOnboardingSchema(): void {
+    this.isLoadingSchema = true;
+    this.schemaLoadError = null;
+
+    this.formSchemaService.listSchemas('onboarding', 'internal').subscribe({
+      next: (schemas) => {
+        const selectedSchema = this.selectPreferredSchema(schemas);
+        if (!selectedSchema) {
+          this.useFallbackSectionTemplates();
+          return;
+        }
+
+        this.formSchemaService.getSchema(selectedSchema.schema_id).subscribe({
+          next: (schema) => {
+            this.activeOnboardingSchema = schema;
+            this.sectionTemplates = this.buildSectionTemplates(schema);
+            this.sections = this.sectionTemplates
+              .filter((section) => section.is_required)
+              .map((section) => ({ ...section }));
+            this.isLoadingSchema = false;
+          },
+          error: () => {
+            this.useFallbackSectionTemplates('Unable to load the onboarding schema, so the legacy section templates are being used.');
+          }
+        });
+      },
+      error: () => {
+        this.useFallbackSectionTemplates('Unable to load onboarding schema templates from management-api, so the legacy defaults are being used.');
+      }
+    });
+  }
+
+  private useFallbackSectionTemplates(schemaLoadError?: string): void {
+    this.activeOnboardingSchema = null;
+    this.sectionTemplates = this.fallbackSectionTemplates.map((section) => ({ ...section }));
+    this.sections = this.sectionTemplates
+      .filter((section) => section.is_required)
+      .map((section) => ({ ...section }));
+    this.schemaLoadError = schemaLoadError ?? null;
+    this.isLoadingSchema = false;
+  }
+
+  private selectPreferredSchema(schemas: FormSchemaSummary[]): FormSchemaSummary | null {
+    if (schemas.length === 0) {
+      return null;
+    }
+
+    return [...schemas].sort((left, right) => {
+      const leftRank = this.getSchemaPriority(left);
+      const rightRank = this.getSchemaPriority(right);
+      if (leftRank !== rightRank) {
+        return rightRank - leftRank;
+      }
+      return right.version - left.version;
+    })[0];
+  }
+
+  private getSchemaPriority(schema: FormSchemaSummary): number {
+    if (schema.is_active) {
+      return 3;
+    }
+    if (schema.status === 'published') {
+      return 2;
+    }
+    if (schema.status === 'draft') {
+      return 1;
+    }
+    return 0;
+  }
+
+  private buildSectionTemplates(schema: FormSchema): CreateOnboardingRequestSectionDTO[] {
+    const sections = (schema.sections ?? [])
+      .filter((section) => section.is_active)
+      .sort((left, right) => left.display_order - right.display_order);
+
+    if (sections.length === 0) {
+      return this.fallbackSectionTemplates.map((section) => ({ ...section }));
+    }
+
+    return sections.map((section, index) => this.createTemplateFromSchemaSection(schema.schema_id, section, index));
+  }
+
+  private createTemplateFromSchemaSection(schemaId: number, section: FormSchemaSection, index: number): CreateOnboardingRequestSectionDTO {
+    return {
+      form_schema_id: schemaId,
+      form_schema_section_key: section.section_key,
+      section_type: section.section_key,
+      section_title: section.label,
+      section_description: section.description ?? '',
+      is_required: section.is_required,
+      display_order: index + 1
+    };
   }
 }

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 
 export interface ReportTokenDetails {
   instance_id: number;
   manager_id: number;
   token: string;
+  api_endpoint: string;
 }
 
 export interface ReportTokenFailure {
@@ -21,6 +22,17 @@ export interface ReportTokensResponse {
   tokens: { [key: string]: ReportTokenDetails }; // key is "instance_id:manager_id"
   failed?: ReportTokenFailure[];
 }
+
+export interface InstanceListItem {
+  instance_id: number;
+  instance_name: string;
+  client_id: number;
+  client_name: string;
+  client_logo: string;
+}
+
+// The /instances endpoint returns an array directly, not wrapped
+type InstancesResponse = InstanceListItem[];
 
 @Injectable({
   providedIn: 'root'
@@ -111,6 +123,44 @@ export class ReportTokenService {
    */
   getAllTokens(): Map<number, ReportTokenDetails> {
     return this.tokens;
+  }
+
+  /**
+   * Fetch all instances the user has access to
+   * Returns a map of instance_id -> instance_name for easy lookup
+   */
+  fetchInstanceNames(): Observable<Map<number, string>> {
+    const bearerToken = this.getBearerToken();
+    
+    if (!bearerToken) {
+      return throwError(() => new Error('No authentication token found'));
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': bearerToken
+    });
+
+    const url = `${this.managementApi}/instances`;
+
+    return this.http.get<InstancesResponse>(url, { headers }).pipe(
+      tap(instances => {
+        console.log(`[ReportTokenService] Fetched ${instances?.length || 0} instances`);
+      }),
+      map(instances => {
+        const instanceMap = new Map<number, string>();
+        if (instances && Array.isArray(instances)) {
+          instances.forEach(instance => {
+            instanceMap.set(instance.instance_id, instance.instance_name);
+          });
+        }
+        return instanceMap;
+      }),
+      catchError(error => {
+        console.error('[ReportTokenService] Error fetching instances:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

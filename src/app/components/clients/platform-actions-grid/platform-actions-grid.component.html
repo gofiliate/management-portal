@@ -14,7 +14,7 @@
           class="card platform-action-card" 
           (click)="onActionClick(action.section)"
           [attr.data-color]="action.color"
-          [class.disabled]="action.section !== 'instance-details' && !hasLinkedToken"
+          [class.disabled]="(action.requiresLinkedToken ?? true) && !hasLinkedToken"
         >
           <div class="card-body text-center">
             <div class="icon-wrapper mb-3">

@@ -7,6 +7,7 @@ export interface PlatformAction {
   icon: string;
   section: string;
   color: string;
+  requiresLinkedToken?: boolean;
 }
 
 @Component({
@@ -26,7 +27,16 @@ export class PlatformActionsGridComponent {
       description: 'Edit instance configuration and settings',
       icon: 'fa fa-cog',
       section: 'instance-details',
-      color: 'primary'
+      color: 'primary',
+      requiresLinkedToken: false
+    },
+    {
+      title: 'Signup Form',
+      description: 'Create, order, label, and publish signup fields',
+      icon: 'fa fa-wpforms',
+      section: 'signup-schema',
+      color: 'danger',
+      requiresLinkedToken: false
     },
     {
       title: 'Account Managers',
@@ -80,13 +90,14 @@ export class PlatformActionsGridComponent {
   ];
 
   onActionClick(section: string): void {
-    // Instance details is always accessible
-    if (section === 'instance-details') {
+    const action = this.platformActions.find((item) => item.section === section);
+    const requiresLinkedToken = action?.requiresLinkedToken ?? true;
+
+    if (!requiresLinkedToken) {
       this.actionClick.emit(section);
       return;
     }
     
-    // Other sections require linked token
     if (this.hasLinkedToken) {
       this.actionClick.emit(section);
     }

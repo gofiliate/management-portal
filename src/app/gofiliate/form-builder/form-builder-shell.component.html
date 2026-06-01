@@ -1,0 +1,294 @@
+<div class="container-fluid form-builder-shell">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div>
+            <h3>Form Builder</h3>
+            <p class="text-muted mb-0">
+              Browse both external portal and OTP internal schemas from management-api.
+            </p>
+          </div>
+          <button
+            *ngIf="!showNewSchemaForm"
+            class="btn btn-success"
+            (click)="openNewSchemaForm()"
+            [disabled]="isLoading">
+            <i class="fa fa-plus me-2"></i>New Schema
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-xl-8">
+      <div *ngIf="showNewSchemaForm" class="card new-schema-card mb-3">
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div>
+              <h5 class="mb-1">Create New Schema</h5>
+              <p class="text-muted mb-0">
+                Create a new draft schema in management-api for either external signup or OTP onboarding.
+              </p>
+            </div>
+            <span class="badge bg-light text-dark border">{{ newSchema.schemaType === 'internal' ? 'OTP internal draft' : 'External portal draft' }}</span>
+          </div>
+
+          <form (ngSubmit)="createNewSchema()">
+            <div class="row g-3">
+              <div class="col-12 col-md-3">
+                <label for="schemaType" class="form-label">Audience</label>
+                <select
+                  id="schemaType"
+                  name="schemaType"
+                  class="form-select"
+                  [(ngModel)]="newSchema.schemaType"
+                  [disabled]="isCreating"
+                  (ngModelChange)="onSchemaTypeChanged()">
+                  <option value="external">External portal</option>
+                  <option value="internal">OTP internal</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label for="formType" class="form-label">Form Type</label>
+                <select
+                  id="formType"
+                  name="formType"
+                  class="form-select"
+                  [(ngModel)]="newSchema.formType"
+                  [disabled]="isCreating || newSchema.schemaType === 'internal'">
+                  <option *ngIf="newSchema.schemaType === 'external'" value="signup">Signup</option>
+                  <option *ngIf="newSchema.schemaType === 'internal'" value="onboarding">Onboarding</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label for="schemaKey" class="form-label">Schema Key</label>
+                <input
+                  type="text"
+                  id="schemaKey"
+                  name="schemaKey"
+                  class="form-control"
+                  [(ngModel)]="newSchema.schemaKey"
+                  placeholder="e.g., affiliate_signup"
+                  [disabled]="isCreating"
+                  (blur)="normaliseSchemaKey()">
+                <div class="form-text">Use lowercase letters, numbers, and underscores.</div>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label for="schemaLabel" class="form-label">Label</label>
+                <input
+                  type="text"
+                  id="schemaLabel"
+                  name="schemaLabel"
+                  class="form-control"
+                  [(ngModel)]="newSchema.label"
+                  placeholder="e.g., Affiliate Signup Form"
+                  [disabled]="isCreating">
+              </div>
+            </div>
+
+            <div *ngIf="createError" class="alert alert-danger mt-3 mb-0" role="alert">
+              <i class="fa fa-exclamation-circle me-2"></i>{{ createError }}
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="isCreating">
+                <i class="fa fa-check me-2" *ngIf="!isCreating"></i>
+                <span class="spinner-border spinner-border-sm me-2" *ngIf="isCreating" aria-hidden="true"></span>
+                {{ isCreating ? 'Creating...' : 'Create Schema' }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="cancelNewSchema()"
+                [disabled]="isCreating">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="card">
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mb-0">Loading schemas...</p>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && errorMessage" class="card">
+        <div class="card-body text-center py-5">
+          <i class="fa fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+          <p class="text-muted mb-3">{{ errorMessage }}</p>
+          <button class="btn btn-primary" (click)="loadSchemas()">
+            <i class="fa fa-refresh me-2"></i>Retry
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && !errorMessage && schemas.length === 0" class="card">
+        <div class="card-body text-center py-5">
+          <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+          <p class="text-muted mb-3">No schemas found yet. Create your first draft to get started.</p>
+          <button class="btn btn-success" (click)="openNewSchemaForm()">
+            <i class="fa fa-plus me-2"></i>Create Schema
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && !errorMessage && schemas.length > 0">
+        <div class="card border-dashed mb-3">
+          <div class="card-body">
+            <h5 class="mb-2">Schema audiences</h5>
+            <p class="text-muted mb-0">
+              <strong>External</strong> schemas are for client-facing portals. <strong>Internal</strong> schemas are for OTP experiences such as onboarding.
+            </p>
+          </div>
+        </div>
+
+        <div class="card schema-type-card mb-3" *ngFor="let schema of schemas; trackBy: trackBySchema">
+          <div class="card-body">
+            <div class="d-flex flex-column flex-lg-row align-items-start gap-4">
+              <div class="schema-type-card__icon" aria-hidden="true">
+                <i [class]="getSchemaIcon(schema)"></i>
+              </div>
+
+              <div class="flex-grow-1">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                  <h4 class="mb-0">{{ schema.label || schema.schema_key }}</h4>
+                  <span
+                    class="badge"
+                    [ngClass]="getStatusBadge(schema).className">
+                    {{ getStatusBadge(schema).label }}
+                  </span>
+                  <span class="badge" [ngClass]="getAudienceBadgeClass(schema)">{{ getAudienceLabel(schema) }}</span>
+                  <span class="badge bg-primary-subtle text-primary-emphasis">{{ getFormTypeLabel(schema) }}</span>
+                </div>
+
+                <div class="schema-meta mb-3">
+                  <span class="badge text-bg-light border">
+                    <strong>Key:</strong> {{ schema.schema_key }}
+                  </span>
+                  <span class="badge text-bg-light border" *ngIf="schema.version !== null && schema.version !== undefined">
+                    <strong>Version:</strong> {{ schema.version }}
+                  </span>
+                  <span class="badge text-bg-light border">
+                    <strong>Status:</strong> {{ schema.status }}
+                  </span>
+                </div>
+
+                <p class="text-muted mb-3">
+                  <ng-container *ngIf="canOpenEditor(schema); else previewOnlyCopy">
+                    Manage this schema in the existing editor, or preview the stored sections and fields before opening it.
+                  </ng-container>
+                  <ng-template #previewOnlyCopy>
+                    Preview the stored sections and fields for this schema. Runtime onboarding screens already consume internal onboarding schemas.
+                  </ng-template>
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                  <a
+                    *ngIf="canOpenEditor(schema)"
+                    class="btn btn-primary"
+                    (click)="openSchemaEditor(schema)">
+                    <i class="fa fa-arrow-right me-2"></i>Open Editor
+                  </a>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    (click)="toggleSchemaPreview(schema)"
+                    [disabled]="isPreviewLoading(schema)"
+                    [attr.aria-expanded]="isPreviewOpen(schema)">
+                    <span
+                      class="spinner-border spinner-border-sm me-2"
+                      *ngIf="isPreviewLoading(schema)"
+                      aria-hidden="true"></span>
+                    <i class="fa fa-eye me-2" *ngIf="!isPreviewLoading(schema)"></i>
+                    {{ isPreviewOpen(schema) && !isPreviewLoading(schema) ? 'Hide Details' : 'Preview Details' }}
+                  </button>
+                </div>
+
+                <div *ngIf="isPreviewOpen(schema)" class="schema-preview mt-4" aria-live="polite">
+                  <div *ngIf="isPreviewLoading(schema)" class="d-flex align-items-center gap-2 text-muted">
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    <span>Loading schema details...</span>
+                  </div>
+
+                  <div *ngIf="!isPreviewLoading(schema) && previewErrorMessage" class="alert alert-warning mb-0">
+                    <i class="fa fa-exclamation-circle me-2"></i>{{ previewErrorMessage }}
+                  </div>
+
+                  <div *ngIf="!isPreviewLoading(schema) && previewSchema" class="schema-preview__panel">
+                    <div class="row g-3 mb-3">
+                      <div class="col-6 col-lg-3">
+                        <div class="schema-preview__label">Audience</div>
+                        <div>{{ getAudienceLabel(previewSchema) }}</div>
+                      </div>
+                      <div class="col-6 col-lg-3">
+                        <div class="schema-preview__label">Form Type</div>
+                        <div>{{ getFormTypeLabel(previewSchema) }}</div>
+                      </div>
+                      <div class="col-6 col-lg-3">
+                        <div class="schema-preview__label">Key</div>
+                        <div>{{ previewSchema.schema_key }}</div>
+                      </div>
+                      <div class="col-6 col-lg-3">
+                        <div class="schema-preview__label">Version</div>
+                        <div>{{ previewSchema.version }}</div>
+                      </div>
+                      <div class="col-6 col-lg-3">
+                        <div class="schema-preview__label">Label</div>
+                        <div>{{ previewSchema.label || 'Untitled schema' }}</div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                      <span class="badge text-bg-light border" *ngIf="previewSchema.sections?.length">Sections: {{ previewSchema.sections?.length }}</span>
+                      <span class="badge text-bg-light border">Fields: {{ previewSchema.fields.length }}</span>
+                    </div>
+
+                    <div *ngIf="previewSchema.sections?.length" class="mb-3">
+                      <div class="schema-preview__label mb-2">Sections</div>
+                      <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-light border" *ngFor="let section of previewSchema.sections">
+                          {{ section.label }} <span class="text-muted">({{ section.section_key }})</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div *ngIf="previewSchema.fields.length > 0; else noPreviewFields">
+                      <div class="schema-preview__label mb-2">Fields</div>
+                      <div class="d-flex flex-wrap gap-2">
+                        <span class="badge text-bg-secondary" *ngFor="let field of previewSchema.fields | slice: 0 : 8">
+                          {{ field.label || field.field_key || field.field_type || 'Field' }}
+                        </span>
+                      </div>
+                      <p class="small text-muted mb-0 mt-2" *ngIf="previewSchema.fields.length > 8">
+                        Showing the first 8 fields for this schema.
+                      </p>
+                    </div>
+
+                    <ng-template #noPreviewFields>
+                      <p class="small text-muted mb-0">No fields have been defined for this schema yet.</p>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

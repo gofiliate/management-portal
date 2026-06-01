@@ -1,0 +1,53 @@
+<div class="date-range-filter">
+  <div class="mb-3">
+    <label class="form-label fw-bold">Date Range</label>
+    
+    <!-- Preset Buttons -->
+    <div class="btn-group btn-group-sm d-flex mb-2" role="group">
+      @for (preset of presetRanges; track preset.value) {
+        <button 
+          type="button" 
+          class="btn btn-outline-primary"
+          (click)="setPresetRange(preset.value)">
+          {{ preset.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Custom Date Inputs -->
+    <div class="row g-2">
+      <div class="col-md-6">
+        <label for="startDate" class="form-label small">Start Date</label>
+        <input 
+          type="date" 
+          class="form-control" 
+          id="startDate"
+          [(ngModel)]="startDate"
+          (change)="onDateChange()"
+          [class.is-invalid]="validationError && validationError.includes('start')">
+      </div>
+      <div class="col-md-6">
+        <label for="endDate" class="form-label small">End Date</label>
+        <input 
+          type="date" 
+          class="form-control" 
+          id="endDate"
+          [(ngModel)]="endDate"
+          (change)="onDateChange()"
+          [min]="startDate"
+          [class.is-invalid]="validationError && !validationError.includes('Warning')">
+      </div>
+    </div>
+
+    <!-- Validation Message -->
+    @if (validationError) {
+      <div 
+        class="small mt-2"
+        [class.text-danger]="!validationError.includes('Warning')"
+        [class.text-warning]="validationError.includes('Warning')">
+        <i class="fa" [class.fa-exclamation-circle]="!validationError.includes('Warning')" [class.fa-exclamation-triangle]="validationError.includes('Warning')"></i>
+        {{ validationError }}
+      </div>
+    }
+  </div>
+</div>

@@ -49,6 +49,21 @@
       <h6 class="mb-0">Section Information</h6>
     </div>
     <div class="card-body">
+      <div *ngIf="isLoadingSchema" class="alert alert-info">
+        <i class="fa fa-spinner fa-spin mr-2"></i>Loading section fields from the onboarding schema...
+      </div>
+
+      <div *ngIf="!isLoadingSchema && activeSchema" class="alert alert-success">
+        <i class="fa fa-check-circle mr-2"></i>
+        This section is using schema <strong>{{ activeSchema.label || activeSchema.schema_key }}</strong>
+        (version {{ activeSchema.version }}) from the form builder.
+      </div>
+
+      <div *ngIf="!isLoadingSchema && !activeSchema" class="alert alert-warning">
+        <i class="fa fa-exclamation-triangle mr-2"></i>
+        This section is using the legacy hardcoded field set because no locked onboarding schema was found.
+      </div>
+
       <form>
         <div class="row">
           <div 

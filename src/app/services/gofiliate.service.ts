@@ -119,6 +119,14 @@ export interface ClientInstance {
   status: number;
 }
 
+export interface PortalInstanceSummary {
+  instance_id: number;
+  instance_name: string;
+  client_id: number;
+  client_name: string;
+  client_logo: string | null;
+}
+
 export interface Manager {
   manager_id: number;
   username: string;
@@ -380,7 +388,7 @@ export class GofiliateService {
   }
 
   // Get all instances (with future permission filtering)
-  listAllInstances(): Observable<any> {
+  listAllInstances(): Observable<PortalInstanceSummary[]> {
     return this.apiService.get('instances', false);
   }
 

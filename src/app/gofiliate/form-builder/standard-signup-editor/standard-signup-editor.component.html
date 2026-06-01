@@ -1,0 +1,550 @@
+<div class="container-fluid py-4">
+  <div *ngIf="loading" class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+      <p class="mb-0 text-muted">Loading schema editor...</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+      <div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge" [class]="supportsSections ? 'bg-dark-subtle text-dark-emphasis' : 'bg-info-subtle text-info-emphasis'">
+            {{ currentSchemaType === 'internal' ? 'OTP internal' : 'External portal' }}
+          </span>
+          <span class="badge bg-light text-dark border">
+            {{ currentFormType === 'onboarding' ? 'Onboarding' : 'Signup' }}
+          </span>
+          <span *ngIf="selectedSchema" class="badge bg-light text-dark border">
+            {{ getSchemaVersionLabel(selectedSchema) }}
+          </span>
+        </div>
+
+        <h2 class="h4 mb-1">{{ pageTitle }}</h2>
+        <p class="text-muted mb-0">{{ pageDescription }}</p>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary" [routerLink]="backRoute">
+          <i class="fa fa-arrow-left me-2"></i>{{ backButtonLabel }}
+        </a>
+        <button class="btn btn-outline-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
+          <i class="fa fa-plus me-2"></i>New Draft
+        </button>
+        <button class="btn btn-outline-primary" type="button" (click)="saveDraft()" [disabled]="editorLocked">
+          <i class="fa fa-floppy-o me-2"></i>{{ saving ? 'Saving...' : 'Save Draft' }}
+        </button>
+        <button class="btn btn-primary" type="button" (click)="publishDraft()" [disabled]="!canPublishSelectedSchema || publishing || saving || deleting">
+          <i class="fa fa-cloud-upload me-2"></i>{{ publishing ? 'Publishing...' : 'Publish' }}
+        </button>
+        <button
+          *ngIf="isDistributableSchemaFamily"
+          class="btn btn-outline-success"
+          type="button"
+          (click)="distributeSchema()"
+          [disabled]="!canDistributeSelectedSchema || distributing || publishing || saving || deleting">
+          <i class="fa fa-share-square-o me-2"></i>{{ distributing ? 'Distributing...' : 'Distribute' }}
+        </button>
+        <button class="btn btn-outline-danger" type="button" (click)="deleteDraft()" [disabled]="!canDeleteSelectedSchema || deleting || saving || publishing">
+          <i class="fa fa-trash me-2"></i>{{ deleting ? 'Deleting...' : 'Delete Draft' }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger shadow-sm" role="alert">
+      <i class="fa fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+    </div>
+
+    <div *ngIf="validationError" class="alert alert-warning shadow-sm" role="alert">
+      <i class="fa fa-exclamation-circle me-2"></i>{{ validationError }}
+    </div>
+
+    <div *ngIf="selectedSchema && editableSchema; else noSchemaState" class="row g-4">
+      <div class="col-12 col-xxl-8">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold" for="schemaLabel">Schema Label</label>
+                <input
+                  id="schemaLabel"
+                  class="form-control"
+                  [(ngModel)]="editableSchema.label"
+                  [disabled]="editorLocked"
+                  placeholder="Enter a schema label">
+              </div>
+              <div class="col-12 col-lg-3">
+                <label class="form-label fw-semibold">Schema Key</label>
+                <input class="form-control" [ngModel]="editableSchema.schema_key" disabled>
+              </div>
+              <div class="col-12 col-lg-3">
+                <label class="form-label fw-semibold">Version</label>
+                <input class="form-control" [ngModel]="'v' + editableSchema.version" disabled>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <span class="badge bg-light text-dark border">Schema type: {{ editableSchema.schema_type }}</span>
+              <span class="badge bg-light text-dark border">Form type: {{ editableSchema.form_type }}</span>
+              <span class="badge bg-light text-dark border">Status: {{ editableSchema.is_active ? 'active' : editableSchema.status }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="supportsSections" class="card shadow-sm border-0 mt-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+              <div>
+                <h3 class="h5 mb-1">Onboarding Sections</h3>
+                <p class="text-muted mb-0">Each section becomes a step in the OTP onboarding flow.</p>
+              </div>
+
+              <button class="btn btn-outline-primary" type="button" (click)="addSection()" [disabled]="editorLocked">
+                <i class="fa fa-plus me-2"></i>Add Section
+              </button>
+            </div>
+
+            <div *ngIf="!(editableSchema.sections || []).length" class="border rounded bg-light text-muted text-center py-4">
+              No onboarding sections configured yet.
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div *ngFor="let section of editableSchema.sections; trackBy: trackBySection" class="border rounded p-3">
+                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                  <div>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                      <span class="badge bg-dark-subtle text-dark-emphasis">Step {{ section.step_index }}</span>
+                      <span class="badge bg-light text-dark border">{{ getSectionFieldCount(section.section_key) }} field(s)</span>
+                    </div>
+                    <h4 class="h6 mb-0">{{ section.label || section.section_key }}</h4>
+                  </div>
+
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveSection(section.section_id, -1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveSection(section.section_id, 1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" type="button" (click)="removeSection(section.section_id)" [disabled]="editorLocked">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="row g-3">
+                  <div class="col-12 col-lg-4">
+                    <label class="form-label fw-semibold">Section Label</label>
+                    <input class="form-control" [(ngModel)]="section.label" [disabled]="editorLocked">
+                  </div>
+                  <div class="col-12 col-lg-4">
+                    <label class="form-label fw-semibold">Section Key</label>
+                    <input class="form-control" [(ngModel)]="section.section_key" (blur)="onSectionKeyBlur(section)" [disabled]="editorLocked">
+                    <div *ngIf="getSectionKeyMessage(section)" class="form-text text-danger">{{ getSectionKeyMessage(section) }}</div>
+                  </div>
+                  <div class="col-12 col-lg-4">
+                    <label class="form-label fw-semibold">Description</label>
+                    <input class="form-control" [(ngModel)]="section.description" [disabled]="editorLocked">
+                  </div>
+                  <div class="col-6 col-lg-2">
+                    <label class="form-label fw-semibold">Required</label>
+                    <select class="form-select" [(ngModel)]="section.is_required" [disabled]="editorLocked">
+                      <option [ngValue]="true">Yes</option>
+                      <option [ngValue]="false">No</option>
+                    </select>
+                  </div>
+                  <div class="col-6 col-lg-2">
+                    <label class="form-label fw-semibold">Active</label>
+                    <select class="form-select" [(ngModel)]="section.is_active" [disabled]="editorLocked">
+                      <option [ngValue]="true">Yes</option>
+                      <option [ngValue]="false">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
+                    <h5 class="h6 mb-0">Fields in this section</h5>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="small text-muted">{{ getSectionFieldCount(section.section_key) }} configured</span>
+                      <button class="btn btn-sm btn-outline-primary" type="button" (click)="addFieldToSection(section.section_key)" [disabled]="editorLocked">
+                        <i class="fa fa-plus me-2"></i>Add Field
+                      </button>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!getFieldsForSection(section.section_key).length" class="border rounded bg-light text-muted text-center py-3">
+                    No fields are assigned to this section yet.
+                  </div>
+
+                  <div class="section-field-list" *ngIf="getFieldsForSection(section.section_key).length">
+                    <div *ngFor="let field of getFieldsForSection(section.section_key); trackBy: trackByField" class="border rounded overflow-hidden section-field-card">
+                      <div
+                        class="px-3 py-2 bg-light-subtle section-field-card__summary"
+                        style="cursor: pointer;"
+                        role="button"
+                        tabindex="0"
+                        (click)="toggleFieldExpanded(field.field_id)"
+                        (keydown.enter)="toggleFieldExpanded(field.field_id)"
+                        (keydown.space)="toggleFieldExpanded(field.field_id); $event.preventDefault()">
+                        <div class="section-field-card__summary-content">
+                          <div
+                            class="section-field-card__header"
+                            style="display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 0.75rem; width: 100%;">
+                            <div class="section-field-card__title fw-semibold">{{ field.label || field.field_key }}</div>
+
+                            <div
+                              class="section-field-card__toolbar"
+                              style="display: inline-flex; gap: 0.35rem; justify-self: end; white-space: nowrap;">
+                              <button
+                                class="btn btn-sm btn-outline-secondary section-field-card__icon-button"
+                                type="button"
+                                title="Move up"
+                                (click)="$event.stopPropagation(); moveFieldWithinSection(section.section_key, field.field_id, -1)"
+                                [disabled]="editorLocked || !canMoveFieldWithinSection(section.section_key, field.field_id, -1)">
+                                <i class="fa fa-arrow-up"></i>
+                              </button>
+                              <button
+                                class="btn btn-sm btn-outline-secondary section-field-card__icon-button"
+                                type="button"
+                                title="Move down"
+                                (click)="$event.stopPropagation(); moveFieldWithinSection(section.section_key, field.field_id, 1)"
+                                [disabled]="editorLocked || !canMoveFieldWithinSection(section.section_key, field.field_id, 1)">
+                                <i class="fa fa-arrow-down"></i>
+                              </button>
+                              <button
+                                class="btn btn-sm btn-outline-danger section-field-card__icon-button"
+                                type="button"
+                                title="Remove field"
+                                (click)="$event.stopPropagation(); removeField(field.field_id)"
+                                [disabled]="editorLocked">
+                                <i class="fa fa-trash"></i>
+                              </button>
+                              <button
+                                class="btn btn-sm btn-outline-secondary section-field-card__icon-button"
+                                type="button"
+                                [title]="isFieldExpanded(field.field_id) ? 'Collapse' : 'Expand'"
+                                (click)="$event.stopPropagation(); toggleFieldExpanded(field.field_id)">
+                                <i class="fa" [ngClass]="isFieldExpanded(field.field_id) ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div
+                            class="section-field-card__details"
+                            style="display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 0.75rem; width: 100%;">
+                            <div class="section-field-card__key small text-muted">{{ field.field_key }}</div>
+                            <div class="section-field-card__meta">
+                              <div class="text-end">
+                                <div class="small">{{ getFieldPreviewMeta(field) }}</div>
+                                <div *ngIf="field.help_text" class="small text-muted">{{ field.help_text }}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div *ngIf="isFieldExpanded(field.field_id)" class="border-top p-3">
+                        <ng-container *ngTemplateOutlet="fieldEditor; context: { field: field }"></ng-container>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="hasUnassignedFields()" class="alert alert-warning py-2 px-3 mt-3 mb-0 small">
+              Fields without a section assignment will not appear in the onboarding flow until they are assigned to a section.
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!supportsSections" class="card shadow-sm border-0 mt-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+              <div>
+                <h3 class="h5 mb-1">Fields</h3>
+                <p class="text-muted mb-0">
+                  Edit the external signup form fields and ordering.
+                </p>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button
+                  *ngFor="let fieldType of supportedFieldTypes"
+                  class="btn btn-sm btn-outline-primary"
+                  type="button"
+                  (click)="addCustomField(fieldType.value)"
+                  [disabled]="editorLocked">
+                  Add {{ fieldType.label }}
+                </button>
+                <button
+                  *ngIf="showMarketingChannelsPreset"
+                  class="btn btn-sm btn-outline-secondary"
+                  type="button"
+                  (click)="addMarketingChannelsPreset()"
+                  [disabled]="editorLocked">
+                  Add Marketing Channels
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="!(editableSchema.fields || []).length" class="border rounded bg-light text-muted text-center py-4">
+              No fields configured yet.
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div *ngFor="let field of editableSchema.fields; trackBy: trackByField" class="border rounded p-3">
+                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                  <div>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                      <span class="badge bg-light text-dark border">{{ getFieldTypeLabel(field.field_type) }}</span>
+                      <span *ngIf="supportsSections && field.section_key" class="badge bg-dark-subtle text-dark-emphasis">
+                        {{ field.section_key }}
+                      </span>
+                      <span *ngIf="!supportsSections" class="badge bg-light text-dark border">
+                        Step {{ field.step_index }}
+                      </span>
+                    </div>
+                    <h4 class="h6 mb-0">{{ field.label || field.field_key }}</h4>
+                  </div>
+
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveField(field.field_id, -1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveField(field.field_id, 1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" type="button" (click)="removeField(field.field_id)" [disabled]="editorLocked">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <ng-container *ngTemplateOutlet="fieldEditor; context: { field: field }"></ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #fieldEditor let-field="field">
+          <div class="row g-3">
+            <div class="col-12 col-lg-3">
+              <label class="form-label fw-semibold">Field Key</label>
+              <input class="form-control" [(ngModel)]="field.field_key" [disabled]="editorLocked">
+              <div *ngIf="getFieldKeyMessage(field)" class="form-text text-danger">{{ getFieldKeyMessage(field) }}</div>
+            </div>
+            <div class="col-12 col-lg-3">
+              <label class="form-label fw-semibold">Label</label>
+              <input class="form-control" [(ngModel)]="field.label" [disabled]="editorLocked">
+            </div>
+            <div class="col-12 col-lg-3">
+              <label class="form-label fw-semibold">Field Type</label>
+              <select class="form-select" [(ngModel)]="field.field_type" (ngModelChange)="onFieldTypeChanged(field)" [disabled]="editorLocked">
+                <option *ngFor="let fieldType of supportedFieldTypes" [value]="fieldType.value">{{ fieldType.label }}</option>
+              </select>
+            </div>
+            <div *ngIf="supportsSections; else signupStepEditor" class="col-12 col-lg-3">
+              <label class="form-label fw-semibold">Onboarding Section</label>
+              <select class="form-select" [(ngModel)]="field.section_key" [disabled]="editorLocked">
+                <option *ngFor="let section of editableSchema.sections || []; trackBy: trackBySection" [value]="section.section_key">
+                  {{ section.label }}
+                </option>
+              </select>
+            </div>
+            <ng-template #signupStepEditor>
+              <div class="col-12 col-lg-3">
+                <label class="form-label fw-semibold">Step</label>
+                <input class="form-control" type="number" min="1" [(ngModel)]="field.step_index" [disabled]="editorLocked">
+              </div>
+            </ng-template>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-semibold">Help Text</label>
+              <input class="form-control" [(ngModel)]="field.help_text" [disabled]="editorLocked">
+            </div>
+            <div class="col-12 col-lg-6" *ngIf="field.field_type !== 'checkbox'">
+              <label class="form-label fw-semibold">Placeholder</label>
+              <input class="form-control" [(ngModel)]="field.placeholder" [disabled]="editorLocked || field.field_type === 'select' || field.field_type === 'checkbox_group' || field.field_type === 'color' || field.field_type === 'date'">
+            </div>
+            <div class="col-6 col-lg-2">
+              <label class="form-label fw-semibold">Required</label>
+              <select class="form-select" [(ngModel)]="field.is_required" [disabled]="editorLocked">
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+              </select>
+            </div>
+            <div class="col-6 col-lg-2">
+              <label class="form-label fw-semibold">Active</label>
+              <select class="form-select" [(ngModel)]="field.is_active" [disabled]="editorLocked">
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+              </select>
+            </div>
+            <div *ngIf="!supportsSections" class="col-6 col-lg-2">
+              <label class="form-label fw-semibold">System</label>
+              <select class="form-select" [(ngModel)]="field.is_system" [disabled]="editorLocked">
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="field.field_type === 'select' || field.field_type === 'checkbox_group'" class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="h6 mb-0">Options</h5>
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="addOption(field)" [disabled]="editorLocked">
+                <i class="fa fa-plus me-2"></i>Add Option
+              </button>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+              <div *ngFor="let option of field.options" class="border rounded p-3">
+                <div class="row g-3 align-items-end">
+                  <div class="col-12 col-lg-3">
+                    <label class="form-label fw-semibold">Option Key</label>
+                    <input class="form-control" [(ngModel)]="option.option_value" [disabled]="editorLocked">
+                  </div>
+                  <div class="col-12 col-lg-3">
+                    <label class="form-label fw-semibold">Label</label>
+                    <input class="form-control" [(ngModel)]="option.option_label" [disabled]="editorLocked">
+                  </div>
+                  <div class="col-12 col-lg-3">
+                    <label class="form-label fw-semibold">Value</label>
+                    <input class="form-control" [(ngModel)]="option.option_value" [disabled]="editorLocked">
+                    <div *ngIf="getOptionMessage(field, option)" class="form-text text-danger">{{ getOptionMessage(field, option) }}</div>
+                  </div>
+                  <div class="col-12 col-lg-3 d-flex justify-content-end gap-2">
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveOption(field, option.option_value, -1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-up"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" (click)="moveOption(field, option.option_value, 1)" [disabled]="editorLocked">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" type="button" (click)="removeOption(field, option.option_value)" [disabled]="editorLocked">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="col-12 col-xxl-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h3 class="h5 mb-3">Schema Versions</h3>
+            <label class="form-label fw-semibold">Selected Version</label>
+            <select class="form-select" [ngModel]="selectedSchemaId" (ngModelChange)="onSchemaSelected($event)">
+              <option *ngFor="let schema of schemas; trackBy: trackBySchema" [ngValue]="schema.schema_id">
+                {{ getSchemaVersionLabel(schema) }}
+              </option>
+            </select>
+
+            <dl class="row mb-0 mt-3" *ngIf="selectedSchema">
+              <dt class="col-sm-5 text-muted">Schema key</dt>
+              <dd class="col-sm-7">{{ selectedSchema.schema_key }}</dd>
+
+              <dt class="col-sm-5 text-muted">Created</dt>
+              <dd class="col-sm-7">{{ selectedSchema.created | date:'medium' }}</dd>
+
+              <dt class="col-sm-5 text-muted">Updated</dt>
+              <dd class="col-sm-7">{{ selectedSchema.updated | date:'medium' }}</dd>
+
+              <dt class="col-sm-5 text-muted">Published</dt>
+              <dd class="col-sm-7">{{ selectedSchema.published_at ? (selectedSchema.published_at | date:'medium') : 'Not published' }}</dd>
+            </dl>
+          </div>
+        </div>
+
+        <div *ngIf="isDistributableSchemaFamily" class="card shadow-sm border-0 mt-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+              <div>
+                <h3 class="h5 mb-1">Instance Distribution</h3>
+                <p class="text-muted mb-0">Active signup schemas can be pushed to selected instances.</p>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" type="button" (click)="selectAllInstances()">All</button>
+                <button class="btn btn-sm btn-outline-secondary" type="button" (click)="deselectAllInstances()">None</button>
+              </div>
+            </div>
+
+            <p class="small text-muted mb-3">{{ selectedInstanceCount }} instance(s) selected.</p>
+
+            <div class="d-flex flex-column gap-2">
+              <label *ngFor="let instance of instances" class="d-flex align-items-center gap-2 border rounded px-3 py-2">
+                <input
+                  type="checkbox"
+                  [checked]="selectedInstanceIds.has(instance.instance_id)"
+                  [disabled]="!instance.is_active"
+                  (change)="toggleInstance(instance.instance_id, $any($event.target).checked)">
+                <span class="flex-grow-1">
+                  {{ instance.instance_name }}
+                  <span *ngIf="instance.client_name" class="text-muted">({{ instance.client_name }})</span>
+                </span>
+                <span class="badge" [class]="instance.is_active ? 'bg-success-subtle text-success-emphasis' : 'bg-secondary-subtle text-secondary-emphasis'">
+                  {{ instance.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </label>
+            </div>
+
+            <div class="mt-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="h6 mb-0">Recent Distributions</h4>
+                <span *ngIf="distributionsLoading" class="text-muted small">Loading...</span>
+              </div>
+
+              <div *ngIf="!distributions.length && !distributionsLoading" class="text-muted small">
+                No distributions recorded for this schema version yet.
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <div *ngFor="let distribution of distributions; trackBy: trackByDistribution" class="border rounded px-3 py-2">
+                  <div class="d-flex justify-content-between gap-3 flex-wrap">
+                    <div>
+                      <div class="fw-semibold">{{ distribution.instance_name }}</div>
+                      <div class="text-muted small">{{ distribution.distributed_at ? (distribution.distributed_at | date:'medium') : 'Pending sync' }}</div>
+                    </div>
+                    <span class="badge bg-light text-dark border">{{ distribution.status }}</span>
+                  </div>
+                  <div *ngIf="distribution.sync_error || distribution.error" class="text-danger small mt-2">
+                    {{ distribution.sync_error || distribution.error }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="supportsSections" class="card shadow-sm border-0 mt-4">
+          <div class="card-body">
+            <h3 class="h5 mb-2">Internal schema rules</h3>
+            <p class="text-muted mb-0">
+              Internal onboarding schemas stay inside OTP. They can be versioned and published here, but they are not distributed to client instances.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noSchemaState>
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center py-5">
+        <i class="fa fa-file-text-o fa-2x text-muted mb-3"></i>
+        <h3 class="h5 mb-2">No schema version found</h3>
+        <p class="text-muted mb-4">
+          Create the first {{ currentSchemaType === 'internal' ? 'internal onboarding' : 'external signup' }} draft for this schema family.
+        </p>
+        <button class="btn btn-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
+          <i class="fa fa-plus me-2"></i>Create Draft
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</div>
