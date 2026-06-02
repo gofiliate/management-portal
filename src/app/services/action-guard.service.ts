@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { ApiService } from './api/api.service';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 export interface ActionGuardRequest {
@@ -23,6 +23,8 @@ export interface ActionGuardResponse {
 export class ActionGuardService {
   private actionsSubject = new BehaviorSubject<{ action_id: number; action_name: string }[]>([]);
   public actions$ = this.actionsSubject.asObservable();
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
   
   // Cache for supplemental permissions (checking permissions for routes we're not currently on)
   private supplementalPermissionsCache = new Map<string, { action_id: number; action_name: string }[]>();
@@ -67,30 +69,19 @@ export class ActionGuardService {
     
     this.isLoading = true;
     const url = this.router.url;
-    const segments = url.replace(/^\//, '').split('/').filter(s => s && !s.includes('?'));
-    
-    if (segments.length >= 2) {
-      const section = segments[0];
-      const endpoint = segments[1];
-      const payload: ActionGuardRequest = { section, endpoint };
-      
-      this.apiService.post('gofiliate/navigation/action-guard', payload, null).subscribe({
-        next: (res: ActionGuardResponse) => {
-          if (res.result && res.actions) {
-            this.actionsSubject.next(res.actions);
-          } else {
-            this.actionsSubject.next([]);
-          }
-          this.isLoading = false;
-        },
-        error: () => {
-          this.actionsSubject.next([]);
-          this.isLoading = false;
-        }
+    const payload = this.buildPayloadFromRoute(url);
+
+    if (payload) {
+      this.loadingSubject.next(true);
+      this.fetchActionsForRoute(url).subscribe((actions) => {
+        this.actionsSubject.next(actions);
+        this.isLoading = false;
+        this.loadingSubject.next(false);
       });
     } else {
       this.actionsSubject.next([]);
       this.isLoading = false;
+      this.loadingSubject.next(false);
     }
   }
 
@@ -157,23 +148,37 @@ export class ActionGuardService {
     // Mark as loading with empty array
     this.supplementalPermissionsCache.set(route, []);
 
-    const segments = route.split('/').filter(s => s);
-    if (segments.length >= 2) {
-      const section = segments[0];
-      const endpoint = segments[1];
-      const payload: ActionGuardRequest = { section, endpoint };
-      
-      // Direct API call without triggering refresh logic
-      this.apiService.post('gofiliate/navigation/action-guard', payload, null).subscribe({
-        next: (res: ActionGuardResponse) => {
-          const actions = (res.result && res.actions) ? res.actions : [];
-          this.supplementalPermissionsCache.set(route, actions);
-        },
-        error: () => {
-          this.supplementalPermissionsCache.set(route, []);
-        }
+    if (this.buildPayloadFromRoute(route)) {
+      this.fetchActionsForRoute(route).subscribe((actions) => {
+        this.supplementalPermissionsCache.set(route, actions);
       });
     }
+  }
+
+  private buildPayloadFromRoute(route: string): ActionGuardRequest | null {
+    const normalizedRoute = route.split('?')[0].split('#')[0];
+    const segments = normalizedRoute.replace(/^\//, '').split('/').filter(s => s);
+
+    if (segments.length < 2) {
+      return null;
+    }
+
+    return {
+      section: segments[0],
+      endpoint: segments[1]
+    };
+  }
+
+  private fetchActionsForRoute(route: string): Observable<{ action_id: number; action_name: string }[]> {
+    const payload = this.buildPayloadFromRoute(route);
+    if (!payload) {
+      return of([]);
+    }
+
+    return this.apiService.post('gofiliate/navigation/action-guard', payload, null).pipe(
+      map((res: ActionGuardResponse) => (res.result && res.actions) ? res.actions : []),
+      catchError(() => of([]))
+    );
   }
 
   canViewSupplemental(route: string): boolean {
@@ -228,6 +233,7 @@ export class ActionGuardService {
    */
   clearAll(): void {
     this.actionsSubject.next([]);
+    this.loadingSubject.next(false);
     this.clearSupplementalCache();
     this.currentRoute = '';
     this.godModeStatus = null;

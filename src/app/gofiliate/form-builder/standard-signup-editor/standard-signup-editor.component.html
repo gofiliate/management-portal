@@ -1,4 +1,13 @@
 <div class="container-fluid py-4">
+  <div *ngIf="permissionsResolved && !canViewPage" class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+      <i class="fa fa-lock fa-2x text-muted mb-3"></i>
+      <h3 class="h5 mb-2">Access denied</h3>
+      <p class="text-muted mb-0">You do not have permission to view Form Builder.</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!permissionsResolved || canViewPage">
   <div *ngIf="loading" class="card shadow-sm border-0">
     <div class="card-body text-center py-5">
       <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
@@ -29,24 +38,24 @@
         <a class="btn btn-outline-secondary" [routerLink]="backRoute">
           <i class="fa fa-arrow-left me-2"></i>{{ backButtonLabel }}
         </a>
-        <button class="btn btn-outline-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
+        <button *ngIf="hasCreatePermission" class="btn btn-outline-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
           <i class="fa fa-plus me-2"></i>New Draft
         </button>
-        <button class="btn btn-outline-primary" type="button" (click)="saveDraft()" [disabled]="editorLocked">
+        <button *ngIf="hasEditPermission" class="btn btn-outline-primary" type="button" (click)="saveDraft()" [disabled]="editorLocked">
           <i class="fa fa-floppy-o me-2"></i>{{ saving ? 'Saving...' : 'Save Draft' }}
         </button>
-        <button class="btn btn-primary" type="button" (click)="publishDraft()" [disabled]="!canPublishSelectedSchema || publishing || saving || deleting">
+        <button *ngIf="hasEditPermission" class="btn btn-primary" type="button" (click)="publishDraft()" [disabled]="!canPublishSelectedSchema || publishing || saving || deleting">
           <i class="fa fa-cloud-upload me-2"></i>{{ publishing ? 'Publishing...' : 'Publish' }}
         </button>
         <button
-          *ngIf="isDistributableSchemaFamily"
+          *ngIf="isDistributableSchemaFamily && hasEditPermission"
           class="btn btn-outline-success"
           type="button"
           (click)="distributeSchema()"
           [disabled]="!canDistributeSelectedSchema || distributing || publishing || saving || deleting">
           <i class="fa fa-share-square-o me-2"></i>{{ distributing ? 'Distributing...' : 'Distribute' }}
         </button>
-        <button class="btn btn-outline-danger" type="button" (click)="deleteDraft()" [disabled]="!canDeleteSelectedSchema || deleting || saving || publishing">
+        <button *ngIf="hasDeletePermission" class="btn btn-outline-danger" type="button" (click)="deleteDraft()" [disabled]="!canDeleteSelectedSchema || deleting || saving || publishing">
           <i class="fa fa-trash me-2"></i>{{ deleting ? 'Deleting...' : 'Delete Draft' }}
         </button>
       </div>
@@ -58,6 +67,10 @@
 
     <div *ngIf="validationError" class="alert alert-warning shadow-sm" role="alert">
       <i class="fa fa-exclamation-circle me-2"></i>{{ validationError }}
+    </div>
+
+    <div *ngIf="editorLockReason" class="alert alert-info shadow-sm" role="alert">
+      <i class="fa fa-info-circle me-2"></i>{{ editorLockReason }}
     </div>
 
     <div *ngIf="selectedSchema && editableSchema; else noSchemaState" class="row g-4">
@@ -392,7 +405,13 @@
             </div>
           </div>
 
-          <div *ngIf="field.field_type === 'select' || field.field_type === 'checkbox_group'" class="mt-4">
+          <div *ngIf="hasDynamicOptionsSource(field)" class="mt-4">
+            <div class="alert alert-info mb-0">
+              This field loads its options from <strong>{{ field.options_source }}</strong>, so manual options are not required here.
+            </div>
+          </div>
+
+          <div *ngIf="supportsStaticOptions(field)" class="mt-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h5 class="h6 mb-0">Options</h5>
               <button class="btn btn-sm btn-outline-primary" type="button" (click)="addOption(field)" [disabled]="editorLocked">
@@ -508,7 +527,7 @@
                   <div class="d-flex justify-content-between gap-3 flex-wrap">
                     <div>
                       <div class="fw-semibold">{{ distribution.instance_name }}</div>
-                      <div class="text-muted small">{{ distribution.distributed_at ? (distribution.distributed_at | date:'medium') : 'Pending sync' }}</div>
+                      <div class="text-muted small">{{ (distribution.last_synced_at || distribution.published_at || distribution.distributed_at) ? ((distribution.last_synced_at || distribution.published_at || distribution.distributed_at) | date:'medium') : 'Pending sync' }}</div>
                     </div>
                     <span class="badge bg-light text-dark border">{{ distribution.status }}</span>
                   </div>
@@ -541,10 +560,11 @@
         <p class="text-muted mb-4">
           Create the first {{ currentSchemaType === 'internal' ? 'internal onboarding' : 'external signup' }} draft for this schema family.
         </p>
-        <button class="btn btn-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
+        <button *ngIf="hasCreatePermission" class="btn btn-primary" type="button" (click)="createDraft()" [disabled]="!canCreateDraft">
           <i class="fa fa-plus me-2"></i>Create Draft
         </button>
       </div>
     </div>
   </ng-template>
+  </ng-container>
 </div>

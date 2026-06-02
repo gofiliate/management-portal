@@ -58,6 +58,10 @@ export class FormSchemaService {
     return this.api.get(`/form-schemas/${id}/distributions`, false);
   }
 
+  getCurrentInstanceDistribution(instanceId: number, formType = 'signup'): Observable<FormSchemaDistributionSummary> {
+    return this.api.get(`/instances/${instanceId}/form-schemas/current/${encodeURIComponent(formType)}`, false);
+  }
+
   distributeSchema(id: number, request: PublishFormSchemaRequest): Observable<PublishFormSchemaResponse> {
     return this.api.post(`/form-schemas/${id}/distribute`, request, false);
   }

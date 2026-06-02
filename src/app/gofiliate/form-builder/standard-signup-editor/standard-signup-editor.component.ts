@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { Subscription, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { FormSchemaService } from '../../../services/form-schema.service';
+import { ActionGuardService } from '../../../services/action-guard.service';
 import {
   CreateFormSchemaRequest,
   FormSchema,
@@ -41,11 +42,14 @@ interface EditorRouteConfig {
   styleUrl: './standard-signup-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StandardSignupEditorComponent implements OnInit {
+export class StandardSignupEditorComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly formSchemaService = inject(FormSchemaService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly actionGuard = inject(ActionGuardService);
+  private readonly subscriptions = new Subscription();
+  private awaitingPermissionResponse = false;
 
   private readonly keyPattern = /^[a-z0-9_]+$/;
   private readonly signupFieldTypes: FieldTypeOption[] = [
@@ -99,9 +103,27 @@ export class StandardSignupEditorComponent implements OnInit {
   public errorMessage: string | null = null;
   public validationError: string | null = null;
   public expandedFieldId: number | null = null;
+  public permissionsResolved = false;
+  public permissionsLoading = true;
 
   public ngOnInit(): void {
-    combineLatest([
+    this.subscriptions.add(this.actionGuard.actions$.subscribe(() => {
+      this.cdr.markForCheck();
+    }));
+
+    this.subscriptions.add(this.actionGuard.loading$.subscribe((loading) => {
+      this.permissionsLoading = loading;
+      if (this.awaitingPermissionResponse && !loading) {
+        this.awaitingPermissionResponse = false;
+        this.permissionsResolved = true;
+      }
+      this.cdr.markForCheck();
+    }));
+
+    this.awaitingPermissionResponse = true;
+    this.actionGuard.refreshActions();
+
+    this.subscriptions.add(combineLatest([
       this.route.paramMap,
       this.route.queryParamMap,
       this.route.data
@@ -133,7 +155,11 @@ export class StandardSignupEditorComponent implements OnInit {
       }
 
       this.loadPageData();
-    });
+    }));
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   public get supportedFieldTypes(): FieldTypeOption[] {
@@ -141,23 +167,24 @@ export class StandardSignupEditorComponent implements OnInit {
   }
 
   public get canCreateDraft(): boolean {
-    return !this.loading && !this.publishing && !this.distributing && !this.deleting;
+    return this.hasCreatePermission && !this.loading && !this.publishing && !this.distributing && !this.deleting;
   }
 
   public get canEditSelectedSchema(): boolean {
-    return this.selectedSchema?.status === 'draft';
+    return this.hasEditPermission && this.selectedSchema?.status === 'draft';
   }
 
   public get canPublishSelectedSchema(): boolean {
-    return this.selectedSchema?.status === 'draft';
+    return this.hasEditPermission && this.selectedSchema?.status === 'draft';
   }
 
   public get canDeleteSelectedSchema(): boolean {
-    return this.selectedSchema?.status === 'draft';
+    return this.hasDeletePermission && this.selectedSchema?.status === 'draft';
   }
 
   public get canDistributeSelectedSchema(): boolean {
-    return this.isDistributableSchemaFamily
+    return this.hasEditPermission
+      && this.isDistributableSchemaFamily
       && !!this.selectedSchema?.is_active
       && this.selectedInstanceIds.size > 0;
   }
@@ -176,6 +203,44 @@ export class StandardSignupEditorComponent implements OnInit {
 
   public get showMarketingChannelsPreset(): boolean {
     return this.isDistributableSchemaFamily;
+  }
+
+  public get canViewPage(): boolean {
+    return this.actionGuard.canView();
+  }
+
+  public get hasCreatePermission(): boolean {
+    return this.canViewPage && this.actionGuard.canCreate();
+  }
+
+  public get hasEditPermission(): boolean {
+    return this.canViewPage && this.actionGuard.canEdit();
+  }
+
+  public get hasDeletePermission(): boolean {
+    return this.canViewPage && this.actionGuard.canDelete();
+  }
+
+  public get editorLockReason(): string | null {
+    if (!this.canViewPage) {
+      return 'You do not have permission to view this schema editor.';
+    }
+
+    if (!this.selectedSchema) {
+      return null;
+    }
+
+    if (this.selectedSchema?.status !== 'draft') {
+      return this.hasCreatePermission
+        ? 'This schema version is published. Create a draft to make changes.'
+        : 'This schema version is published and cannot be edited directly.';
+    }
+
+    if (!this.hasEditPermission) {
+      return 'You do not have permission to edit draft schemas.';
+    }
+
+    return null;
   }
 
   public get selectedInstanceCount(): number {
@@ -519,7 +584,7 @@ export class StandardSignupEditorComponent implements OnInit {
       field_id: -Date.now(),
       field_key: 'marketing_channels',
       field_type: 'checkbox_group',
-      label: 'Preferred marketing channels',
+      label: 'Marketing Channels',
       help_text: 'Choose how you would like to hear from us.',
       placeholder: null,
       section_key: null,
@@ -724,6 +789,9 @@ export class StandardSignupEditorComponent implements OnInit {
 
   public getFieldPreviewMeta(field: FormSchemaField): string {
     const meta: string[] = [this.getFieldTypeLabel(field.field_type)];
+    if (this.hasDynamicOptionsSource(field)) {
+      meta.push('Dynamic options');
+    }
     if (field.is_required) {
       meta.push('Required');
     }
@@ -793,6 +861,10 @@ export class StandardSignupEditorComponent implements OnInit {
       .some((candidate) => candidate.option_value.trim() === option.option_value.trim());
 
     return duplicates ? 'Option value must be unique in this field.' : null;
+  }
+
+  public hasDynamicOptionsSource(field: FormSchemaField): boolean {
+    return field.field_type === 'select' && !!field.options_source?.trim();
   }
 
   public getSchemaVersionLabel(schema: FormSchemaSummary): string {
@@ -982,7 +1054,7 @@ export class StandardSignupEditorComponent implements OnInit {
       : [];
 
     const sectionOrder = new Map(normalizedSections.map((section, index) => [section.section_key, index + 1]));
-    const normalizedFields = [...(this.editableSchema.fields || [])]
+    const normalizedFields = this.sortEditableFields(this.editableSchema.fields || [], normalizedSections)
       .map((field, index) => {
         const sectionKey = this.supportsSections
           ? (field.section_key ? this.sanitiseKey(field.section_key) : normalizedSections[0]?.section_key || null)
@@ -1088,7 +1160,7 @@ export class StandardSignupEditorComponent implements OnInit {
 
       fieldKeys.add(field.field_key.trim());
 
-      if (this.supportsStaticOptionsByType(field.field_type)) {
+      if (this.supportsStaticOptionsByType(field.field_type) && !this.hasDynamicOptionsSource(field)) {
         if (!(field.options || []).length) {
           return `Field "${field.field_key}" needs at least one option.`;
         }
@@ -1166,8 +1238,7 @@ export class StandardSignupEditorComponent implements OnInit {
       sections: [...(schema.sections || [])]
         .sort((left, right) => left.display_order - right.display_order)
         .map((section) => ({ ...section })),
-      fields: [...(schema.fields || [])]
-        .sort((left, right) => left.display_order - right.display_order)
+      fields: this.sortEditableFields(schema.fields || [], schema.sections || [])
         .map((field) => ({
           ...field,
           options: [...(field.options || [])]
@@ -1228,7 +1299,41 @@ export class StandardSignupEditorComponent implements OnInit {
     return Math.max(1, ...((this.editableSchema?.fields || []).map((field) => field.step_index || 1)));
   }
 
-  private supportsStaticOptions(field: FormSchemaField): boolean {
+  private sortEditableFields(fields: FormSchemaField[], sections: FormSchemaSection[] = []): FormSchemaField[] {
+    const sectionOrder = new Map(
+      [...sections]
+        .sort((left, right) => left.display_order - right.display_order)
+        .map((section, index) => [section.section_key, index + 1])
+    );
+
+    return [...fields].sort((left, right) => {
+      if (this.supportsSections) {
+        const leftOrder = sectionOrder.get(left.section_key || '') || Number.MAX_SAFE_INTEGER;
+        const rightOrder = sectionOrder.get(right.section_key || '') || Number.MAX_SAFE_INTEGER;
+        if (leftOrder !== rightOrder) {
+          return leftOrder - rightOrder;
+        }
+      } else {
+        const leftStep = Math.max(1, Number(left.step_index) || 1);
+        const rightStep = Math.max(1, Number(right.step_index) || 1);
+        if (leftStep !== rightStep) {
+          return leftStep - rightStep;
+        }
+      }
+
+      if (left.display_order !== right.display_order) {
+        return left.display_order - right.display_order;
+      }
+
+      if (left.field_id !== right.field_id) {
+        return left.field_id - right.field_id;
+      }
+
+      return left.field_key.localeCompare(right.field_key);
+    });
+  }
+
+  public supportsStaticOptions(field: FormSchemaField): boolean {
     return this.supportsStaticOptionsByType(field.field_type) && !field.options_source;
   }
 
