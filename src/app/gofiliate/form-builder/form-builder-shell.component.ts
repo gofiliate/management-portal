@@ -12,6 +12,7 @@ interface NewSchemaDraft {
   formType: string;
   schemaKey: string;
   label: string;
+  cloneFromSchemaId: number | null;
 }
 
 interface StatusBadge {
@@ -32,7 +33,7 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
   private readonly actionGuard = inject(ActionGuardService);
-  private readonly schemaKeyPattern = /^[a-z0-9_]+$/;
+  private readonly schemaKeyPattern = /^[a-z][a-z0-9_]{1,63}$/;
   private readonly subscriptions = new Subscription();
   private awaitingPermissionResponse = false;
 
@@ -194,7 +195,8 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
       form_type: this.newSchema.formType,
       schema_type: this.newSchema.schemaType,
       schema_key: schemaKey,
-      label
+      label,
+      clone_from_schema_id: this.newSchema.cloneFromSchemaId || undefined
     };
 
     this.formSchemaService.createDraft(payload).subscribe({
@@ -300,27 +302,17 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
 
     this.copyingSchemaId = schema.schema_id;
     this.errorMessage = null;
-    this.cdr.markForCheck();
-
-    const payload: CreateFormSchemaRequest = {
-      form_type: schema.form_type,
-      schema_type: schema.schema_type,
-      schema_key: this.buildCopiedSchemaKey(schema),
+    this.createError = null;
+    this.showNewSchemaForm = true;
+    this.newSchema = {
+      schemaType: schema.schema_type,
+      formType: schema.form_type,
+      schemaKey: this.buildCopiedSchemaKey(schema),
       label: this.buildCopiedSchemaLabel(schema),
-      clone_from_schema_id: schema.schema_id
+      cloneFromSchemaId: schema.schema_id
     };
-
-    this.formSchemaService.createDraft(payload).subscribe({
-      next: (copiedSchema) => {
-        this.copyingSchemaId = null;
-        void this.router.navigate(['/gofiliate/form-builder/schemas', copiedSchema.schema_id]);
-      },
-      error: (error: unknown) => {
-        this.errorMessage = this.extractErrorMessage(error, 'Failed to copy schema. Please try again.');
-        this.copyingSchemaId = null;
-        this.cdr.markForCheck();
-      }
-    });
+    this.copyingSchemaId = null;
+    this.cdr.markForCheck();
   }
 
   private loadSchemaPreview(schema: FormSchemaSummary): void {
@@ -362,7 +354,8 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
       schemaType: 'external',
       formType: 'signup',
       schemaKey: 'affiliate_signup',
-      label: 'Affiliate Signup Form'
+      label: 'Affiliate Signup Form',
+      cloneFromSchemaId: null
     };
   }
 
@@ -372,7 +365,12 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
   }
 
   private sanitiseSchemaKey(schemaKey: string): string {
-    return schemaKey.trim().toLowerCase().replace(/[\s-]+/g, '_');
+    return schemaKey
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, '_')
+      .replace(/[^a-z0-9_]+/g, '_')
+      .replace(/^_+|_+$/g, '');
   }
 
   private buildCopiedSchemaKey(schema: FormSchemaSummary): string {
@@ -444,5 +442,9 @@ export class FormBuilderShellComponent implements OnInit, OnDestroy {
 
   public get canCreateSchemas(): boolean {
     return this.canViewPage && this.actionGuard.canCreate();
+  }
+
+  public get isCopyMode(): boolean {
+    return this.newSchema.cloneFromSchemaId !== null;
   }
 }

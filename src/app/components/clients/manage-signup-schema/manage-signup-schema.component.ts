@@ -55,7 +55,7 @@ export class ManageSignupSchemaComponent implements OnInit {
       }
     }
 
-    await this.router.navigate(['/gofiliate/form-builder/signup'], {
+    await this.router.navigate(['/gofiliate/form-builder'], {
       queryParams: {
         back: 'instance',
         instanceId: this.instanceId

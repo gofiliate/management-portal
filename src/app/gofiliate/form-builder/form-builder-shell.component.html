@@ -35,9 +35,11 @@
         <div class="card-body">
           <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
             <div>
-              <h5 class="mb-1">Create New Schema</h5>
+              <h5 class="mb-1">{{ isCopyMode ? 'Copy Schema' : 'Create New Schema' }}</h5>
               <p class="text-muted mb-0">
-                Create a new draft schema in management-api for either external signup or OTP onboarding.
+                {{ isCopyMode
+                  ? 'Review the copied draft key and label before creating the new schema family.'
+                  : 'Create a new draft schema in management-api for either external signup or OTP onboarding.' }}
               </p>
             </div>
             <span class="badge bg-light text-dark border">{{ newSchema.schemaType === 'internal' ? 'OTP internal draft' : 'External portal draft' }}</span>
@@ -110,7 +112,7 @@
                 [disabled]="isCreating">
                 <i class="fa fa-check me-2" *ngIf="!isCreating"></i>
                 <span class="spinner-border spinner-border-sm me-2" *ngIf="isCreating" aria-hidden="true"></span>
-                {{ isCreating ? 'Creating...' : 'Create Schema' }}
+              {{ isCreating ? (isCopyMode ? 'Copying...' : 'Creating...') : (isCopyMode ? 'Create Copy' : 'Create Schema') }}
               </button>
               <button
                 type="button"
