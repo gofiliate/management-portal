@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subscription, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { Subscription, combineLatest, forkJoin, Observable, of, switchMap } from 'rxjs';
 import { FormSchemaService } from '../../../services/form-schema.service';
 import { ActionGuardService } from '../../../services/action-guard.service';
 import {
@@ -282,15 +282,8 @@ export class StandardSignupEditorComponent implements OnInit, OnDestroy {
   }
 
   public saveDraft(): void {
-    if (!this.editableSchema || !this.canEditSelectedSchema) {
-      return;
-    }
-
-    this.normalizeEditableSchema();
-    const validationError = this.validateEditableSchema();
-    if (validationError) {
-      this.validationError = validationError;
-      this.cdr.markForCheck();
+    const schema = this.prepareEditableSchemaForSave();
+    if (!schema) {
       return;
     }
 
@@ -299,7 +292,7 @@ export class StandardSignupEditorComponent implements OnInit, OnDestroy {
     this.validationError = null;
     this.cdr.markForCheck();
 
-    this.formSchemaService.saveSchema(this.editableSchema.schema_id, this.buildSaveRequest(this.editableSchema)).subscribe({
+    this.formSchemaService.saveSchema(schema.schema_id, this.buildSaveRequest(schema)).subscribe({
       next: (schema) => {
         this.saving = false;
         this.loadPageData(schema.schema_id, schema);
@@ -317,14 +310,9 @@ export class StandardSignupEditorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.editableSchema && this.canEditSelectedSchema) {
-      this.normalizeEditableSchema();
-      const validationError = this.validateEditableSchema();
-      if (validationError) {
-        this.validationError = validationError;
-        this.cdr.markForCheck();
-        return;
-      }
+    const schema = this.prepareEditableSchemaForSave();
+    if (!schema) {
+      return;
     }
 
     this.publishing = true;
@@ -333,7 +321,9 @@ export class StandardSignupEditorComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
 
     const payload: PublishFormSchemaRequest = {};
-    this.formSchemaService.publishSchema(this.selectedSchemaId, payload).subscribe({
+    this.formSchemaService.saveSchema(schema.schema_id, this.buildSaveRequest(schema)).pipe(
+      switchMap((savedSchema) => this.formSchemaService.publishSchema(savedSchema.schema_id, payload))
+    ).subscribe({
       next: (response) => {
         this.publishing = false;
         this.loadPageData(response.schema.schema_id, response.schema);
@@ -1185,6 +1175,22 @@ export class StandardSignupEditorComponent implements OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  private prepareEditableSchemaForSave(): FormSchema | null {
+    if (!this.editableSchema || !this.canEditSelectedSchema) {
+      return null;
+    }
+
+    this.normalizeEditableSchema();
+    const validationError = this.validateEditableSchema();
+    if (validationError) {
+      this.validationError = validationError;
+      this.cdr.markForCheck();
+      return null;
+    }
+
+    return this.editableSchema;
   }
 
   private buildSaveRequest(schema: FormSchema): SaveFormSchemaRequest {

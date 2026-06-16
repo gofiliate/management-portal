@@ -420,26 +420,26 @@
             </div>
 
             <div class="d-flex flex-column gap-2">
-              <div *ngFor="let option of field.options" class="border rounded p-3">
-                <div class="row g-3 align-items-end">
-                  <div class="col-12 col-lg-4">
+              <div *ngFor="let option of field.options" class="border rounded p-3 option-row">
+                <div class="option-row__grid">
+                  <div class="option-row__field">
                     <label class="form-label fw-semibold">Value</label>
                     <input class="form-control" [(ngModel)]="option.option_value" [disabled]="editorLocked">
                   </div>
-                  <div class="col-12 col-lg-5">
+                  <div class="option-row__field">
                     <label class="form-label fw-semibold">Label</label>
                     <input class="form-control" [(ngModel)]="option.option_label" [disabled]="editorLocked">
                   </div>
-                  <div class="col-12 col-lg-3">
-                    <div *ngIf="getOptionMessage(field, option)" class="form-text text-danger mb-2">{{ getOptionMessage(field, option) }}</div>
-                    <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-outline-secondary" type="button" (click)="moveOption(field, option.option_value, -1)" [disabled]="editorLocked">
+                  <div class="option-row__actions-col">
+                    <div *ngIf="getOptionMessage(field, option)" class="form-text text-danger option-row__message">{{ getOptionMessage(field, option) }}</div>
+                    <div class="option-row__actions">
+                    <button class="btn btn-outline-secondary option-row__action" type="button" (click)="moveOption(field, option.option_value, -1)" [disabled]="editorLocked">
                       <i class="fa fa-arrow-up"></i>
                     </button>
-                    <button class="btn btn-outline-secondary" type="button" (click)="moveOption(field, option.option_value, 1)" [disabled]="editorLocked">
+                    <button class="btn btn-outline-secondary option-row__action" type="button" (click)="moveOption(field, option.option_value, 1)" [disabled]="editorLocked">
                       <i class="fa fa-arrow-down"></i>
                     </button>
-                    <button class="btn btn-outline-danger" type="button" (click)="removeOption(field, option.option_value)" [disabled]="editorLocked">
+                    <button class="btn btn-outline-danger option-row__action" type="button" (click)="removeOption(field, option.option_value)" [disabled]="editorLocked">
                       <i class="fa fa-trash"></i>
                     </button>
                     </div>
